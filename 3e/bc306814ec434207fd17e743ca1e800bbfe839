@@ -1,0 +1,35 @@
+build_model_page.py
+  s_67b1e088a6a194::t_9304e096451615 1-3,17-22,24-32,35,40-41,45,47-49,53-58,61-62,64-65,69-70,187-188,192-193,196-197,202-203,209-210,236-238,240-241,251,284-286,290-293,295,299-302
+  s_67b1e088a6a194::t_4afd0d05f8a78a 4-16,23,33-34,36-39,42-44,46,50-52,59-60,63,66-68,71-186,189-191,194-195,198-201,204-208,211-235,239,242-250,252-283,287-289,294,296-298
+  s_67b1e088a6a194::t_7e3ca216f8f41c 303-308
+data/cap_v6e_163264.json
+  s_67b1e088a6a194::t_8697ab45f30bad 1-310
+capacity_calculator.py
+  s_67b1e088a6a194::t_1edbbf1211bb1c 36-38,40,44-45,47-48
+data/capacity_32chip.json
+  s_67b1e088a6a194::t_1edbbf1211bb1c 1-214
+data/cap_v5e_163264.json
+  s_67b1e088a6a194::t_8697ab45f30bad 1-310
+logbook.jsonl
+  s_67b1e088a6a194::t_98e65cb0c95d73 54-56
+models.html
+  s_67b1e088a6a194::t_03db25d4c8c622 1-166
+experiment8_dense_vs_moe.py
+  s_67b1e088a6a194::t_7666d71c03b550 90-92,134-137,148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3ebc306814ec434207fd17e743ca1e800bbfe839",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
