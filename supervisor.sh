@@ -60,6 +60,24 @@ if [ "${1:-}" = "--status" ]; then
   exit 0
 fi
 
+# ---------------------------------------------------------------- money first
+# Bill the fleet for the time since the last cycle before deciding anything. A campaign that
+# spends its reserve is worse than one that collects less data, because reruns happen at the end.
+VERDICT=$(python3 "$STUDY/budget_guard.py" 2>/dev/null | tail -1)
+case "$VERDICT" in
+  STOP)
+    say "budget guard says STOP: deleting the fleet and standing down"
+    for z in $ZONES; do
+      for n in $(gcloud compute tpus tpu-vm list --zone="$z" --format="value(name)" 2>/dev/null); do
+        gcloud compute tpus tpu-vm delete "$n" --zone="$z" --quiet >/dev/null 2>&1
+        say "  deleted $n in $z"
+      done
+    done
+    exit 0 ;;
+  THROTTLE)
+    say "budget guard says THROTTLE: measuring what is already running, claiming nothing new" ;;
+esac
+
 read -r zone state <<< "$(find_slice)"
 
 # ---------------------------------------------------------------- keep a slice alive
@@ -108,10 +126,21 @@ gcloud compute tpus tpu-vm ssh "$SLICE" --zone="$zone" --worker=all \
   --command='cd ~ && python3.11 experiment2_fabric_collectives.py' \
   > "$DATA/fabric_${STAMP}.stdout" 2>&1
 
-if gcloud compute tpus tpu-vm scp "$SLICE:~/fabric_results.json" \
-     "$DATA/fabric_${STAMP}.json" --zone="$zone" --worker=0 >/dev/null 2>&1; then
+# JAX process 0 is not necessarily gcloud worker 0: on this slice the file landed on worker 3.
+# So try every worker and take the first one that has it.
+workers=$(gcloud compute tpus tpu-vm describe "$SLICE" --zone="$zone" \
+            --format="value(networkEndpoints.len())" 2>/dev/null | head -1)
+workers=${workers:-8}
+got_file=""
+for w in $(seq 0 $((workers - 1))); do
+  if gcloud compute tpus tpu-vm scp "$SLICE:~/fabric_results.json" \
+       "$DATA/fabric_${STAMP}.json" --zone="$zone" --worker="$w" >/dev/null 2>&1; then
+    got_file="w$w"; break
+  fi
+done
+if [ -n "$got_file" ]; then
   n=$(grep -c '"op"' "$DATA/fabric_${STAMP}.json" 2>/dev/null || echo 0)
-  say "cycle $STAMP: collected $n fabric records"
+  say "cycle $STAMP: collected $n fabric records from $got_file"
 else
   say "cycle $STAMP: no fabric_results.json came back, stdout kept for diagnosis"
 fi

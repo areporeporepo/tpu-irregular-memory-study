@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "jax": "0.10.2",
+    "device_kind": "TPU v6 lite",
+    "num_devices": 1,
+    "python": "3.11.13",
+    "host": "t1v-n-b5c424b0-w-0",
+    "sparsecore": "SparseCoreInfo(num_cores=2, num_subcores=16, num_lanes=8, vmem_capacity_bytes=262144, dma_granule_size_bytes=32)"
+  },
+  "records": [
+    {
+      "num_rows": 1048576,
+      "value_dim": 1,
+      "num_indices": 16384,
+      "window": 512,
+      "table_mib": 4.0,
+      "delivered_mib": 0.062,
+      "tensorcore_ms": 0.2113,
+      "tensorcore_gbs": 0.31,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (1) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%220, %221, %222, %223) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x1xf32, #tpu.tiled<(8,"
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 1,
+      "num_indices": 65536,
+      "window": 512,
+      "table_mib": 4.0,
+      "delivered_mib": 0.25,
+      "tensorcore_ms": 0.5098,
+      "tensorcore_gbs": 0.514,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (1) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%222, %223, %224, %225) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x1xf32, #tpu.tiled<(8,"
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 1,
+      "num_indices": 262144,
+      "window": 512,
+      "table_mib": 4.0,
+      "delivered_mib": 1.0,
+      "tensorcore_ms": 1.6903,
+      "tensorcore_gbs": 0.62,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (1) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%222, %223, %224, %225) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x1xf32, #tpu.tiled<(8,"
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 8,
+      "num_indices": 16384,
+      "window": 512,
+      "table_mib": 32.0,
+      "delivered_mib": 0.5,
+      "tensorcore_ms": 0.1623,
+      "tensorcore_gbs": 3.23,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (8) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%220, %221, %222, %223) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x8xf32, #tpu.tiled<(8,"
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 8,
+      "num_indices": 65536,
+      "window": 512,
+      "table_mib": 32.0,
+      "delivered_mib": 2.0,
+      "tensorcore_ms": 0.323,
+      "tensorcore_gbs": 6.493,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (8) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%222, %223, %224, %225) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x8xf32, #tpu.tiled<(8,"
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 8,
+      "num_indices": 262144,
+      "window": 512,
+      "table_mib": 32.0,
+      "delivered_mib": 8.0,
+      "tensorcore_ms": 0.9503,
+      "tensorcore_gbs": 8.828,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (8) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%222, %223, %224, %225) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x8xf32, #tpu.tiled<(8,"
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 32,
+      "num_indices": 16384,
+      "window": 512,
+      "table_mib": 128.0,
+      "delivered_mib": 2.0,
+      "tensorcore_ms": 0.5075,
+      "tensorcore_gbs": 4.132,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (32) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%220, %221, %222, %223) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x32xf32, #tpu.tiled<("
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 32,
+      "num_indices": 65536,
+      "window": 512,
+      "table_mib": 128.0,
+      "delivered_mib": 8.0,
+      "tensorcore_ms": 1.6979,
+      "tensorcore_gbs": 4.941,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (32) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%222, %223, %224, %225) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x32xf32, #tpu.tiled<("
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 32,
+      "num_indices": 262144,
+      "window": 512,
+      "table_mib": 128.0,
+      "delivered_mib": 32.0,
+      "tensorcore_ms": 6.4303,
+      "tensorcore_gbs": 5.218,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:142:1: error: 'tpu.enqueue_indirect_dma' op Not implemented: expected slice size (32) to be aligned with source (gather operand) tiling (128).\ngather.6:142:1: note: see current operation: \"tpu.enqueue_indirect_dma\"(%222, %223, %224, %225) <{add = false}> {sc.inside_trace_region, sc.unlowered} : (memref<1048576x32xf32, #tpu.tiled<("
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 128,
+      "num_indices": 16384,
+      "window": 512,
+      "table_mib": 512.0,
+      "delivered_mib": 8.0,
+      "tensorcore_ms": 0.2497,
+      "tensorcore_gbs": 33.597,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (132095 words) exceeds the legitimate user allocatable offset upper bound (65535 words) in memory space tile_spmem when allocating 131072 words\nSee https://openxla.org/xla/errors/error_3000 for more details.\ngather."
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 128,
+      "num_indices": 65536,
+      "window": 512,
+      "table_mib": 512.0,
+      "delivered_mib": 32.0,
+      "tensorcore_ms": 0.6606,
+      "tensorcore_gbs": 50.797,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (132095 words) exceeds the legitimate user allocatable offset upper bound (65535 words) in memory space tile_spmem when allocating 131072 words\nSee https://openxla.org/xla/errors/error_3000 for more details.\ngather."
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 128,
+      "num_indices": 262144,
+      "window": 512,
+      "table_mib": 512.0,
+      "delivered_mib": 128.0,
+      "tensorcore_ms": 3.3,
+      "tensorcore_gbs": 40.672,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (132095 words) exceeds the legitimate user allocatable offset upper bound (65535 words) in memory space tile_spmem when allocating 131072 words\nSee https://openxla.org/xla/errors/error_3000 for more details.\ngather."
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 512,
+      "num_indices": 16384,
+      "window": 512,
+      "table_mib": 2048.0,
+      "delivered_mib": 32.0,
+      "tensorcore_ms": 0.3232,
+      "tensorcore_gbs": 103.813,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (525311 words) exceeds the legitimate user allocatable offset upper bound (65535 words) in memory space tile_spmem when allocating 524288 words\nSee https://openxla.org/xla/errors/error_3000 for more details.\ngather."
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 512,
+      "num_indices": 65536,
+      "window": 512,
+      "table_mib": 2048.0,
+      "delivered_mib": 128.0,
+      "tensorcore_ms": 1.3008,
+      "tensorcore_gbs": 103.179,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (525311 words) exceeds the legitimate user allocatable offset upper bound (65535 words) in memory space tile_spmem when allocating 524288 words\nSee https://openxla.org/xla/errors/error_3000 for more details.\ngather."
+    },
+    {
+      "num_rows": 1048576,
+      "value_dim": 512,
+      "num_indices": 262144,
+      "window": 512,
+      "table_mib": 2048.0,
+      "delivered_mib": 512.0,
+      "tensorcore_ms": 4.8312,
+      "tensorcore_gbs": 111.126,
+      "sparsecore_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.gather.6:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (525311 words) exceeds the legitimate user allocatable offset upper bound (65535 words) in memory space tile_spmem when allocating 524288 words\nSee https://openxla.org/xla/errors/error_3000 for more details.\ngather."
+    }
+  ]
+}

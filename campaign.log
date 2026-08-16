@@ -1,1 +1,5 @@
 2026-08-16T10:57:46Z cycle 20260816T105739Z: running fabric collectives on anh-v6e-32 in us-east1-d
+2026-08-16T10:59:30Z cycle 20260816T105739Z: no fabric_results.json came back, stdout kept for diagnosis
+2026-08-16T10:59:32Z cycle 20260816T105739Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T11:01:05Z cycle 20260816T105739Z: collected local gather results
+2026-08-16T11:01:05Z cycle 20260816T105739Z: done

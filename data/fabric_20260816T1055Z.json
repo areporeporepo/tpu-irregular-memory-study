@@ -1,0 +1,265 @@
+{
+  "meta": {
+    "jax": "0.10.2",
+    "device_kind": "TPU v6 lite",
+    "num_devices": 32,
+    "process_index": 0,
+    "process_count": 8,
+    "host": "t1v-n-d2cb5999-w-3",
+    "python": "3.11.13"
+  },
+  "records": [
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 0.25,
+      "ms": 0.0268,
+      "ms_with_dispatch": 0.5601,
+      "dispatch_ms": 0.5333,
+      "bus_gbs": 8.56,
+      "per_peer_kib": 32.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "per_chip_mib": 0.25,
+      "ms": 0.0306,
+      "ms_with_dispatch": 0.5378,
+      "dispatch_ms": 0.5072,
+      "bus_gbs": 14.98,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 1.0,
+      "ms": 0.0365,
+      "ms_with_dispatch": 0.5493,
+      "dispatch_ms": 0.5128,
+      "bus_gbs": 25.16,
+      "per_peer_kib": 128.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "per_chip_mib": 1.0,
+      "ms": 0.0438,
+      "ms_with_dispatch": 0.5724,
+      "dispatch_ms": 0.5286,
+      "bus_gbs": 41.86,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 4.0,
+      "ms": 0.0772,
+      "ms_with_dispatch": 0.7157,
+      "dispatch_ms": 0.6385,
+      "bus_gbs": 47.55,
+      "per_peer_kib": 512.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "per_chip_mib": 4.0,
+      "ms": 0.0733,
+      "ms_with_dispatch": 0.789,
+      "dispatch_ms": 0.7157,
+      "bus_gbs": 100.12,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 16.0,
+      "ms": 0.2362,
+      "ms_with_dispatch": 1.2074,
+      "dispatch_ms": 0.9713,
+      "bus_gbs": 62.16,
+      "per_peer_kib": 2048.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "per_chip_mib": 16.0,
+      "ms": 0.2231,
+      "ms_with_dispatch": 1.437,
+      "dispatch_ms": 1.214,
+      "bus_gbs": 131.62,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 0.25,
+      "ms": 0.0294,
+      "ms_with_dispatch": 0.5466,
+      "dispatch_ms": 0.5172,
+      "bus_gbs": 8.37,
+      "per_peer_kib": 16.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "per_chip_mib": 0.25,
+      "ms": 0.0421,
+      "ms_with_dispatch": 0.5471,
+      "dispatch_ms": 0.5049,
+      "bus_gbs": 11.67,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 1.0,
+      "ms": 0.0395,
+      "ms_with_dispatch": 0.5472,
+      "dispatch_ms": 0.5076,
+      "bus_gbs": 24.87,
+      "per_peer_kib": 64.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "per_chip_mib": 1.0,
+      "ms": 0.0455,
+      "ms_with_dispatch": 0.5668,
+      "dispatch_ms": 0.5212,
+      "bus_gbs": 43.19,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 4.0,
+      "ms": 0.0805,
+      "ms_with_dispatch": 0.7086,
+      "dispatch_ms": 0.6281,
+      "bus_gbs": 48.82,
+      "per_peer_kib": 256.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "per_chip_mib": 4.0,
+      "ms": 0.0782,
+      "ms_with_dispatch": 0.8004,
+      "dispatch_ms": 0.7222,
+      "bus_gbs": 100.53,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 16.0,
+      "ms": 0.239,
+      "ms_with_dispatch": 1.207,
+      "dispatch_ms": 0.968,
+      "bus_gbs": 65.81,
+      "per_peer_kib": 1024.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "per_chip_mib": 16.0,
+      "ms": 0.2402,
+      "ms_with_dispatch": 1.4427,
+      "dispatch_ms": 1.2024,
+      "bus_gbs": 130.94,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 0.25,
+      "ms": 0.0361,
+      "ms_with_dispatch": 0.5767,
+      "dispatch_ms": 0.5406,
+      "bus_gbs": 7.04,
+      "per_peer_kib": 8.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 0.25,
+      "ms": 0.041,
+      "ms_with_dispatch": 0.562,
+      "dispatch_ms": 0.521,
+      "bus_gbs": 12.4,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 1.0,
+      "ms": 0.0552,
+      "ms_with_dispatch": 0.5835,
+      "dispatch_ms": 0.5283,
+      "bus_gbs": 18.42,
+      "per_peer_kib": 32.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 1.0,
+      "ms": 0.0551,
+      "ms_with_dispatch": 0.5863,
+      "dispatch_ms": 0.5313,
+      "bus_gbs": 36.89,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 4.0,
+      "ms": 0.1293,
+      "ms_with_dispatch": 0.773,
+      "dispatch_ms": 0.6437,
+      "bus_gbs": 31.43,
+      "per_peer_kib": 128.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 4.0,
+      "ms": 0.1102,
+      "ms_with_dispatch": 0.8416,
+      "dispatch_ms": 0.7314,
+      "bus_gbs": 73.75,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 16.0,
+      "ms": 0.423,
+      "ms_with_dispatch": 1.4256,
+      "dispatch_ms": 1.0026,
+      "bus_gbs": 38.42,
+      "per_peer_kib": 512.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 16.0,
+      "ms": 0.3123,
+      "ms_with_dispatch": 1.5375,
+      "dispatch_ms": 1.2252,
+      "bus_gbs": 104.07,
+      "inner": 32
+    }
+  ]
+}
