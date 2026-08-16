@@ -32,3 +32,12 @@
 2026-08-16T12:09:19Z installing jax on all workers
 2026-08-16T12:09:39Z cycle 20260816T120856Z: running fabric collectives on anh-steady-16 in us-east1-d
 12:09:55Z serving test on anh-steady-16: installing vllm and the TPU backend on worker 0
+2026-08-16T12:11:16Z cycle 20260816T120856Z: collected 16 fabric records from w1
+2026-08-16T12:11:17Z cycle 20260816T120856Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T12:12:15Z cycle 20260816T120856Z: collected local gather results
+2026-08-16T12:12:15+00:00: 33 chips project-wide, 32 held by 3 peers, zones=['us-east1-d', 'asia-northeast1-b', 'us-west4-a']
+2026-08-16T12:12:23Z cycle 20260816T120856Z: probing availability across zones
+2026-08-16T12:12:49Z another cycle is still running, skipping
+12:13:51Z attempting to serve Qwen/Qwen3-4B
+12:13:55Z attempting to serve Qwen/Qwen3.8-27B
+12:13:58Z serving test complete

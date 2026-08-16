@@ -1,0 +1,2 @@
+{"model": "Qwen/Qwen3-4B", "stage": "import", "error": "No module named 'vllm'"}
+{"model": "Qwen/Qwen3.8-27B", "stage": "import", "error": "No module named 'vllm'"}

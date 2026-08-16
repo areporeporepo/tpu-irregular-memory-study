@@ -1,2 +1,8 @@
 Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
 SSH: Attempting to connect to worker 0...
+             Got        de4ab27c962a35b2922ab48ac5de8cc4628cd755ea9b89d94bf9bc2cf8437db4
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'vllm'
+ModuleNotFoundError: No module named 'tpu_inference'
