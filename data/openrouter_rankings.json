@@ -1,0 +1,62 @@
+[
+  {
+    "rank": 1,
+    "name": "DeepSeek V4 Flash 0731",
+    "tokens": "11.1T tokens",
+    "t": 11100000000000.0
+  },
+  {
+    "rank": 2,
+    "name": "Hy3",
+    "tokens": "10.4T tokens",
+    "t": 10400000000000.0
+  },
+  {
+    "rank": 3,
+    "name": "GPT-5.6 Luna",
+    "tokens": "5.23T tokens",
+    "t": 5230000000000.0
+  },
+  {
+    "rank": 4,
+    "name": "DeepSeek V4 Flash 0423",
+    "tokens": "4.77T tokens",
+    "t": 4770000000000.0
+  },
+  {
+    "rank": 5,
+    "name": "GLM 5.2",
+    "tokens": "4.23T tokens",
+    "t": 4230000000000.0005
+  },
+  {
+    "rank": 6,
+    "name": "MiMo-V2.5",
+    "tokens": "3.84T tokens",
+    "t": 3840000000000.0
+  },
+  {
+    "rank": 7,
+    "name": "DeepSeek V4 Pro",
+    "tokens": "2.77T tokens",
+    "t": 2770000000000.0
+  },
+  {
+    "rank": 8,
+    "name": "Claude Opus 5",
+    "tokens": "2.06T tokens",
+    "t": 2060000000000.0
+  },
+  {
+    "rank": 9,
+    "name": "Nemotron 3 Ultra (free)",
+    "tokens": "1.99T tokens",
+    "t": 1990000000000.0
+  },
+  {
+    "rank": 10,
+    "name": "Gemini 3.6 Flash",
+    "tokens": "1.85T tokens",
+    "t": 1850000000000.0
+  }
+]

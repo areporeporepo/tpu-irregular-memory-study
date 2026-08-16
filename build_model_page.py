@@ -47,6 +47,88 @@ KNOWN = {
 }
 
 
+# Top-10 OpenRouter usage, scraped from the rankings page because it is client-rendered and has
+# no public JSON endpoint. Open-weight status is from whether the weights are published on
+# HuggingFace; the three closed models are marked as such. Params are given only where published,
+# and DeepSeek V4's are not, so it carries no fit verdict rather than a guessed one.
+RANK_CACHE = HERE / "data" / "openrouter_rankings.json"
+OPEN_WEIGHTS = {
+    "DeepSeek V4 Flash 0731": True,  "Hy3": True,      "GPT-5.6 Luna": False,
+    "DeepSeek V4 Flash 0423": True,  "GLM 5.2": True,  "MiMo-V2.5": True,
+    "DeepSeek V4 Pro": True,         "Claude Opus 5": False,
+    "Nemotron 3 Ultra (free)": True, "Gemini 3.6 Flash": False,
+}
+
+
+def rankings() -> list[dict]:
+    """Render the rankings page in a real browser and parse the leaderboard."""
+    import re
+    try:
+        from playwright.sync_api import sync_playwright
+        exe = sorted((Path.home() / "Library" / "Caches" / "ms-playwright").glob(
+            "chromium_headless_shell-*/chrome-headless-shell-mac-arm64/chrome-headless-shell"))
+        with sync_playwright() as pw:
+            b = pw.chromium.launch(executable_path=str(exe[-1]) if exe else None)
+            pg = b.new_page(viewport={"width": 1400, "height": 1400})
+            try:
+                pg.goto("https://openrouter.ai/rankings", wait_until="domcontentloaded",
+                        timeout=60000)
+            except Exception:
+                pass
+            pg.wait_for_timeout(9000)
+            pg.mouse.wheel(0, 2500)
+            pg.wait_for_timeout(3000)
+            txt = pg.inner_text("body")
+            b.close()
+        lines = [l.strip() for l in txt.splitlines() if l.strip()]
+        i = next(k for k, l in enumerate(lines) if l.startswith("LLM Leaderboard"))
+        rows, cur = [], {}
+        for l in lines[i:i + 180]:
+            if re.fullmatch(r"\d+\.", l):
+                if cur.get("name"):
+                    rows.append(cur)
+                cur = {"rank": int(l[:-1])}
+            elif cur and "name" not in cur and l != "by" and not l.endswith("tokens"):
+                cur["name"] = l
+            elif cur and re.fullmatch(r"[\d.]+[TBM] tokens", l):
+                cur["tokens"] = l
+                cur["t"] = float(l.split()[0][:-1]) * {"T": 1e12, "B": 1e9, "M": 1e6}[l.split()[0][-1]]
+        if cur.get("name"):
+            rows.append(cur)
+        rows = [r for r in rows if r.get("t")][:10]
+        if rows:
+            RANK_CACHE.parent.mkdir(exist_ok=True)
+            RANK_CACHE.write_text(json.dumps(rows, indent=2))
+        return rows
+    except Exception as exc:
+        print(f"  rankings scrape failed ({type(exc).__name__}), using cache")
+        return json.loads(RANK_CACHE.read_text()) if RANK_CACHE.is_file() else []
+
+
+def chart_usage(rows: list[dict]) -> str:
+    """Weekly token usage of the top ten, marked by whether the weights are published."""
+    if not rows:
+        return "<p>rankings unavailable this run</p>"
+    hi = max(r["t"] for r in rows)
+    h = len(rows) * (ROW_H + GAP) + 56
+    out = [f'<svg viewBox="0 0 {W} {h}" width="100%" role="img" '
+           f'aria-label="Weekly token usage of the ten most-used models on OpenRouter">']
+    for i, r in enumerate(rows):
+        y = 30 + i * (ROW_H + GAP)
+        w = (r["t"] / hi) * (W - PAD_L - PAD_R - 60)
+        openw = OPEN_WEIGHTS.get(r["name"])
+        cls = "w" if openw else "kv"
+        out.append(f'<text class="cat" x="{PAD_L-12}" y="{y+ROW_H*0.68:.0f}" '
+                   f'text-anchor="end">{r["rank"]}. {r["name"][:26]}</text>')
+        out.append(f'<rect class="{cls}" x="{PAD_L}" y="{y}" width="{max(w,2):.1f}" '
+                   f'height="{ROW_H}" rx="4"><title>{r["name"]}: {r["tokens"]} this week, '
+                   f'{"open weights" if openw else "closed weights"}</title></rect>')
+        out.append(f'<text class="val" x="{PAD_L+w+8:.1f}" y="{y+ROW_H*0.68:.0f}">'
+                   f'{r["tokens"]}{"" if openw else "  (closed)"}</text>')
+    out.append('</svg>')
+    return "\n".join(out)
+
+
 def openrouter() -> dict:
     with urllib.request.urlopen("https://openrouter.ai/api/v1/models", timeout=60) as r:
         return {m["id"]: m for m in json.load(r)["data"]}
@@ -188,6 +270,7 @@ def table_view(rows: list[dict]) -> str:
 
 def main() -> None:
     rows = collect()
+    ranks = rankings()
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     OUT.write_text(f"""<title>What We Can Actually Run</title>
 <style>
@@ -243,6 +326,21 @@ def main() -> None:
  published price to measure our cost against instead of a vendor claim, and it must
  <strong>fit on chips we can obtain</strong>. Trending on HuggingFace is not a criterion: the
  current trending flagship is a 2.4-trillion-parameter mixture needing about ninety v6e chips.</p>
+
+ <h2>What the market is actually using, this week</h2>
+ <div class="legend">
+   <span><span class="key k1"></span>open weights</span>
+   <span><span class="key k2"></span>closed, API only</span>
+ </div>
+ <figure>{chart_usage(ranks)}
+  <figcaption>Weekly token usage on OpenRouter, scraped live from the rankings page. Seven of the
+  top ten publish their weights, which is the fact that makes this study possible at all: the models
+  people actually use are mostly downloadable.</figcaption>
+ </figure>
+ <p><strong>And none of the top three are things we could serve.</strong> DeepSeek V4's parameter
+ count is unpublished, Hy3's is large, and GPT-5.6 Luna is closed. The models in the fit chart below
+ are the ones with both a published price and published weights, which is a much smaller set than
+ the leaderboard.</p>
 
  <h2>Does it fit?</h2>
  <div class="legend">
