@@ -1,0 +1,96 @@
+{
+  "device_kind": "TPU v6 lite",
+  "jax": "0.10.2",
+  "thresholds": [
+    {
+      "dim": 64,
+      "n": 16384,
+      "last_promoted_rows": 196480,
+      "first_hbm_rows": 196488,
+      "last_promoted_bytes": 50298880,
+      "first_hbm_bytes": 50300928,
+      "last_promoted_mib": 47.969,
+      "first_hbm_mib": 47.971
+    },
+    {
+      "dim": 128,
+      "n": 16384,
+      "last_promoted_rows": 196480,
+      "first_hbm_rows": 196488,
+      "last_promoted_bytes": 100597760,
+      "first_hbm_bytes": 100601856,
+      "last_promoted_mib": 95.938,
+      "first_hbm_mib": 95.941
+    },
+    {
+      "dim": 256,
+      "n": 16384,
+      "last_promoted_rows": 98240,
+      "first_hbm_rows": 98248,
+      "last_promoted_bytes": 100597760,
+      "first_hbm_bytes": 100605952,
+      "last_promoted_mib": 95.938,
+      "first_hbm_mib": 95.945
+    },
+    {
+      "dim": 512,
+      "n": 16384,
+      "last_promoted_rows": 49120,
+      "first_hbm_rows": 49128,
+      "last_promoted_bytes": 100597760,
+      "first_hbm_bytes": 100614144,
+      "last_promoted_mib": 95.938,
+      "first_hbm_mib": 95.953
+    }
+  ],
+  "index_scaling": [
+    {
+      "dim": 128,
+      "n": 1024,
+      "last_promoted_rows": 196480,
+      "first_hbm_rows": 196488,
+      "last_promoted_bytes": 100597760,
+      "first_hbm_bytes": 100601856,
+      "last_promoted_mib": 95.938,
+      "first_hbm_mib": 95.941,
+      "index_bytes": 4096,
+      "table_plus_indices": 100601856
+    },
+    {
+      "dim": 128,
+      "n": 4096,
+      "last_promoted_rows": 196480,
+      "first_hbm_rows": 196488,
+      "last_promoted_bytes": 100597760,
+      "first_hbm_bytes": 100601856,
+      "last_promoted_mib": 95.938,
+      "first_hbm_mib": 95.941,
+      "index_bytes": 16384,
+      "table_plus_indices": 100614144
+    },
+    {
+      "dim": 128,
+      "n": 16384,
+      "last_promoted_rows": 196480,
+      "first_hbm_rows": 196488,
+      "last_promoted_bytes": 100597760,
+      "first_hbm_bytes": 100601856,
+      "last_promoted_mib": 95.938,
+      "first_hbm_mib": 95.941,
+      "index_bytes": 65536,
+      "table_plus_indices": 100663296
+    },
+    {
+      "dim": 128,
+      "n": 65536,
+      "last_promoted_rows": 196480,
+      "first_hbm_rows": 196488,
+      "last_promoted_bytes": 100597760,
+      "first_hbm_bytes": 100601856,
+      "last_promoted_mib": 95.938,
+      "first_hbm_mib": 95.941,
+      "index_bytes": 262144,
+      "table_plus_indices": 100859904
+    }
+  ]
+}

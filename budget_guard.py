@@ -30,8 +30,24 @@ TOTAL = 20_000.0     # credit at the start of this campaign
 RESERVE = 3_000.0    # never spend into this
 SOFT_FRACTION = 0.80  # stop *claiming* at 80% of the spendable pool
 
-# Spot price per chip-hour, us-east5 and us-east1, August 2026.
-RATE = {"v6e": 1.4033}
+# Spot price per chip-hour, us-east5 and us-east1, August 2026. v5e is the least certain of the
+# three and is deliberately rounded up, because a rate that is too low here spends real credit.
+RATE = {"v6e": 1.4033, "v5p": 1.26, "v5litepod": 0.60, "v4": 0.97}
+
+
+def chips_for(accel: str) -> int:
+    """Chips in an accelerator type, which is not always the number in its name.
+
+    v5e and v6e count chips in the suffix. v5p and v4 count TensorCores and put two on a chip, so
+    `v5p-8` is four chips, which JAX confirms by reporting 4 devices on it. Before this was fixed
+    the guard billed our v5p-8 as eight v6e chips, $11.23/hr against a real $5.04, which is about
+    $2,400 of imaginary spend between now and September and enough to trigger a false STOP.
+    """
+    tail = accel.rsplit("-", 1)[-1]
+    if not tail.isdigit():
+        return 1
+    n = int(tail)
+    return n // 2 if accel.startswith(("v5p-", "v4-")) else n
 ZONES = ["us-east1-d", "asia-northeast1-b", "us-east5-a", "us-east5-b", "us-east5-c"]
 
 
@@ -55,7 +71,7 @@ def live_chips() -> list[dict]:
             if state not in ("READY", "CREATING"):
                 continue
             out.append({"name": name, "zone": zone, "accel": accel,
-                        "chips": int(count) if count.isdigit() else 1,
+                        "chips": chips_for(accel),
                         "rate": RATE.get(family, 1.4033), "state": state})
     return out
 

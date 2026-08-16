@@ -30,12 +30,30 @@ SERIES = HERE / "data" / "contention.jsonl"
 ZONES = ["us-east1-d", "us-east5-a", "us-east5-b", "us-east5-c", "us-south1-a",
          "us-central1-a", "us-central2-b", "europe-west4-a", "asia-northeast1-b",
          "us-west4-a", "us-west4-b"]
-OURS = {"anh-v6e-32", "anh-dev1", "anh-big-256", "anh-big-128", "anh-big-64"}
+# Ownership by prefix, not by a list of names. The previous version hardcoded the names of a fleet
+# that has since been deleted and replaced, so every VM we currently own except anh-dev1 was being
+# counted as a peer's. On 2026-08-16 that made the log claim "32 chips held by 3 peers" when the
+# real number was 8 held by 1. Every slice this study creates starts with one of these.
+OURS_PREFIX = ("anh-", "probe-", "sweep-", "burst-")
 
 
 def anon(name: str) -> str:
     """Stable pseudonym. Enough to count distinct holders across time, not enough to identify."""
     return "peer-" + hashlib.sha256(name.encode()).hexdigest()[:8]
+
+
+def chips_for(accel: str) -> int:
+    """Chips in an accelerator type, which is not always the number in its name.
+
+    For v5e and v6e the suffix counts chips. For v5p and v4 it counts TensorCores, and those
+    generations put two cores on a chip, so `v5p-8` is four chips and not eight. Confirmed on the
+    hardware: JAX reports 4 devices on our v5p-8.
+    """
+    tail = accel.rsplit("-", 1)[-1]
+    if not tail.isdigit():
+        return 1
+    n = int(tail)
+    return n // 2 if accel.startswith(("v5p-", "v4-")) else n
 
 
 def observe() -> dict:
@@ -54,10 +72,10 @@ def observe() -> dict:
             if len(parts) < 3:
                 continue
             name, accel, state = parts[0], parts[1], parts[2]
-            tail = accel.rsplit("-", 1)[-1]
+            mine = name.startswith(OURS_PREFIX)
             rows.append({"zone": zone, "accel": accel, "state": state,
-                         "chips": int(tail) if tail.isdigit() else 1,
-                         "mine": name in OURS, "who": "us" if name in OURS else anon(name)})
+                         "chips": chips_for(accel),
+                         "mine": mine, "who": "us" if mine else anon(name)})
     theirs = [r for r in rows if not r["mine"]]
     return {"at": at, "total_vms": len(rows), "total_chips": sum(r["chips"] for r in rows),
             "peer_vms": len(theirs), "peer_chips": sum(r["chips"] for r in theirs),

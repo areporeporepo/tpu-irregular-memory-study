@@ -27,6 +27,52 @@ STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 mkdir -p "$DATA"
 say() { printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" | tee -a "$LOG"; }
 
+# Every command that touches the network gets a deadline. This is not defensive dressing: on
+# 2026-08-16 a `--worker=all` ssh wedged for four hours because one worker's JAX process was waiting
+# on a peer that had been preempted. launchd will not start a second copy of a job while the first
+# is still alive, so that one hung ssh silently stopped the entire campaign, and every scheduled
+# cycle after it exited with "another cycle is still running". A cycle that fails is recoverable.
+# A cycle that hangs is not.
+#
+# macOS ships no timeout(1) and no coreutils here, so this is the bash equivalent: run the command,
+# race it against a sleeper, kill whichever loses.
+# Two things in here are not obvious and both were found by testing rather than by reasoning:
+#
+#   >/dev/null 2>&1 on the killer      Without it, the killer inherits the write end of any command
+#                                      substitution wrapping this function, so `x=$(t 120 cmd)`
+#                                      blocks for the full 120 seconds waiting for EOF on the pipe
+#                                      even after cmd has already finished and exited.
+#   polling instead of one long sleep   A killer that outlives its target and then fires kill -9 at
+#                                      a recycled PID is a loaded gun. Checking once a second means
+#                                      it exits as soon as the target is gone.
+t() {
+  local secs="$1"; shift
+  "$@" &
+  local pid=$!
+  ( waited=0
+    while [ "$waited" -lt "$secs" ]; do
+      sleep 1
+      kill -0 "$pid" 2>/dev/null || exit 0
+      waited=$((waited + 1))
+    done
+    kill -9 "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  local killer=$!
+  disown "$killer" 2>/dev/null || true   # else bash announces "Terminated" into the campaign log
+  wait "$pid" 2>/dev/null
+  local rc=$?
+  kill "$killer" 2>/dev/null
+  return "$rc"
+}
+
+# A gcloud left over from a previous cycle that outlived its deadline holds nothing useful and may
+# hold the TPU. Half an hour is well beyond any healthy call and well short of a wedge.
+for p in $(pgrep -f "gcloud.py compute tpus" 2>/dev/null); do
+  age=$(ps -o etimes= -p "$p" 2>/dev/null | tr -d ' ')
+  if [ -n "$age" ] && [ "$age" -gt 1800 ]; then
+    kill -9 "$p" 2>/dev/null && say "reaped orphaned gcloud pid $p, ${age}s old"
+  fi
+done
+
 # Two JAX programs on one TPU slice fight over the accelerator and both fail, so a cycle that
 # runs long must not have the next one started on top of it. A stale lock older than two hours
 # is assumed dead, because the longest legitimate cycle is a jax reinstall plus two experiments.
@@ -40,12 +86,16 @@ if [ -d "$LOCK" ]; then
 fi
 if [ "${1:-}" != "--status" ]; then
   mkdir "$LOCK" 2>/dev/null || { say "could not take lock"; exit 0; }
-  trap 'rm -rf "$LOCK"' EXIT
+  # Last line of defence: even with a deadline on every call, the whole cycle gets one too. Shorter
+  # than two schedule intervals, so a killed cycle is replaced rather than accumulating.
+  ( sleep 1500; pkill -P $$ 2>/dev/null; kill -TERM $$ 2>/dev/null ) &
+  WATCHDOG=$!
+  trap 'rm -rf "$LOCK"; kill "$WATCHDOG" 2>/dev/null' EXIT
 fi
 
 find_slice() {
   for z in $ZONES; do
-    state=$(gcloud compute tpus tpu-vm describe "$SLICE" --zone="$z" \
+    state=$(t 120 gcloud compute tpus tpu-vm describe "$SLICE" --zone="$z" \
               --format="value(state)" 2>/dev/null | head -1)
     if [ -n "$state" ]; then echo "$z $state"; return 0; fi
   done
@@ -68,8 +118,8 @@ case "$VERDICT" in
   STOP)
     say "budget guard says STOP: deleting the fleet and standing down"
     for z in $ZONES; do
-      for n in $(gcloud compute tpus tpu-vm list --zone="$z" --format="value(name)" 2>/dev/null); do
-        gcloud compute tpus tpu-vm delete "$n" --zone="$z" --quiet >/dev/null 2>&1
+      for n in $(t 120 gcloud compute tpus tpu-vm list --zone="$z" --format="value(name)" 2>/dev/null); do
+        t 300 gcloud compute tpus tpu-vm delete "$n" --zone="$z" --quiet >/dev/null 2>&1
         say "  deleted $n in $z"
       done
     done
@@ -84,12 +134,12 @@ read -r zone state <<< "$(find_slice)"
 if [ "$state" = "MISSING" ] || [ "$state" = "PREEMPTED" ] || [ "$state" = "TERMINATED" ]; then
   say "slice $state, hunting capacity"
   if [ "$state" != "MISSING" ]; then
-    gcloud compute tpus tpu-vm delete "$SLICE" --zone="$zone" --quiet >/dev/null 2>&1
+    t 300 gcloud compute tpus tpu-vm delete "$SLICE" --zone="$zone" --quiet >/dev/null 2>&1
   fi
   got=""
   for z in $ZONES; do
     for size in 16 8 4 1; do   # take the largest the zone will give
-      out=$(gcloud compute tpus tpu-vm create "$SLICE" --zone="$z" \
+      out=$(t 420 gcloud compute tpus tpu-vm create "$SLICE" --zone="$z" \
             --accelerator-type="v6e-$size" --version="$RUNTIME" --spot \
             --labels=owner=anh,study=irregular-memory 2>&1)
       if echo "$out" | grep -qi "no more capacity\|Insufficient\|RESOURCE_EXHAUSTED"; then
@@ -109,26 +159,26 @@ fi
 if [ "$state" != "READY" ]; then say "slice is $state, skipping this cycle"; exit 0; fi
 
 # ---------------------------------------------------------------- make sure it can run jax
-have_jax=$(gcloud compute tpus tpu-vm ssh "$SLICE" --zone="$zone" --worker=0 \
+have_jax=$(t 240 gcloud compute tpus tpu-vm ssh "$SLICE" --zone="$zone" --worker=0 \
              --command='python3.11 -c "import jax" 2>/dev/null && echo yes || echo no' \
              2>/dev/null | tail -1)
 if [ "$have_jax" != "yes" ]; then
   say "installing jax on all workers"
-  gcloud compute tpus tpu-vm ssh "$SLICE" --zone="$zone" --worker=all \
-    --command='python3.11 -m pip install -q -U "jax[tpu]"' >/dev/null 2>&1
+  t 900 gcloud compute tpus tpu-vm ssh "$SLICE" --zone="$zone" --worker=all \
+    --command='timeout 600 python3.11 -m pip install -q -U "jax[tpu]"' >/dev/null 2>&1
 fi
 
 # ---------------------------------------------------------------- measure
 say "cycle $STAMP: running fabric collectives on $SLICE in $zone"
-gcloud compute tpus tpu-vm scp "$STUDY/experiment2_fabric_collectives.py" \
+t 240 gcloud compute tpus tpu-vm scp "$STUDY/experiment2_fabric_collectives.py" \
   "$SLICE:~/experiment2_fabric_collectives.py" --zone="$zone" --worker=all >/dev/null 2>&1
-gcloud compute tpus tpu-vm ssh "$SLICE" --zone="$zone" --worker=all \
-  --command='cd ~ && python3.11 experiment2_fabric_collectives.py' \
+t 900 gcloud compute tpus tpu-vm ssh "$SLICE" --zone="$zone" --worker=all \
+  --command='cd ~ && timeout 780 python3.11 experiment2_fabric_collectives.py' \
   > "$DATA/fabric_${STAMP}.stdout" 2>&1
 
 # JAX process 0 is not necessarily gcloud worker 0: on this slice the file landed on worker 3.
 # So try every worker and take the first one that has it.
-workers=$(gcloud compute tpus tpu-vm describe "$SLICE" --zone="$zone" \
+workers=$(t 120 gcloud compute tpus tpu-vm describe "$SLICE" --zone="$zone" \
             --format="value(networkEndpoints.len())" 2>/dev/null | head -1)
 workers=${workers:-8}
 got_file=""
@@ -147,17 +197,17 @@ fi
 
 # ---------------------------------------------------------------- single chip, if one exists
 for z in $ZONES; do
-  dstate=$(gcloud compute tpus tpu-vm describe "$DEV" --zone="$z" --format="value(state)" 2>/dev/null | head -1)
+  dstate=$(t 120 gcloud compute tpus tpu-vm describe "$DEV" --zone="$z" --format="value(state)" 2>/dev/null | head -1)
   [ "$dstate" = "READY" ] || continue
   say "cycle $STAMP: running local gather on $DEV in $z"
-  gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
+  t 900 gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
     --command='python3.11 -c "import jax" 2>/dev/null || python3.11 -m pip install -q -U "jax[tpu]"' >/dev/null 2>&1
-  gcloud compute tpus tpu-vm scp "$STUDY/experiment1_local_gather.py" \
+  t 240 gcloud compute tpus tpu-vm scp "$STUDY/experiment1_local_gather.py" \
     "$DEV:~/experiment1_local_gather.py" --zone="$z" >/dev/null 2>&1
-  gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
-    --command="cd ~ && python3.11 experiment1_local_gather.py --out gather_${STAMP}.json" \
+  t 900 gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
+    --command="cd ~ && timeout 780 python3.11 experiment1_local_gather.py --out gather_${STAMP}.json" \
     > "$DATA/gather_${STAMP}.stdout" 2>&1
-  gcloud compute tpus tpu-vm scp "$DEV:~/gather_${STAMP}.json" \
+  t 240 gcloud compute tpus tpu-vm scp "$DEV:~/gather_${STAMP}.json" \
     "$DATA/gather_${STAMP}.json" --zone="$z" >/dev/null 2>&1 \
     && say "cycle $STAMP: collected local gather results"
   break
@@ -171,22 +221,22 @@ done
 V5P="anh-v5p-8"
 V5P_ZONE="us-east5-a"
 if [ "$(( $(date -u +%H) % 2 ))" -eq 0 ] && [ "$(date -u +%M)" -lt 20 ]; then
-  vstate=$(gcloud compute tpus tpu-vm describe "$V5P" --zone="$V5P_ZONE" \
+  vstate=$(t 120 gcloud compute tpus tpu-vm describe "$V5P" --zone="$V5P_ZONE" \
              --format="value(state)" 2>/dev/null | head -1)
   if [ "$vstate" = "READY" ]; then
     say "cycle $STAMP: allocation ladder and HLO bisection on $V5P"
     for f in experiment10_gather_locality.py hlo_gather_lowering.py; do
-      gcloud compute tpus tpu-vm scp "$STUDY/$f" "$V5P:~/$f" \
+      t 240 gcloud compute tpus tpu-vm scp "$STUDY/$f" "$V5P:~/$f" \
         --zone="$V5P_ZONE" --worker=0 >/dev/null 2>&1
     done
-    gcloud compute tpus tpu-vm ssh "$V5P" --zone="$V5P_ZONE" --worker=0 \
-      --command="cd ~ && python3.11 experiment10_gather_locality.py --sweep --out alloc_sweep_v5p.json" \
+    t 900 gcloud compute tpus tpu-vm ssh "$V5P" --zone="$V5P_ZONE" --worker=0 \
+      --command="cd ~ && timeout 780 python3.11 experiment10_gather_locality.py --sweep --out alloc_sweep_v5p.json" \
       > "$DATA/alloc_sweep_${STAMP}.stdout" 2>&1
-    gcloud compute tpus tpu-vm ssh "$V5P" --zone="$V5P_ZONE" --worker=0 \
-      --command="cd ~ && python3.11 hlo_gather_lowering.py --bisect --out hlo_bisect_v5p.json" \
+    t 900 gcloud compute tpus tpu-vm ssh "$V5P" --zone="$V5P_ZONE" --worker=0 \
+      --command="cd ~ && timeout 780 python3.11 hlo_gather_lowering.py --bisect --out hlo_bisect_v5p.json" \
       > "$DATA/hlo_bisect_${STAMP}.stdout" 2>&1
     for f in alloc_sweep_v5p.json hlo_bisect_v5p.json; do
-      gcloud compute tpus tpu-vm scp "$V5P:~/$f" "$DATA/$f" \
+      t 240 gcloud compute tpus tpu-vm scp "$V5P:~/$f" "$DATA/$f" \
         --zone="$V5P_ZONE" --worker=0 >/dev/null 2>&1
     done
     say "cycle $STAMP: v5p artefacts refreshed"
@@ -200,21 +250,21 @@ fi
 # explanations we had for the cliff.
 if [ "$(( $(date -u +%H) % 2 ))" -eq 1 ] && [ "$(date -u +%M)" -lt 20 ]; then
   for z in $ZONES; do
-    dstate=$(gcloud compute tpus tpu-vm describe "$DEV" --zone="$z" \
+    dstate=$(t 120 gcloud compute tpus tpu-vm describe "$DEV" --zone="$z" \
                --format="value(state)" 2>/dev/null | head -1)
     [ "$dstate" = "READY" ] || continue
     say "cycle $STAMP: allocation ladder on $DEV, the v6e side of the comparison"
     for f in experiment10_gather_locality.py hlo_gather_lowering.py; do
-      gcloud compute tpus tpu-vm scp "$STUDY/$f" "$DEV:~/$f" --zone="$z" >/dev/null 2>&1
+      t 240 gcloud compute tpus tpu-vm scp "$STUDY/$f" "$DEV:~/$f" --zone="$z" >/dev/null 2>&1
     done
-    gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
-      --command="cd ~ && python3.11 experiment10_gather_locality.py --sweep --out alloc_sweep_v6e.json" \
+    t 900 gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
+      --command="cd ~ && timeout 780 python3.11 experiment10_gather_locality.py --sweep --out alloc_sweep_v6e.json" \
       > "$DATA/alloc_sweep_v6e_${STAMP}.stdout" 2>&1
-    gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
-      --command="cd ~ && python3.11 hlo_gather_lowering.py --bisect --out hlo_bisect_v6e.json" \
+    t 900 gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
+      --command="cd ~ && timeout 780 python3.11 hlo_gather_lowering.py --bisect --out hlo_bisect_v6e.json" \
       > "$DATA/hlo_bisect_v6e_${STAMP}.stdout" 2>&1
     for f in alloc_sweep_v6e.json hlo_bisect_v6e.json; do
-      gcloud compute tpus tpu-vm scp "$DEV:~/$f" "$DATA/$f" --zone="$z" >/dev/null 2>&1
+      t 240 gcloud compute tpus tpu-vm scp "$DEV:~/$f" "$DATA/$f" --zone="$z" >/dev/null 2>&1
     done
     break
   done
@@ -248,7 +298,8 @@ if [ "$(date -u +%M)" -lt 20 ]; then
   python3 "$STUDY/build_model_page.py" >> "$LOG" 2>&1 || \
     say "cycle $STAMP: model page build failed, keeping the last good copy"
 fi
-if [ -n "$(git -C "$STUDY" status --porcelain data index.html logbook.jsonl budget_ledger.json gather-cliff.html roadmap.html models.html 2>/dev/null)" ]; then
+ahead=$(git -C "$STUDY" rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
+if [ -n "$(git -C "$STUDY" status --porcelain data index.html logbook.jsonl budget_ledger.json gather-cliff.html roadmap.html models.html 2>/dev/null)" ] || [ "${ahead:-0}" -gt 0 ]; then
   git -C "$STUDY" add data index.html cluster.html gather-cliff.html roadmap.html models.html \
     logbook.jsonl budget_ledger.json >/dev/null 2>&1
   git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \

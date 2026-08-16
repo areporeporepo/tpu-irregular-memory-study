@@ -63,7 +63,7 @@
 </style>
 <header><div class="wrap">
  <h1>A gather on a TPU is fast or slow depending on a number you never wrote down</h1>
- <p class="sub">2026-08-16 16:52 UTC &middot; measured on v5p, v6e and an A100 &middot;
+ <p class="sub">2026-08-16 16:59 UTC &middot; measured on v5p, v6e and an A100 &middot;
  part of the TPU irregular-access study</p>
  <p class="lede" style="margin-top:18px">Reading scattered rows out of a table is what an embedding
  lookup, an MoE router and a paged KV cache all reduce to. On a TPU that operation runs at one of
@@ -236,6 +236,14 @@ flat. v5p steps 259&thinsp;&rarr;&thinsp;77 GB/s (3.38&times;) &middot; v6e step
 its indirect DMA reads HBM whatever the table's size: 176.3&ndash;178.3 GB/s, a 1.1% spread across a 24&times; range. The
 A100 is flat for a different reason, that nothing about a CUDA gather is decided at compile time.
 Only the TPU TensorCore has a cliff, and each generation puts it somewhere else.</p>
+
+<h3>The same three questions, asked of both architectures</h3>
+<table><thead><tr><th>factor varied</th><th class='n'>v5p TensorCore</th><th class='n'>A100</th><th>what it is</th></tr></thead><tbody><tr><td>declared buffer size, span held fixed</td><td class='n'><b>3.37&times;</b></td><td class='n'>1.03&times;</td><td>a compile-time property. nothing about the run changes.</td></tr><tr><td>address span touched, buffer held fixed</td><td class='n'>1.00&times;</td><td class='n'>1.14&times;</td><td>the real working set. this is what a cache would care about.</td></tr><tr><td>index order: random, sorted, blocked</td><td class='n'>1.00&times;</td><td class='n'>1.02&times;</td><td>locality within the same span. this is what wide transactions would care about.</td></tr></tbody></table>
+<p>Read the first row against the other two. The TPU is blind to both facts that are true at run
+time and sensitive to the one that is fixed at compile time. The A100 is the exact inverse: it does
+not care what size you declared the buffer to be, and it does care, mildly, how much memory the
+indices really touch, because that is its L2 doing an honest job. Only one of those two failure
+modes can be fixed by a compiler.</p>
 
 <h2>4. The mechanism, in one line of HLO</h2>
 <p>XLA hands over the compiled program, so this does not have to stay a correlation. Compiling the

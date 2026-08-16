@@ -47,6 +47,20 @@ def anon(name: str) -> str:
     return "peer-" + hashlib.sha256(name.encode()).hexdigest()[:6]
 
 
+def chips_for(accel: str) -> int:
+    """Chips in an accelerator type, which is not always the number in its name.
+
+    v5e and v6e count chips in the suffix; v5p and v4 count TensorCores, and those generations put
+    two cores on a chip, so `v5p-8` is four chips. Confirmed on the hardware: JAX reports 4 devices
+    on our v5p-8. Getting this wrong doubled the apparent size of every v5p slice on this page.
+    """
+    tail = accel.rsplit("-", 1)[-1]
+    if not tail.isdigit():
+        return 1
+    n = int(tail)
+    return n // 2 if accel.startswith(("v5p-", "v4-")) else n
+
+
 def survey_clusters() -> list[dict]:
     out = []
     for name, loc in CLUSTERS:
@@ -78,11 +92,10 @@ def survey_tpus() -> list[dict]:
             if len(parts) < 3:
                 continue
             name, accel, state = parts[0], parts[1], parts[2]
-            tail = accel.rsplit("-", 1)[-1]
             mine = name.startswith(OURS_PREFIX)
             rows.append({"zone": zone, "accel": accel, "state": state, "mine": mine,
                          "who": "us" if mine else anon(name),
-                         "chips": int(tail) if tail.isdigit() else 1})
+                         "chips": chips_for(accel)})
     return rows
 
 

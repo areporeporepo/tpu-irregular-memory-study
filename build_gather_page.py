@@ -216,6 +216,68 @@ def chart_real_tables(budget_mib: float) -> str:
     return "\n".join(out)
 
 
+def factor_table(tpu: dict | None, gpu: dict | None) -> str:
+    """The three-factor comparison, computed from both grids rather than typed by hand.
+
+    Each row is one thing we varied while holding the others fixed, so the ratios are directly
+    comparable across the two architectures.
+    """
+    if not tpu or not gpu:
+        return ""
+
+    def ratio(recs: list[dict], key: str, pick) -> float | None:
+        vals = [pick(r) for r in recs if pick(r) is not None]
+        vals = [v for v in vals if v]
+        return max(vals) / min(vals) if len(vals) > 1 else None
+
+    t_rows, g_rows = tpu["records"], gpu["records"]
+    big = max(r["alloc_rows"] for r in t_rows)
+
+    def span_ratio(rows, key):
+        sub = [r for r in rows if r["alloc_rows"] == big and r["order"] == "random"]
+        return ratio(sub, key, lambda r: r.get(key))
+
+    def order_ratio(rows, key):
+        sub = [r for r in rows if r["span_rows"] == big]
+        return ratio(sub, key, lambda r: r.get(key))
+
+    def alloc_ratio(rows, key):
+        """Same span, different buffer: the compile-time-only variable."""
+        out = []
+        for r in rows:
+            if r["alloc_rows"] != r["span_rows"]:
+                continue
+            match = [s for s in rows if s["alloc_rows"] == big
+                     and s["span_rows"] == r["span_rows"] and s["order"] == "random"]
+            if match and r.get(key) and match[0].get(key):
+                out.append(r[key] / match[0][key])
+        return max(out) if out else None
+
+    rows = [
+        ("declared buffer size, span held fixed", alloc_ratio(t_rows, "tc_gbs"),
+         alloc_ratio(g_rows, "gather_gbs"),
+         "a compile-time property. nothing about the run changes."),
+        ("address span touched, buffer held fixed", span_ratio(t_rows, "tc_gbs"),
+         span_ratio(g_rows, "gather_gbs"),
+         "the real working set. this is what a cache would care about."),
+        ("index order: random, sorted, blocked", order_ratio(t_rows, "tc_gbs"),
+         order_ratio(g_rows, "gather_gbs"),
+         "locality within the same span. this is what wide transactions would care about."),
+    ]
+
+    def cell(v: float | None) -> str:
+        if v is None:
+            return "<td class='n'>&mdash;</td>"
+        strong = v > 1.5
+        return (f"<td class='n'>{'<b>' if strong else ''}{v:.2f}&times;"
+                f"{'</b>' if strong else ''}</td>")
+
+    body = "".join(f"<tr><td>{what}</td>{cell(t)}{cell(g)}<td>{why}</td></tr>"
+                   for what, t, g, why in rows)
+    return (f"<table><thead><tr><th>factor varied</th><th class='n'>v5p TensorCore</th>"
+            f"<th class='n'>A100</th><th>what it is</th></tr></thead><tbody>{body}</tbody></table>")
+
+
 def series_from_sweep(doc: dict, key: str, name: str) -> dict | None:
     if not doc:
         return None
@@ -228,6 +290,7 @@ def main() -> None:
     v6e = load("alloc_sweep_v6e.json")
     loc = load("gather_locality_v5p.json")
     gpu = load("gpu_a100_sweep.json")
+    gpu_grid = load("gpu_a100_grid.json")
     bis5, bis6 = load("hlo_bisect_v5p.json"), load("hlo_bisect_v6e.json")
     hlo = load("hlo_v5p.json")
 
@@ -250,6 +313,7 @@ def main() -> None:
     ladder = chart_ladder(lines, thresholds)
     inv = chart_invariance(loc["records"], loc["contiguous"]["gbs"]) if loc else ""
     real = chart_real_tables(t6 or 96.0)
+    factors = factor_table(loc, gpu_grid)
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     steps = []
@@ -409,6 +473,14 @@ flat. {' &middot; '.join(steps)}. {gpu_flat}</figcaption>
 its indirect DMA reads HBM whatever the table's size: {sc_spread} across a 24&times; range. The
 A100 is flat for a different reason, that nothing about a CUDA gather is decided at compile time.
 Only the TPU TensorCore has a cliff, and each generation puts it somewhere else.</p>
+
+<h3>The same three questions, asked of both architectures</h3>
+{factors}
+<p>Read the first row against the other two. The TPU is blind to both facts that are true at run
+time and sensitive to the one that is fixed at compile time. The A100 is the exact inverse: it does
+not care what size you declared the buffer to be, and it does care, mildly, how much memory the
+indices really touch, because that is its L2 doing an honest job. Only one of those two failure
+modes can be fixed by a compiler.</p>
 
 <h2>4. The mechanism, in one line of HLO</h2>
 <p>XLA hands over the compiled program, so this does not have to stay a correlation. Compiling the

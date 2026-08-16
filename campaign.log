@@ -68,3 +68,11 @@ availability series now 16 observations
 12:50:10Z deleting anh-burst-8 unconditionally
 2026-08-16T12:53:08Z cycle 20260816T125249Z: running fabric collectives on anh-steady-16 in us-east1-d
 12:53:42Z deleted anh-burst-8
+2026-08-16T17:01:36Z cycle 20260816T170117Z: running fabric collectives on anh-steady-16 in us-east1-d
+2026-08-16T17:03:14Z cycle 20260816T170117Z: collected 16 fabric records from w1
+2026-08-16T17:03:15Z cycle 20260816T170117Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T17:04:12Z cycle 20260816T170117Z: collected local gather results
+2026-08-16T17:04:13Z cycle 20260816T170117Z: allocation ladder on anh-dev1, the v6e side of the comparison
+2026-08-16T17:05:33+00:00: 33 chips project-wide, 32 held by 3 peers, zones=['us-east1-d', 'us-east5-a', 'us-west4-a']
+2026-08-16T17:05:43Z cycle 20260816T170117Z: probing availability across zones
+  us-east1-d         v6e-8   available      212s

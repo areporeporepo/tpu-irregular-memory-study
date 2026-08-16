@@ -28,10 +28,10 @@
 </style>
 <header><div class="wrap">
  <h1>Class Hardware Right Now</h1>
- <p class="sub">2026-08-16 15:51 UTC &middot; project soe-hpccenter &middot;
+ <p class="sub">2026-08-16 17:08 UTC &middot; project soe-hpccenter &middot;
  regenerated every campaign cycle</p>
  <div class="tiles">
-  <div class="tile"><span class="v">25</span><span class="k">chips, ours</span></div>
+  <div class="tile"><span class="v">29</span><span class="k">chips, ours</span></div>
   <div class="tile"><span class="v">8</span><span class="k">chips, peers</span></div>
   <div class="tile"><span class="v">1</span><span class="k">other holders</span></div>
   <div class="tile"><span class="v">4</span><span class="k">GKE workloads</span></div>
@@ -48,14 +48,14 @@
  <div class="scroll"><table>
   <thead><tr><th>cluster</th><th>region</th><th class="n">nodes</th><th class="n">TPU nodes</th>
    <th class="n">user pods</th><th class="n">system pods</th></tr></thead>
-  <tbody><tr><td>east5</td><td>us-east5</td><td class='n'>10</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>171</td></tr><tr><td>south1</td><td>us-south1</td><td class='n'>10</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>172</td></tr><tr><td>west4</td><td>us-west4</td><td class='n'>1</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>27</td></tr><tr><td>central1</td><td>us-central1</td><td class='n'>1</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>27</td></tr></tbody></table></div>
+  <tbody><tr><td>east5</td><td>us-east5</td><td class='n'>11</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>172</td></tr><tr><td>south1</td><td>us-south1</td><td class='n'>8</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>130</td></tr><tr><td>west4</td><td>us-west4</td><td class='n'>2</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>43</td></tr><tr><td>central1</td><td>us-central1</td><td class='n'>1</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>27</td></tr></tbody></table></div>
  <p class="sub" style="margin-top:8px">System pods are GKE's own: metrics collectors, CNI, logging.
  A cluster with many nodes and no user pods is idle, not busy.</p>
 
  <h2>TPU VMs across every zone</h2>
  <div class="scroll"><table>
   <thead><tr><th>holder</th><th>type</th><th>zone</th><th>state</th><th class="n">chips</th></tr></thead>
-  <tbody><tr><td>us</td><td>v6e-1</td><td>us-east1-d</td><td>READY</td><td class='n'>1</td></tr><tr><td>us</td><td>v6e-16</td><td>us-east1-d</td><td>READY</td><td class='n'>16</td></tr><tr><td>us</td><td>v5p-8</td><td>us-east5-a</td><td>DELETING</td><td class='n'>8</td></tr><tr><td>peer-e54565</td><td>v5litepod-8</td><td>us-west4-a</td><td>READY</td><td class='n'>8</td></tr></tbody></table></div>
+  <tbody><tr><td>us</td><td>v6e-1</td><td>us-east1-d</td><td>READY</td><td class='n'>1</td></tr><tr><td>us</td><td>v6e-16</td><td>us-east1-d</td><td>READY</td><td class='n'>16</td></tr><tr><td>us</td><td>v6e-8</td><td>us-east1-d</td><td>CREATING</td><td class='n'>8</td></tr><tr><td>us</td><td>v5p-8</td><td>us-east5-a</td><td>READY</td><td class='n'>4</td></tr><tr><td>peer-e54565</td><td>v5litepod-8</td><td>us-west4-a</td><td>READY</td><td class='n'>8</td></tr></tbody></table></div>
 
  <h2>GKE workloads in non-system namespaces</h2>
  <div class="scroll"><table>

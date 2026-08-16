@@ -14,8 +14,8 @@
     "sparsecore": "SparseCoreInfo(num_cores=2, num_subcores=16, num_lanes=8, vmem_capacity_bytes=262144, dma_granule_size_bytes=32)"
   },
   "contiguous": {
-    "ms": 0.009,
-    "gbs": 934.86
+    "ms": 0.0093,
+    "gbs": 898.14
   },
   "records": [
     {
@@ -24,10 +24,10 @@
       "order": "random",
       "alloc_mib": 8.0,
       "span_mib": 8.0,
-      "tc_ms": 0.0539,
-      "tc_gbs": 155.77,
-      "tc_pct_hbm": 9.51,
-      "tc_vs_contiguous": 0.167,
+      "tc_ms": 0.0543,
+      "tc_gbs": 154.62,
+      "tc_pct_hbm": 9.44,
+      "tc_vs_contiguous": 0.172,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -36,10 +36,10 @@
       "order": "random",
       "alloc_mib": 16.0,
       "span_mib": 16.0,
-      "tc_ms": 0.0539,
-      "tc_gbs": 155.61,
-      "tc_pct_hbm": 9.5,
-      "tc_vs_contiguous": 0.166,
+      "tc_ms": 0.0544,
+      "tc_gbs": 154.33,
+      "tc_pct_hbm": 9.422,
+      "tc_vs_contiguous": 0.172,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -48,10 +48,10 @@
       "order": "random",
       "alloc_mib": 24.0,
       "span_mib": 24.0,
-      "tc_ms": 0.0542,
-      "tc_gbs": 154.72,
-      "tc_pct_hbm": 9.446,
-      "tc_vs_contiguous": 0.166,
+      "tc_ms": 0.0545,
+      "tc_gbs": 154.04,
+      "tc_pct_hbm": 9.404,
+      "tc_vs_contiguous": 0.172,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -60,10 +60,10 @@
       "order": "random",
       "alloc_mib": 32.0,
       "span_mib": 32.0,
-      "tc_ms": 0.0542,
-      "tc_gbs": 154.63,
-      "tc_pct_hbm": 9.44,
-      "tc_vs_contiguous": 0.165,
+      "tc_ms": 0.0547,
+      "tc_gbs": 153.44,
+      "tc_pct_hbm": 9.368,
+      "tc_vs_contiguous": 0.171,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -72,10 +72,10 @@
       "order": "random",
       "alloc_mib": 40.0,
       "span_mib": 40.0,
-      "tc_ms": 0.0547,
-      "tc_gbs": 153.27,
-      "tc_pct_hbm": 9.357,
-      "tc_vs_contiguous": 0.164,
+      "tc_ms": 0.0548,
+      "tc_gbs": 152.98,
+      "tc_pct_hbm": 9.34,
+      "tc_vs_contiguous": 0.17,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -84,10 +84,10 @@
       "order": "random",
       "alloc_mib": 48.0,
       "span_mib": 48.0,
-      "tc_ms": 0.0546,
-      "tc_gbs": 153.52,
-      "tc_pct_hbm": 9.373,
-      "tc_vs_contiguous": 0.164,
+      "tc_ms": 0.0549,
+      "tc_gbs": 152.66,
+      "tc_pct_hbm": 9.32,
+      "tc_vs_contiguous": 0.17,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -96,10 +96,10 @@
       "order": "random",
       "alloc_mib": 64.0,
       "span_mib": 64.0,
-      "tc_ms": 0.0548,
-      "tc_gbs": 153.2,
-      "tc_pct_hbm": 9.353,
-      "tc_vs_contiguous": 0.164,
+      "tc_ms": 0.0552,
+      "tc_gbs": 151.95,
+      "tc_pct_hbm": 9.276,
+      "tc_vs_contiguous": 0.169,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -108,10 +108,10 @@
       "order": "random",
       "alloc_mib": 80.0,
       "span_mib": 80.0,
-      "tc_ms": 0.0552,
-      "tc_gbs": 152.06,
-      "tc_pct_hbm": 9.283,
-      "tc_vs_contiguous": 0.163,
+      "tc_ms": 0.0555,
+      "tc_gbs": 151.26,
+      "tc_pct_hbm": 9.235,
+      "tc_vs_contiguous": 0.168,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -120,10 +120,10 @@
       "order": "random",
       "alloc_mib": 96.0,
       "span_mib": 96.0,
-      "tc_ms": 0.1983,
-      "tc_gbs": 42.3,
-      "tc_pct_hbm": 2.582,
-      "tc_vs_contiguous": 0.045,
+      "tc_ms": 0.1988,
+      "tc_gbs": 42.21,
+      "tc_pct_hbm": 2.577,
+      "tc_vs_contiguous": 0.047,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -132,10 +132,10 @@
       "order": "random",
       "alloc_mib": 128.0,
       "span_mib": 128.0,
-      "tc_ms": 0.1984,
-      "tc_gbs": 42.28,
-      "tc_pct_hbm": 2.581,
-      "tc_vs_contiguous": 0.045,
+      "tc_ms": 0.1987,
+      "tc_gbs": 42.23,
+      "tc_pct_hbm": 2.578,
+      "tc_vs_contiguous": 0.047,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     },
     {
@@ -144,10 +144,10 @@
       "order": "random",
       "alloc_mib": 192.0,
       "span_mib": 192.0,
-      "tc_ms": 0.1982,
-      "tc_gbs": 42.32,
-      "tc_pct_hbm": 2.584,
-      "tc_vs_contiguous": 0.045,
+      "tc_ms": 0.1986,
+      "tc_gbs": 42.23,
+      "tc_pct_hbm": 2.578,
+      "tc_vs_contiguous": 0.047,
       "sc_error": "JaxRuntimeError: INTERNAL: Failed to run MLO pass pipeline.f.223:45:1: error: 'memref.alloca' op E3000: CompileTimeSparseCoreAllocationFailure: current allocation offset upper bound (66047 words) exce"
     }
   ]
