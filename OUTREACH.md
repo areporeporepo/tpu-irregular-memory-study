@@ -84,3 +84,66 @@ collective that works on the whole slice but fails on a subset of it is a sharp 
 They cost Google nothing to receive and are immediately actionable, which is a better opening than
 a permissions question. They also establish that the study found real things, which is the only
 credential that matters when asking an engineering team for anything.
+
+---
+
+## 4. Access request: container.admin and billing.viewer
+
+**To:** `smjones@stanford.edu` (project owner, technical contact, and the requester of record)
+**Cc:** `tbrooke@stanford.edu` (financial contact, technical contact 2)
+**Note:** those addresses are inferred from the project labels `su-owner_name=su__smjones` and
+`su-fin_contact=su__tbrooke`. Confirm them before sending.
+
+**Why this cannot be self-served:** Privileged Access Manager is not configured on this project, and
+`gcloud projects add-iam-policy-binding` returns `does not have permission`. There is no request
+API. A human with admin rights has to run two commands.
+
+> Subject: Access request on soe-hpccenter: container.admin and billing.viewer
+>
+> Hi — I am running a TPU measurement study on `soe-hpccenter`, published openly at
+> github.com/areporeporepo/tpu-irregular-memory-study. Two access grants would help, and one of
+> them I think helps you more than it helps me.
+>
+> **1. `roles/billing.viewer` on billing account `01F867-B7EAEB-2BA7E1`.** This is the important
+> one. At the moment nobody using the project can see how much credit remains, so we are all
+> estimating spend from instance uptime and the published spot rate. I have a script that does this
+> and deliberately over-bills to stay safe, but a real balance would replace guesswork for everyone
+> on the project, not just me.
+>
+> ```
+> gcloud billing accounts add-iam-policy-binding 01F867-B7EAEB-2BA7E1 \
+>   --member="user:qanh@stanford.edu" --role="roles/billing.viewer"
+> ```
+>
+> **2. `roles/container.admin` on `soe-hpccenter`.** The four Autopilot clusters currently have no
+> student namespaces, no ResourceQuotas and no Kueue, so the first person to claim capacity holds it
+> until they release it. I would like to set up per-student namespaces with hard TPU quotas and a
+> Kueue cohort so idle quota is borrowed rather than wasted, which is what lets hardware sized for
+> eight serve a class of thirty. I will hand over the manifests either way.
+>
+> ```
+> gcloud projects add-iam-policy-binding soe-hpccenter \
+>   --member="user:qanh@stanford.edu" --role="roles/container.admin"
+> ```
+>
+> **If only one is possible, `billing.viewer` is the one worth granting.** It is read-only, it
+> cannot affect anyone's workloads, and it answers a question the whole project currently cannot
+> answer. `container.admin` is a larger grant and I am happy to instead send you the manifests to
+> apply yourself, or to work in a single namespace you create for me.
+>
+> Two findings from this week that may be useful regardless of the answer:
+>
+> - `tpu-inference` 0.26.0 is uninstallable: it pins `libtpu==0.0.43`, a version never published to
+>   PyPI. The 0.25.0 pair works. Students will lose an afternoon to this.
+> - v6e capacity is exhausted in every us-east5 zone and available in us-east1-d and
+>   asia-northeast1-b. On-demand does not help; it is refused with the same capacity error. But
+>   **v5p is available in us-east5-a**, and at 95 GB per chip it is the better choice for
+>   fine-tuning anyway.
+
+**What each grant unblocks, concretely:**
+
+| grant | unblocks |
+|---|---|
+| `roles/billing.viewer` | the real credit balance and burn rate, replacing `budget_guard.py`'s estimate |
+| `roles/container.admin` | namespaces, ResourceQuotas, Kueue cohorts, taints; multi-tenant fairness for a class |
+| neither | everything in this study continues; both are conveniences, not blockers |
