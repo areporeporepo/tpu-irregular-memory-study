@@ -53,7 +53,7 @@ say "jax ready on $NAME"
 
 # Everything that wants this parent size. The sweep gives the scaling curve; the geometry run
 # gives subset-shape effects at this parent; the capture banks HLO and traces we keep forever.
-for exp in experiment2_fabric_collectives experiment4_geometry experiment6_capture_artifacts; do
+for exp in experiment2_fabric_collectives experiment4_geometry experiment8_dense_vs_moe experiment6_capture_artifacts; do
   gcloud compute tpus tpu-vm scp "$STUDY/$exp.py" "$NAME:~/$exp.py" --zone="$ZONE" --worker=all >/dev/null 2>&1
   say "running $exp on v6e-$SIZE"
   gcloud compute tpus tpu-vm ssh "$NAME" --zone="$ZONE" --worker=all \
@@ -63,7 +63,7 @@ done
 # JAX process 0 is not necessarily worker 0, so try them all.
 workers=$(gcloud compute tpus tpu-vm describe "$NAME" --zone="$ZONE" \
             --format="value(networkEndpoints.len())" 2>/dev/null | head -1)
-for f in fabric_results.json geometry_results.json; do
+for f in fabric_results.json geometry_results.json dense_vs_moe_results.json; do
   for w in $(seq 0 $(( ${workers:-8} - 1 ))); do
     if gcloud compute tpus tpu-vm scp "$NAME:~/$f" \
          "$DATA/${f%.json}_${SIZE}chip_${STAMP}.json" --zone="$ZONE" --worker="$w" >/dev/null 2>&1; then
