@@ -1,0 +1,31 @@
+campaign.log
+  s_67b1e088a6a194::t_e932dd78dacf70 179
+sherlock_probe.sh
+  s_67b1e088a6a194::t_f2af835608fccf 1-51
+budget_ledger.json
+  s_67b1e088a6a194::t_e932dd78dacf70 4,77-82,85
+build_roadmap_page.py
+  s_67b1e088a6a194::t_f4e3c087e90592 44-62
+  s_67b1e088a6a194::t_5bf9de3abbc253 158-188
+  s_67b1e088a6a194::t_dc04ada7e82e46 93-100,256,379-400,417,422
+roadmap.html
+  s_67b1e088a6a194::t_dc04ada7e82e46 54,218-259,276,281,284
+logbook.jsonl
+  s_67b1e088a6a194::t_607962989f6f3e 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b29c2dcd4e6033859cdb521f452cf5cfbe6e3806",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
