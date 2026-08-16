@@ -163,4 +163,24 @@ for z in $ZONES; do
   break
 done
 
+# ---------------------------------------------------------------- the shared-project view
+# soe-hpccenter is a class project, so every cycle also records what everyone else is holding.
+# That series is what distinguishes "Google has no capacity" from "our classmates have it all",
+# and the first observation already showed we hold 33 of 41 chips project-wide.
+python3 "$STUDY/observe_contention.py" >> "$LOG" 2>&1
+
+# ---------------------------------------------------------------- publish
+# The logbook page is generated, never hand-edited, so it can be rebuilt and pushed every cycle.
+python3 "$STUDY/logbook.py" build >/dev/null 2>&1
+if [ -n "$(git -C "$STUDY" status --porcelain data index.html logbook.jsonl budget_ledger.json 2>/dev/null)" ]; then
+  git -C "$STUDY" add data index.html logbook.jsonl budget_ledger.json >/dev/null 2>&1
+  git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \
+    commit -q -m "campaign cycle $STAMP" >/dev/null 2>&1
+  if git -C "$STUDY" push -q origin main >/dev/null 2>&1; then
+    say "cycle $STAMP: published"
+  else
+    say "cycle $STAMP: push failed, will retry next cycle"
+  fi
+fi
+
 say "cycle $STAMP: done"

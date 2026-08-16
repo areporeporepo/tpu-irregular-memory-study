@@ -36,6 +36,17 @@ except ImportError:
     from jax.experimental.shard_map import shard_map
 
 
+def gather_global(x):
+    """Bring a globally-sharded array to every host.
+
+    A plain np.asarray on a multi-process array raises: the buffers live on devices this process
+    cannot address. The first version of this file died here, which is why correctness went
+    unchecked on the very meshes that produced impossible timings.
+    """
+    from jax.experimental import multihost_utils
+    return np.asarray(multihost_utils.process_allgather(x, tiled=True))
+
+
 def check_correctness(devices) -> list[dict]:
     """Do the collectives actually compute what their names claim?"""
     out = []
@@ -53,7 +64,7 @@ def check_correctness(devices) -> list[dict]:
                                                       tiled=True),
                          mesh=mesh, in_specs=(P("chips", None),), out_specs=P("chips", None))(v)
 
-    got = np.asarray(a2a(x))
+    got = gather_global(a2a(x))
     src = np.asarray(x).reshape(chips, chips, per)      # [sender, slot, :]
     want = src.transpose(1, 0, 2).reshape(chips * chips, per)
     out.append({"check": "all_to_all_permutation", "max_abs_err": float(np.abs(got - want).max()),
@@ -65,7 +76,7 @@ def check_correctness(devices) -> list[dict]:
                          in_specs=(P("chips", None),), out_specs=P("chips", None))(v)
 
     y = jnp.arange(chips * per, dtype=jnp.float32).reshape(chips, per)
-    got = np.asarray(psum(y))
+    got = gather_global(psum(y))
     want = np.tile(np.asarray(y).sum(axis=0), (chips, 1))
     out.append({"check": "psum_value", "max_abs_err": float(np.abs(got - want).max()),
                 "ok": bool(np.allclose(got, want)), "chips": chips})
@@ -92,7 +103,7 @@ def check_timing(devices) -> list[dict]:
         return run
 
     out = []
-    for inner in (8, 32, 64):
+    for inner in (8, 32, 64, 128, 256):
         fn = build(inner)
         jax.block_until_ready(fn(x))
         samples = []
@@ -104,7 +115,7 @@ def check_timing(devices) -> list[dict]:
                     "ms_per_op": round(statistics.median(samples) / inner * 1e3, 4)})
     spread = max(r["ms_per_op"] for r in out) / min(r["ms_per_op"] for r in out)
     out.append({"check": "timing_method_spread", "spread": round(spread, 3),
-                "ok": bool(spread < 1.15)})
+                "ok": bool(spread < 1.15), "note": "per-op cost should stop moving once dispatch is amortised"})
     return out
 
 

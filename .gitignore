@@ -3,3 +3,6 @@ data/*.stdout
 launchd.out.log
 launchd.err.log
 .cycle.lock/
+
+# Banked HLO and profiler archives: hundreds of MiB, kept locally as the durable record
+artifacts/

@@ -11,3 +11,7 @@
 11:06:37Z deleting anh-big-256 (this is the expensive part, so it happens unconditionally)
 11:11:32Z deleted anh-big-256
 2026-08-16T11:21:21Z cycle 20260816T112105Z: running fabric collectives on anh-v6e-32 in us-east1-d
+2026-08-16T11:25:31Z cycle 20260816T112105Z: collected 24 fabric records from w3
+2026-08-16T11:25:33Z cycle 20260816T112105Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T11:26:35Z cycle 20260816T112105Z: collected local gather results
+2026-08-16T11:26:35Z cycle 20260816T112105Z: done
