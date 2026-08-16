@@ -1,0 +1,27 @@
+build_glossary_page.py
+  s_67b1e088a6a194::t_ef17782f98a476 103-125,205-207,306-325
+glossary.html
+  s_67b1e088a6a194::t_ef17782f98a476 40,95-114
+index.html
+  s_67b1e088a6a194::t_eb4534fb139941 62,69,78-80,107
+logbook.jsonl
+  s_67b1e088a6a194::t_f131572d07df8d 76
+logbook.py
+  s_67b1e088a6a194::t_1b88945a6904cb 286-288
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "52a266a8271290d2a58403da9fa6bd9a4dd15c48",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
