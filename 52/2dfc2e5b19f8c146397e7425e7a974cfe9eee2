@@ -1,0 +1,23 @@
+RESEARCH_PLAN.md
+  s_67b1e088a6a194::t_1c051fe3b22b86 1-252
+background-2026-2027.html
+  s_67b1e088a6a194::t_c9209c3b98150f 1-600
+experiment1_local_gather.py
+  s_67b1e088a6a194::t_7a953b3ed58d05 1-163
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "522dfc2e5b19f8c146397e7425e7a974cfe9eee2",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
