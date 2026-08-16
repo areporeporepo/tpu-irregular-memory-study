@@ -51,7 +51,7 @@
 </defs></svg>
 <header><div class="wrap">
  <h1>The chips we can get, and the chips everyone is actually buying</h1>
- <p class="sub">2026-08-16 18:47 UTC &middot; v5e, v5p, v6e measured here &middot; v7, 8t, 8i, A100 and Rubin
+ <p class="sub">2026-08-16 19:06 UTC &middot; v5e, v5p, v6e measured here &middot; v7, 8t, 8i, A100 and Rubin
  from published figures</p>
  <p class="lede" style="margin-top:18px">This study runs on the accelerators a student can get hold
  of, which are two and three generations behind what is being installed and four behind what is
@@ -215,7 +215,48 @@ magnitude across the generations on this page.</p>
 extrapolation is falsifiable in a single afternoon by anyone with Ironwood access and the bisection
 script in this repository, which needs no benchmark and no allocation, only a compile.</p>
 
-<h2>4. What each design is betting on for irregular work</h2>
+<h2>4. Two vendors answered the same question by building the whole chip out of the fast tier</h2>
+<figure><svg viewBox="0 0 900 262" width="100%" role="img" aria-label="On-chip fast-tier memory by architecture">
+<text class="cat" x="238" y="33" text-anchor="end">TPU v5p, promoted budget</text>
+<rect class="bar-g" x="250" y="14" width="43.5" height="26" rx="4"><title>TPU v5p, promoted budget: 48 MiB &mdash; measured by HLO bisection, this study</title></rect>
+<text class="val" x="302.5" y="33">48 MiB measured</text>
+<text class="cat" x="238" y="68" text-anchor="end">TPU v6e, promoted budget</text>
+<rect class="bar-g" x="250" y="49" width="89.8" height="26" rx="4"><title>TPU v6e, promoted budget: 96 MiB &mdash; measured by HLO bisection, this study</title></rect>
+<text class="val" x="348.8" y="68">96 MiB measured</text>
+<text class="cat" x="238" y="103" text-anchor="end">A100, L2 cache</text>
+<rect class="bar-n" x="250" y="84" width="31.4" height="26" rx="4"><title>A100, L2 cache: 40 MiB &mdash; NVIDIA datasheet</title></rect>
+<text class="val" x="290.4" y="103">40 MiB</text>
+<text class="cat" x="238" y="138" text-anchor="end">H100, L2 cache</text>
+<rect class="bar-n" x="250" y="119" width="46.3" height="26" rx="4"><title>H100, L2 cache: 50 MiB &mdash; NVIDIA datasheet</title></rect>
+<text class="val" x="305.3" y="138">50 MiB</text>
+<text class="cat" x="238" y="173" text-anchor="end">Groq LPU, SRAM (whole chip)</text>
+<rect class="bar-n" x="250" y="154" width="148.2" height="26" rx="4"><title>Groq LPU, SRAM (whole chip): 230 MiB &mdash; no DRAM on the part at all</title></rect>
+<text class="val" x="407.2" y="173">230 MiB</text>
+<text class="cat" x="238" y="208" text-anchor="end">Cerebras WSE-3, SRAM (whole wafer)</text>
+<rect class="bar-n" x="250" y="189" width="500.6" height="26" rx="4"><title>Cerebras WSE-3, SRAM (whole wafer): 44 GB &mdash; 44 GB, at ~21 PB/s</title></rect>
+<text class="val" x="759.6" y="208">44 GB</text>
+<text class="ax-t" x="250" y="252">log scale. dark: measured here. light: vendor figures.</text>
+</svg>
+ <figcaption>How much memory sits on the fast side of the cliff, per architecture, in the units this
+ study's own measurement produced. The first two bars are ours, bisected out of the compiler. The
+ last two are vendors who decided the answer to "what if the table always fits" is to build a part
+ with no DRAM at all.</figcaption>
+</figure>
+<p>This is the comparison worth sitting with. Our measurement says a TPU gather is fast when its
+table fits inside roughly 96 MiB and 3.3&times; slower when it does not. A Groq LPU is
+<em>230 MB of SRAM and nothing else</em>, which is the same order of magnitude as the TPU's
+promoted budget and is the whole chip rather than a compiler's discretionary allowance. Cerebras
+went further and put 44 GB of SRAM on a single wafer at around 21 PB/s, which is roughly ten
+thousand times the bandwidth of a v6e's HBM. Both are betting that the way to win at
+memory-bound serving is to make the slow tier not exist.</p>
+<p>The cost of that bet is capacity, and it shows up as a different failure. A 230 MB part cannot
+hold a model at all on its own, so a Groq deployment is many chips wired together to hold weights
+that a single v5p chip fits in its 95 GB, and the fabric becomes the constraint instead of the
+memory. That is the same trade the TPU roadmap is making from the other direction, and it is why
+the interesting number on a serving chip is not capacity or bandwidth alone but which of the two
+runs out first for the model you actually have.</p>
+
+<h2>5. What each design is betting on for irregular work</h2>
 <p>Read down the SparseCore column of the table below and the disagreement is visible. Google put
 four gather engines on v5p, two on v6e, and by the reporting on the eighth generation the training
 chip keeps them while the inference chip spends that area on collectives instead. NVIDIA has never
@@ -232,15 +273,15 @@ sayable because the same script ran on both.</p>
   <th>fabric</th><th>figures</th></tr></thead>
  <tbody><tr><td>TPU v5e</td><td>Google</td><td class='n'>2023</td><td class='n'>16</td><td class='n'>0.82</td><td class='n'>197 bf16</td><td class='n'>&mdash;</td><td>2D torus</td><td>datasheet</td></tr><tr><td>TPU v5p</td><td>Google</td><td class='n'>2023</td><td class='n'>95</td><td class='n'>2.77</td><td class='n'>459 bf16</td><td class='n'>4</td><td>3D torus</td><td>datasheet</td></tr><tr><td>TPU v6e</td><td>Google</td><td class='n'>2024</td><td class='n'>32</td><td class='n'>1.64</td><td class='n'>918 bf16</td><td class='n'>2</td><td>2D torus</td><td>datasheet</td></tr><tr><td>TPU v7 Ironwood</td><td>Google</td><td class='n'>2026</td><td class='n'>192</td><td class='n'>7.37</td><td class='n'>4,614 fp8</td><td class='n'>4</td><td>3D torus</td><td>datasheet</td></tr><tr><td>TPU 8t Sunfish</td><td>Google</td><td class='n'>2027</td><td class='n'>288</td><td class='n'>9.60</td><td class='n'>0 fp8</td><td class='n'>4</td><td>3D torus</td><td>reported</td></tr><tr><td>TPU 8i Zebrafish</td><td>Google</td><td class='n'>2027</td><td class='n'>288</td><td class='n'>7.40</td><td class='n'>0 fp8</td><td class='n'>&mdash;</td><td>Boardfly</td><td>reported</td></tr><tr><td>A100 80GB</td><td>NVIDIA</td><td class='n'>2020</td><td class='n'>80</td><td class='n'>2.04</td><td class='n'>312 bf16</td><td class='n'>&mdash;</td><td>NVLink 3</td><td>datasheet</td></tr><tr><td>H100 SXM</td><td>NVIDIA</td><td class='n'>2022</td><td class='n'>80</td><td class='n'>3.35</td><td class='n'>989 bf16</td><td class='n'>&mdash;</td><td>NVLink 4</td><td>datasheet</td></tr><tr><td>B200</td><td>NVIDIA</td><td class='n'>2024</td><td class='n'>192</td><td class='n'>8.00</td><td class='n'>2,250 fp8</td><td class='n'>&mdash;</td><td>NVLink 5</td><td>datasheet</td></tr><tr><td>R200 Rubin</td><td>NVIDIA</td><td class='n'>2026</td><td class='n'>288</td><td class='n'>22.00</td><td class='n'>50,000 fp4</td><td class='n'>&mdash;</td><td>NVLink 6</td><td>datasheet</td></tr></tbody></table></div>
 
-<h2>5. What in here we are not sure about</h2>
+<h2>6. What in here we are not sure about</h2>
 <ul><li>That TPU 8i removes the SparseCores in favour of a collectives acceleration engine. This was in earlier reporting we read but we could not re-confirm it from a vendor source today, so the SparseCore count for 8i in the table below is our reading of that reporting, not a fact.</li><li>TPU 8t and 8i bandwidth figures. Google published a relative claim, roughly 30% above Ironwood for 8t, and not an absolute number. The absolute figures here are derived from that percentage and should be treated as arithmetic on a rounded claim.</li></ul>
 <p>Both are the kind of claim that is easy to repeat and hard to check, which is why they are
 flagged here rather than buried. The measured numbers in this study do not depend on either.</p>
 
-<h2>6. Sources</h2>
+<h2>7. Sources</h2>
 <div class="scroll"><table>
  <thead><tr><th>figure</th><th>source</th><th>where</th><th>as of</th><th>kind</th></tr></thead>
- <tbody><tr><td>TPU v5e / v5p / v6e capacity and bandwidth</td><td>Google Cloud TPU documentation</td><td class='sub'>cloud.google.com/tpu/docs/system-architecture-tpu-vm</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr><tr><td>v6e SparseCore count, 2 cores, 256 KiB VMEM</td><td>measured, plsc.get_sparse_core_info()</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>v5p SparseCore count, 4 cores, 512 KiB VMEM</td><td>measured, plsc.get_sparse_core_info()</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>On-chip promotion budget, 48 MiB v5p and 96 MiB v6e</td><td>measured by HLO bisection</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>TPU v7 Ironwood, 192 GB, 7.37 TB/s, GA at Cloud Next</td><td>Google Cloud / SemiAnalysis TPUv7 analysis</td><td class='sub'>newsletter.semianalysis.com/p/tpuv7-google-takes-a-swing-at-the</td><td class='sub'>April 2026</td><td>vendor + analyst</td></tr><tr><td>TPU 8t Sunfish: Broadcom, 2 compute dies, 8 stacks of 12-high HBM3e, ~30% more bandwidth than Ironwood, 2.7x perf/$ for training, TSMC 2nm, late 2027</td><td>Google Cloud blog and press coverage of Cloud Next 2026</td><td class='sub'>cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive</td><td class='sub'>April 2026</td><td>vendor</td></tr><tr><td>TPU 8i Zebrafish: MediaTek, 1 compute die, 6 stacks HBM3e, 20-30% lower inference cost, 80% better perf/$ at low latency for MoE, 2x perf/W</td><td>same</td><td class='sub'>cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive</td><td class='sub'>April 2026</td><td>vendor</td></tr><tr><td>R200 Rubin: 288 GB HBM4 per package at 22 TB/s, 50 PFLOPS NVFP4 per GPU, 2H2026</td><td>Glenn Lockwood's processor notes, collating NVIDIA GTC material</td><td class='sub'>glennklockwood.com/garden/processors/r200</td><td class='sub'>checked 2026-08-16</td><td>vendor, collated</td></tr><tr><td>VR200 NVL144: 144 R200 GPUs as 72 Vera Rubin superchips, 3.6 EF NVFP4, ~20.7 TB HBM4/rack</td><td>NVIDIA GTC 2026 material as reported</td><td class='sub'>multiple, see above</td><td class='sub'>2026</td><td>vendor</td></tr><tr><td>A100 / H100 / B200 capacity and bandwidth</td><td>NVIDIA datasheets</td><td class='sub'>nvidia.com</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr><tr><td>A100 gather bandwidth, 222-236 GB/s flat across a 24x buffer range</td><td>measured on a2-highgpu-1g via GKE Autopilot</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr></tbody></table></div>
+ <tbody><tr><td>TPU v5e / v5p / v6e capacity and bandwidth</td><td>Google Cloud TPU documentation</td><td class='sub'>cloud.google.com/tpu/docs/system-architecture-tpu-vm</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr><tr><td>v6e SparseCore count, 2 cores, 256 KiB VMEM</td><td>measured, plsc.get_sparse_core_info()</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>v5p SparseCore count, 4 cores, 512 KiB VMEM</td><td>measured, plsc.get_sparse_core_info()</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>On-chip promotion budget, 48 MiB v5p and 96 MiB v6e</td><td>measured by HLO bisection</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>TPU v7 Ironwood, 192 GB, 7.37 TB/s, GA at Cloud Next</td><td>Google Cloud / SemiAnalysis TPUv7 analysis</td><td class='sub'>newsletter.semianalysis.com/p/tpuv7-google-takes-a-swing-at-the</td><td class='sub'>April 2026</td><td>vendor + analyst</td></tr><tr><td>TPU 8t Sunfish: Broadcom, 2 compute dies, 8 stacks of 12-high HBM3e, ~30% more bandwidth than Ironwood, 2.7x perf/$ for training, TSMC 2nm, late 2027</td><td>Google Cloud blog and press coverage of Cloud Next 2026</td><td class='sub'>cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive</td><td class='sub'>April 2026</td><td>vendor</td></tr><tr><td>TPU 8i Zebrafish: MediaTek, 1 compute die, 6 stacks HBM3e, 20-30% lower inference cost, 80% better perf/$ at low latency for MoE, 2x perf/W</td><td>same</td><td class='sub'>cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive</td><td class='sub'>April 2026</td><td>vendor</td></tr><tr><td>R200 Rubin: 288 GB HBM4 per package at 22 TB/s, 50 PFLOPS NVFP4 per GPU, 2H2026</td><td>Glenn Lockwood's processor notes, collating NVIDIA GTC material</td><td class='sub'>glennklockwood.com/garden/processors/r200</td><td class='sub'>checked 2026-08-16</td><td>vendor, collated</td></tr><tr><td>VR200 NVL144: 144 R200 GPUs as 72 Vera Rubin superchips, 3.6 EF NVFP4, ~20.7 TB HBM4/rack</td><td>NVIDIA GTC 2026 material as reported</td><td class='sub'>multiple, see above</td><td class='sub'>2026</td><td>vendor</td></tr><tr><td>A100 / H100 / B200 capacity and bandwidth</td><td>NVIDIA datasheets</td><td class='sub'>nvidia.com</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr><tr><td>A100 gather bandwidth, 222-236 GB/s flat across a 24x buffer range</td><td>measured on a2-highgpu-1g via GKE Autopilot</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>Cerebras WSE-3: 44 GB on-wafer SRAM, ~21 PB/s, 900,000 cores, 125 PFLOPS peak</td><td>Cerebras and press coverage of the CS-3</td><td class='sub'>cerebras.ai/blog/cerebras-cs-3-vs-groq-lpu</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr><tr><td>Groq LPU: 230 MB SRAM per chip, ~80 TB/s on-chip, no DRAM</td><td>Cerebras' own CS-3 vs LPU comparison, and Groq material</td><td class='sub'>cerebras.ai/blog/cerebras-cs-3-vs-groq-lpu</td><td class='sub'>checked 2026-08-16</td><td>vendor, partisan source</td></tr><tr><td>A100 L2 40 MB, H100 L2 50 MB</td><td>NVIDIA datasheets</td><td class='sub'>nvidia.com</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr></tbody></table></div>
 <p>Analyst material is marked as such. SemiAnalysis in particular is well sourced but a large part
 of any given post is its own modelling, and their eighth-generation numbers should be read as
 informed estimates rather than as specifications. Anything marked <span class="sub">ours</span> was

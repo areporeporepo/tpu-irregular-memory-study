@@ -41,6 +41,25 @@ CHIPS = [
     ("R200 Rubin",   "N", 2026, 288.0, 22000.0, 50000.0, "fp4",  0, "NVLink 6",  False),
 ]
 
+# How much memory sits on the fast side of the cliff, per architecture, in MiB.
+#
+# This is the table that connects this study's own measurement to the rest of the industry. We found
+# that a TPU gather runs 3.3x faster when its source table fits inside a fixed on-chip budget, which
+# we measured at 48 MiB on v5p and 96 MiB on v6e. Two vendors have answered that same question by
+# building chips whose entire memory is the fast tier: Groq with 230 MB of SRAM and no DRAM at all,
+# Cerebras with 44 GB of it on one wafer. A GPU's equivalent is its L2, which is why the A100 in our
+# measurements is mildly footprint-sensitive rather than blind to it.
+#
+# `measured` marks the two numbers this study produced. Everything else is a vendor figure.
+FAST_TIER = [
+    ("TPU v5p, promoted budget", 47.94, True, "measured by HLO bisection, this study"),
+    ("TPU v6e, promoted budget", 95.94, True, "measured by HLO bisection, this study"),
+    ("A100, L2 cache", 40.0, False, "NVIDIA datasheet"),
+    ("H100, L2 cache", 50.0, False, "NVIDIA datasheet"),
+    ("Groq LPU, SRAM (whole chip)", 230.0, False, "no DRAM on the part at all"),
+    ("Cerebras WSE-3, SRAM (whole wafer)", 44.0 * 1024, False, "44 GB, at ~21 PB/s"),
+]
+
 SOURCES = [
     ("TPU v5e / v5p / v6e capacity and bandwidth", "Google Cloud TPU documentation",
      "cloud.google.com/tpu/docs/system-architecture-tpu-vm", "checked 2026-08-16", "vendor"),
@@ -71,6 +90,14 @@ SOURCES = [
      "nvidia.com", "checked 2026-08-16", "vendor"),
     ("A100 gather bandwidth, 222-236 GB/s flat across a 24x buffer range",
      "measured on a2-highgpu-1g via GKE Autopilot", "this study", "2026-08-16", "ours"),
+    ("Cerebras WSE-3: 44 GB on-wafer SRAM, ~21 PB/s, 900,000 cores, 125 PFLOPS peak",
+     "Cerebras and press coverage of the CS-3", "cerebras.ai/blog/cerebras-cs-3-vs-groq-lpu",
+     "checked 2026-08-16", "vendor"),
+    ("Groq LPU: 230 MB SRAM per chip, ~80 TB/s on-chip, no DRAM",
+     "Cerebras' own CS-3 vs LPU comparison, and Groq material",
+     "cerebras.ai/blog/cerebras-cs-3-vs-groq-lpu", "checked 2026-08-16", "vendor, partisan source"),
+    ("A100 L2 40 MB, H100 L2 50 MB", "NVIDIA datasheets", "nvidia.com", "checked 2026-08-16",
+     "vendor"),
 ]
 
 UNVERIFIED = [
@@ -124,6 +151,37 @@ def bars(title: str, key, fmt, note: str, logscale: bool = True) -> str:
         out.append(f'<text class="val" x="{px(v) + 9:.1f}" y="{y + bar_h * 0.72:.0f}">'
                    f'{fmt(v)}{" est" if est else ""}</text>')
     out.append(f'<text class="ax-t" x="{PAD_L}" y="{h - 8}">{note}</text>')
+    out.append("</svg>")
+    return "\n".join(out)
+
+
+def chart_fast_tier() -> str:
+    """On-chip memory across architectures, on a log scale, in the units our measurement produced."""
+    bar_h, gap, pad_l = 26, 9, 250
+    h = len(FAST_TIER) * (bar_h + gap) + 52
+    vmax = max(v for _, v, _, _ in FAST_TIER) * 1.6
+    vmin = min(v for _, v, _, _ in FAST_TIER) / 1.6
+
+    def px(v: float) -> float:
+        return pad_l + (math.log10(v) - math.log10(vmin)) / (math.log10(vmax) - math.log10(vmin)) \
+            * (W - pad_l - PAD_R)
+
+    def fmt(v: float) -> str:
+        return f"{v / 1024:.0f} GB" if v >= 1024 else f"{v:.0f} MiB"
+
+    out = [f'<svg viewBox="0 0 {W} {h}" width="100%" role="img" aria-label="On-chip fast-tier '
+           f'memory by architecture">']
+    for i, (name, mib, measured, note) in enumerate(FAST_TIER):
+        y = 14 + i * (bar_h + gap)
+        out.append(f'<text class="cat" x="{pad_l - 12}" y="{y + bar_h * 0.72:.0f}" '
+                   f'text-anchor="end">{name}</text>')
+        out.append(f'<rect class="{"bar-g" if measured else "bar-n"}" x="{pad_l}" y="{y}" '
+                   f'width="{max(px(mib) - pad_l, 2):.1f}" height="{bar_h}" rx="4">'
+                   f'<title>{name}: {fmt(mib)} &mdash; {note}</title></rect>')
+        out.append(f'<text class="val" x="{px(mib) + 9:.1f}" y="{y + bar_h * 0.72:.0f}">'
+                   f'{fmt(mib)}{" measured" if measured else ""}</text>')
+    out.append(f'<text class="ax-t" x="{pad_l}" y="{h - 10}">log scale. dark: measured here. '
+               f'light: vendor figures.</text>')
     out.append("</svg>")
     return "\n".join(out)
 
@@ -195,6 +253,7 @@ def main() -> None:
                "the list, so read the trend. higher means a kernel must find more arithmetic per "
                "byte it moves before the compute units can be kept busy.")
     promo = chart_promotable(t5, t6)
+    fast = chart_fast_tier()
 
     src = "".join(
         f"<tr><td>{what}</td><td>{who}</td><td class='sub'>{where}</td>"
@@ -317,7 +376,28 @@ magnitude across the generations on this page.</p>
 extrapolation is falsifiable in a single afternoon by anyone with Ironwood access and the bisection
 script in this repository, which needs no benchmark and no allocation, only a compile.</p>
 
-<h2>4. What each design is betting on for irregular work</h2>
+<h2>4. Two vendors answered the same question by building the whole chip out of the fast tier</h2>
+<figure>{fast}
+ <figcaption>How much memory sits on the fast side of the cliff, per architecture, in the units this
+ study's own measurement produced. The first two bars are ours, bisected out of the compiler. The
+ last two are vendors who decided the answer to "what if the table always fits" is to build a part
+ with no DRAM at all.</figcaption>
+</figure>
+<p>This is the comparison worth sitting with. Our measurement says a TPU gather is fast when its
+table fits inside roughly 96 MiB and 3.3&times; slower when it does not. A Groq LPU is
+<em>230 MB of SRAM and nothing else</em>, which is the same order of magnitude as the TPU's
+promoted budget and is the whole chip rather than a compiler's discretionary allowance. Cerebras
+went further and put 44 GB of SRAM on a single wafer at around 21 PB/s, which is roughly ten
+thousand times the bandwidth of a v6e's HBM. Both are betting that the way to win at
+memory-bound serving is to make the slow tier not exist.</p>
+<p>The cost of that bet is capacity, and it shows up as a different failure. A 230 MB part cannot
+hold a model at all on its own, so a Groq deployment is many chips wired together to hold weights
+that a single v5p chip fits in its 95 GB, and the fabric becomes the constraint instead of the
+memory. That is the same trade the TPU roadmap is making from the other direction, and it is why
+the interesting number on a serving chip is not capacity or bandwidth alone but which of the two
+runs out first for the model you actually have.</p>
+
+<h2>5. What each design is betting on for irregular work</h2>
 <p>Read down the SparseCore column of the table below and the disagreement is visible. Google put
 four gather engines on v5p, two on v6e, and by the reporting on the eighth generation the training
 chip keeps them while the inference chip spends that area on collectives instead. NVIDIA has never
@@ -334,12 +414,12 @@ sayable because the same script ran on both.</p>
   <th>fabric</th><th>figures</th></tr></thead>
  <tbody>{spec}</tbody></table></div>
 
-<h2>5. What in here we are not sure about</h2>
+<h2>6. What in here we are not sure about</h2>
 <ul>{unv}</ul>
 <p>Both are the kind of claim that is easy to repeat and hard to check, which is why they are
 flagged here rather than buried. The measured numbers in this study do not depend on either.</p>
 
-<h2>6. Sources</h2>
+<h2>7. Sources</h2>
 <div class="scroll"><table>
  <thead><tr><th>figure</th><th>source</th><th>where</th><th>as of</th><th>kind</th></tr></thead>
  <tbody>{src}</tbody></table></div>
