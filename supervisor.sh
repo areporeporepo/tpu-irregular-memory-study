@@ -319,7 +319,7 @@ publish() {
   if [ -z "$(git -C "$STUDY" status --porcelain 2>/dev/null)" ] && [ "${ahead:-0}" -eq 0 ]; then
     return 0
   fi
-  git -C "$STUDY" add data index.html cluster.html gather-cliff.html roadmap.html models.html \
+  git -C "$STUDY" add data index.html cluster.html gather-cliff.html roadmap.html torus-shape.html models.html \
     logbook.jsonl budget_ledger.json >/dev/null 2>&1
   git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \
     commit -q -m "campaign cycle $STAMP ($why)" >/dev/null 2>&1
@@ -334,6 +334,7 @@ publish() {
 t 120 python3 "$STUDY/logbook.py" build >/dev/null 2>&1
 t 120 python3 "$STUDY/build_gather_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: gather page failed"
 t 120 python3 "$STUDY/build_roadmap_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: roadmap page failed"
+t 120 python3 "$STUDY/build_torus_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: torus page failed"
 publish "local pages"
 
 # Pass two: the pages that need the network, and a second push for whatever they changed. If either

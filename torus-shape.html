@@ -1,0 +1,183 @@
+<!doctype html><meta charset="utf-8">
+<title>The wrong variable</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+ :root{--bg:#fcfcfb;--surface:#fff;--ink:#1c1c20;--ink-2:#42424a;--ink-3:#75757f;--line:#dcd9d4;
+   --band:#efece6;--fast:#1c1c20;--slow:#b4531f;
+   --mono:ui-monospace,"SF Mono",Menlo,monospace;
+   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+ @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111113;--surface:#191919;
+   --ink:#f1f0ed;--ink-2:#b8b7b2;--ink-3:#86858d;--line:#2f2f34;--band:#212127;--fast:#f1f0ed;
+   --slow:#e08a4c}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--sans)}
+ .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+ header{padding:54px 0 26px;border-bottom:1px solid var(--line)}
+ h1{font-size:clamp(27px,4.4vw,40px);letter-spacing:-.03em;margin:0 0 12px;font-weight:680;
+   line-height:1.13}
+ h2{font-size:15px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+   margin:44px 0 12px;font-weight:620}
+ .sub{color:var(--ink-3);font:500 12.5px var(--mono)}
+ p{margin:0 0 14px;max-width:74ch;color:var(--ink-2)}
+ .lede{font-size:18px;color:var(--ink)}
+ figure{margin:20px 0 8px;background:var(--surface);border:1px solid var(--line);
+   border-radius:14px;padding:16px 14px 6px}
+ figcaption{font:13px/1.55 var(--sans);color:var(--ink-3);padding:4px 6px 10px;max-width:80ch}
+ .grid{stroke:var(--line);stroke-width:1}
+ .ax{font:11px var(--mono);fill:var(--ink-3)}
+ .ax-t{font:600 10px var(--mono);fill:var(--ink-3);letter-spacing:.05em;text-transform:uppercase}
+ .pt{stroke:var(--surface);stroke-width:2}
+ .pt.fast{fill:var(--fast)} .pt.slow{fill:var(--slow)}
+ .lbl{font:11px var(--mono);fill:var(--ink-2)}
+ .leader{stroke:var(--ink-3);stroke-width:1;opacity:.5}
+ table{width:100%;border-collapse:collapse;font:12.5px var(--mono);background:var(--surface);
+   border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+ th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+ th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+ td.n{text-align:right}
+ .keys{display:flex;gap:16px;list-style:none;padding:0 6px;margin:2px 0 0;flex-wrap:wrap}
+ .keys li{font:12px var(--mono);color:var(--ink-2)}
+ footer{margin-top:50px;padding:26px 0 64px;border-top:1px solid var(--line);color:var(--ink-3);
+   font-size:13.5px}
+ a{color:var(--ink)}
+</style>
+<header><div class="wrap">
+ <h1>A measurement that killed our own explanation</h1>
+ <p class="sub">2026-08-16 18:58 UTC &middot; TPU v5p, dims 2&times;2&times;4 &middot;
+ all_to_all, 16 MiB per chip, 32 collectives chained per timing</p>
+ <p class="lede" style="margin-top:18px">This study had been explaining collective cost with
+ bisection bandwidth, the number of links crossing a cut through the mesh. A 3D torus lets you test
+ that properly, because you can hold the chip count fixed and change only the shape. We did, and the
+ explanation failed: a set of eight chips with a computed bisection of <em>zero</em> ran exactly as
+ fast as a contiguous cube.</p>
+</div></header>
+<div class="wrap">
+
+<h2>1. The variable that does not explain it</h2>
+<figure><svg viewBox="0 0 880 358" width="100%" role="img" aria-label="all_to_all time against computed bisection of the selected chips, in links">
+<line class="grid" x1="80" y1="262.9" x2="712" y2="262.9"/>
+<text class="ax" x="71" y="266.9" text-anchor="end">0.18</text>
+<line class="grid" x1="80" y1="223.3" x2="712" y2="223.3"/>
+<text class="ax" x="71" y="227.3" text-anchor="end">0.20</text>
+<line class="grid" x1="80" y1="183.7" x2="712" y2="183.7"/>
+<text class="ax" x="71" y="187.7" text-anchor="end">0.22</text>
+<line class="grid" x1="80" y1="144.2" x2="712" y2="144.2"/>
+<text class="ax" x="71" y="148.2" text-anchor="end">0.24</text>
+<line class="grid" x1="80" y1="104.6" x2="712" y2="104.6"/>
+<text class="ax" x="71" y="108.6" text-anchor="end">0.26</text>
+<line class="grid" x1="80" y1="65.0" x2="712" y2="65.0"/>
+<text class="ax" x="71" y="69.0" text-anchor="end">0.28</text>
+<text class="ax-t" x="71" y="16" text-anchor="end">ms</text>
+<text class="ax" x="121.2" y="328" text-anchor="middle">0</text>
+<text class="ax" x="258.6" y="328" text-anchor="middle">2</text>
+<text class="ax" x="396.0" y="328" text-anchor="middle">4</text>
+<text class="ax" x="670.8" y="328" text-anchor="middle">8</text>
+<text class="ax-t" x="396" y="348" text-anchor="middle">computed bisection of the selected chips, in links</text>
+<circle class="pt fast" cx="258.6" cy="248.7" r="6"><title>1host_4chips: 4 chips, 1 hosts, bisection 2, 0.1872 ms</title></circle>
+<line class="leader" x1="266.6" y1="248.7" x2="273.6" y2="278.3"/>
+<text class="lbl" x="275.6" y="282.3">1host_4chips</text>
+<circle class="pt fast" cx="258.6" cy="263.3" r="6"><title>2hosts_4chips: 4 chips, 2 hosts, bisection 2, 0.1798 ms</title></circle>
+<text class="lbl" x="275.6" y="267.3">2hosts_4chips</text>
+<circle class="pt slow" cx="258.6" cy="111.5" r="6"><title>4hosts_4chips: 4 chips, 4 hosts, bisection 2, 0.2565 ms</title></circle>
+<line class="leader" x1="266.6" y1="111.5" x2="273.6" y2="293.3"/>
+<text class="lbl" x="275.6" y="297.3">4hosts_4chips</text>
+<rect class="pt fast" x="390.5" y="242.0" width="11" height="11" rx="2"><title>cube_2x2x2: 8 chips, 2 hosts, bisection 4, 0.1878 ms</title></rect>
+<text class="lbl" x="413.0" y="251.5">cube_2x2x2</text>
+<rect class="pt slow" x="390.5" y="76.1" width="11" height="11" rx="2"><title>slab_1x2x4: 8 chips, 4 hosts, bisection 4, 0.2716 ms</title></rect>
+<line class="leader" x1="404.0" y1="81.6" x2="411.0" y2="277.5"/>
+<text class="lbl" x="413.0" y="281.5">slab_1x2x4</text>
+<rect class="pt slow" x="390.5" y="76.7" width="11" height="11" rx="2"><title>slab_2x1x4: 8 chips, 4 hosts, bisection 4, 0.2713 ms</title></rect>
+<line class="leader" x1="404.0" y1="82.2" x2="411.0" y2="262.5"/>
+<text class="lbl" x="413.0" y="266.5">slab_2x1x4</text>
+<rect class="pt fast" x="115.7" y="239.8" width="11" height="11" rx="2"><title>split_z_0_2: 8 chips, 2 hosts, bisection 0, 0.1889 ms</title></rect>
+<text class="lbl" x="138.2" y="249.3">split_z_0_2</text>
+<polygon class="pt slow" points="670.8,62.9 677.2,74.5 664.4,74.5"><title>full_2x2x4: 16 chips, 4 hosts, bisection 8, 0.2775 ms</title></polygon>
+<text class="lbl" x="687.8" y="73.9">full_2x2x4</text>
+</svg>
+ <ul class="keys"><li>circle: 4 chips</li><li>square: 8 chips</li><li>triangle: 16 chips</li>
+  <li>dark: fast group</li><li>orange: slow group</li></ul>
+ <figcaption>Time against bisection computed from the actual coordinates of the selected chips. If
+ bisection set the cost, this would slope. Instead the points at bisection 4 straddle both groups,
+ and the point at bisection 0 sits with the fastest.</figcaption>
+</figure>
+<p>The set with bisection zero is <span class="sub">split_z_0_2</span>, two 2&times;2 planes that are not adjacent, so it owns no link at all between its two halves. It ran in 0.1889 ms against the contiguous cube&rsquo;s 0.1878 ms, a difference of 0.6%. A model that predicts a set with no internal links should be catastrophic, and measures it as free, is the wrong model.</p>
+
+<h2>2. The variable that does</h2>
+<figure><svg viewBox="0 0 880 358" width="100%" role="img" aria-label="all_to_all time against hosts the mesh spans">
+<line class="grid" x1="80" y1="262.9" x2="712" y2="262.9"/>
+<text class="ax" x="71" y="266.9" text-anchor="end">0.18</text>
+<line class="grid" x1="80" y1="223.3" x2="712" y2="223.3"/>
+<text class="ax" x="71" y="227.3" text-anchor="end">0.20</text>
+<line class="grid" x1="80" y1="183.7" x2="712" y2="183.7"/>
+<text class="ax" x="71" y="187.7" text-anchor="end">0.22</text>
+<line class="grid" x1="80" y1="144.2" x2="712" y2="144.2"/>
+<text class="ax" x="71" y="148.2" text-anchor="end">0.24</text>
+<line class="grid" x1="80" y1="104.6" x2="712" y2="104.6"/>
+<text class="ax" x="71" y="108.6" text-anchor="end">0.26</text>
+<line class="grid" x1="80" y1="65.0" x2="712" y2="65.0"/>
+<text class="ax" x="71" y="69.0" text-anchor="end">0.28</text>
+<text class="ax-t" x="71" y="16" text-anchor="end">ms</text>
+<text class="ax" x="170.3" y="328" text-anchor="middle">1</text>
+<text class="ax" x="320.8" y="328" text-anchor="middle">2</text>
+<text class="ax" x="621.7" y="328" text-anchor="middle">4</text>
+<text class="ax-t" x="396" y="348" text-anchor="middle">hosts the mesh spans</text>
+<circle class="pt fast" cx="170.3" cy="248.7" r="6"><title>1host_4chips: 4 chips, 1 hosts, bisection 2, 0.1872 ms</title></circle>
+<text class="lbl" x="187.3" y="252.7">1host_4chips</text>
+<circle class="pt fast" cx="320.8" cy="263.3" r="6"><title>2hosts_4chips: 4 chips, 2 hosts, bisection 2, 0.1798 ms</title></circle>
+<text class="lbl" x="337.8" y="267.3">2hosts_4chips</text>
+<circle class="pt slow" cx="621.7" cy="111.5" r="6"><title>4hosts_4chips: 4 chips, 4 hosts, bisection 2, 0.2565 ms</title></circle>
+<text class="lbl" x="638.7" y="115.5">4hosts_4chips</text>
+<rect class="pt fast" x="315.3" y="242.0" width="11" height="11" rx="2"><title>cube_2x2x2: 8 chips, 2 hosts, bisection 4, 0.1878 ms</title></rect>
+<line class="leader" x1="328.8" y1="247.5" x2="335.8" y2="278.3"/>
+<text class="lbl" x="337.8" y="282.3">cube_2x2x2</text>
+<rect class="pt slow" x="616.2" y="76.1" width="11" height="11" rx="2"><title>slab_1x2x4: 8 chips, 4 hosts, bisection 4, 0.2716 ms</title></rect>
+<line class="leader" x1="629.7" y1="81.6" x2="636.7" y2="141.5"/>
+<text class="lbl" x="638.7" y="145.5">slab_1x2x4</text>
+<rect class="pt slow" x="616.2" y="76.7" width="11" height="11" rx="2"><title>slab_2x1x4: 8 chips, 4 hosts, bisection 4, 0.2713 ms</title></rect>
+<line class="leader" x1="629.7" y1="82.2" x2="636.7" y2="126.5"/>
+<text class="lbl" x="638.7" y="130.5">slab_2x1x4</text>
+<rect class="pt fast" x="315.3" y="239.8" width="11" height="11" rx="2"><title>split_z_0_2: 8 chips, 2 hosts, bisection 0, 0.1889 ms</title></rect>
+<line class="leader" x1="328.8" y1="245.3" x2="335.8" y2="293.3"/>
+<text class="lbl" x="337.8" y="297.3">split_z_0_2</text>
+<polygon class="pt slow" points="621.7,62.9 628.1,74.5 615.3,74.5"><title>full_2x2x4: 16 chips, 4 hosts, bisection 8, 0.2775 ms</title></polygon>
+<line class="leader" x1="629.7" y1="69.9" x2="636.7" y2="156.5"/>
+<text class="lbl" x="638.7" y="160.5">full_2x2x4</text>
+</svg>
+ <figcaption>The same measurements against the number of hosts the mesh spans. Two groups, cleanly
+ separated, with no overlap: 0.180&ndash;0.189 ms
+ at one or two hosts against 0.257&ndash;0.278 ms
+ at four. Chip count varies from 4 to 16 within each group and does not move it.</figcaption>
+</figure>
+<p>The step is between two hosts and four, not a smooth function of host count: one host and two
+hosts are indistinguishable. Holding bisection at 2 and chip count at 4, spanning one host took
+0.1872 ms, two hosts 0.1798 ms, and four hosts 0.2565 ms.</p>
+
+<h2>3. What we cannot separate, and are not pretending to</h2>
+<p>On this slice each host owns exactly one plane of the length-4 axis. So the number of hosts, the
+span along the long axis, and the fraction of the mesh the timing process owns all move together,
+and this experiment cannot tell them apart. Separating them needs a slice whose hosts are not
+planes, which means more chips per host or a different generation.</p>
+<p>What the experiment does settle is narrower and still useful: chip-adjacency bisection is not the
+mechanism, and every earlier comparison in this study that varied chip count from 8 to 16 was also
+varying host count from 2 to 4 without saying so. The honest version of the earlier finding is that
+those numbers describe a host-boundary effect, and the bisection arithmetic that accompanied them
+was a coincidence of the shapes we happened to be given.</p>
+
+<h2>4. Every configuration</h2>
+<table>
+ <thead><tr><th>shape</th><th class="n">chips</th><th class="n">hosts</th>
+  <th class="n">bisection</th><th class="n">ms</th><th class="n">GB/s</th></tr></thead>
+ <tbody><tr><td>2hosts_4chips</td><td class='n'>4</td><td class='n'>2</td><td class='n'>2</td><td class='n'>0.1798</td><td class='n'>70.0</td></tr><tr><td>1host_4chips</td><td class='n'>4</td><td class='n'>1</td><td class='n'>2</td><td class='n'>0.1872</td><td class='n'>67.2</td></tr><tr><td>cube_2x2x2</td><td class='n'>8</td><td class='n'>2</td><td class='n'>4</td><td class='n'>0.1878</td><td class='n'>78.2</td></tr><tr><td>split_z_0_2</td><td class='n'>8</td><td class='n'>2</td><td class='n'>0</td><td class='n'>0.1889</td><td class='n'>77.7</td></tr><tr><td>4hosts_4chips</td><td class='n'>4</td><td class='n'>4</td><td class='n'>2</td><td class='n'>0.2565</td><td class='n'>49.1</td></tr><tr><td>slab_2x1x4</td><td class='n'>8</td><td class='n'>4</td><td class='n'>4</td><td class='n'>0.2713</td><td class='n'>54.1</td></tr><tr><td>slab_1x2x4</td><td class='n'>8</td><td class='n'>4</td><td class='n'>4</td><td class='n'>0.2716</td><td class='n'>54.0</td></tr><tr><td>full_2x2x4</td><td class='n'>16</td><td class='n'>4</td><td class='n'>8</td><td class='n'>0.2775</td><td class='n'>56.7</td></tr></tbody>
+</table>
+<p>Reproduce with <span class="sub">experiment11_torus_shape.py</span>, which computes the bisection
+from the device coordinates rather than assuming a formula, and refuses to time a mesh the calling
+process owns no chip in, because that mistake produced an impossible 3.5 TB/s reading earlier in this
+study.</p>
+
+<footer><div class="wrap">
+ Generated by <span class="sub">build_torus_page.py</span> from
+ <span class="sub">data/torus_shape_v5p.json</span>. Companion pages:
+ <a href="./">the measurement log</a>, <a href="./gather-cliff.html">the gather cliff</a>,
+ <a href="./roadmap.html">chips we can get</a>, <a href="./cluster.html">who is using the cluster</a>.
+</div></footer>
+</div>

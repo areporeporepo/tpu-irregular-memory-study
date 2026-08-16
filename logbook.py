@@ -268,6 +268,8 @@ def render() -> str:
   <p class="nav">
    <a href="./gather-cliff.html">The gather cliff</a> &middot; the study's main result: a 3x step in
    gather bandwidth caused by one compile-time placement decision, measured on v5p, v6e and an A100.
+   <br><a href="./torus-shape.html">The wrong variable</a> &middot; a 3D torus measurement that
+   falsified this study's own bisection-bandwidth explanation, with the honest replacement.
    <br><a href="./roadmap.html">Chips we can get, chips being bought</a> &middot; v5e through Rubin
    on the same axes, with every figure sourced and the estimates marked.
    <br><a href="./models.html">What we can actually run</a> &middot; live model catalogue against
