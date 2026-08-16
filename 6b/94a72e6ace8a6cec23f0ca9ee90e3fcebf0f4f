@@ -1,0 +1,43 @@
+budget_guard.py
+  s_67b1e088a6a194::t_c1b64906d9004e 29-41
+  s_67b1e088a6a194::t_0dace2a233152d 127-131
+  s_67b1e088a6a194::t_5bc2493fb93c4a 63-64
+build_roadmap_page.py
+  s_67b1e088a6a194::t_ba1d1174905285 38,102-107,270
+supervisor.sh
+  s_67b1e088a6a194::t_ba1d1174905285 259,274,355,357
+  s_67b1e088a6a194::t_1f1fae99f6e4f3 348-354,356
+  s_67b1e088a6a194::t_25a66926809655 114,239-258,260-273,275-277
+logbook.py
+  s_67b1e088a6a194::t_ebd15ccc06f8d7 138-140
+build_glossary_page.py
+  s_67b1e088a6a194::t_04ce0a49d1e21a 1-137,147-163,168-170,172-239,252-266,268,270-299
+  s_67b1e088a6a194::t_ebd15ccc06f8d7 138-146,164-167,171,267,269
+  s_67b1e088a6a194::t_2ecb9bb51303df 240-251
+glossary.html
+  s_67b1e088a6a194::t_67b2e4a45dd096 1-39,41-54,67-81,83,85,87-107
+  s_67b1e088a6a194::t_ebd15ccc06f8d7 40,82,84,86
+  s_67b1e088a6a194::t_2ecb9bb51303df 55-66
+roadmap.html
+  s_67b1e088a6a194::t_ba1d1174905285 54,65,86-90,92-101,110,131-146,154,167-182,283,293
+index.html
+  s_67b1e088a6a194::t_ebd15ccc06f8d7 62,92-93,95
+logbook.jsonl
+  s_67b1e088a6a194::t_7c543310d97b5a 74-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6b94a72e6ace8a6cec23f0ca9ee90e3fcebf0f4f",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
