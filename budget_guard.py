@@ -26,7 +26,19 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 LEDGER = HERE / "budget_ledger.json"
 
-TOTAL = 20_000.0     # credit at the start of this campaign
+# UNVERIFIED. This is not a measured balance and nothing on this project can measure one:
+# `gcloud billing accounts list` returns zero items for our identity, so the real remaining credit is
+# invisible to us. This figure is what the project owner told us was left, written down as a
+# constant, and every "runway" number in this repository is arithmetic on it. It should be read as
+# "the anchor we were given", not as money we know we have.
+#
+# It also over-states what is available, because `spent` below counts only our own TPU VMs from
+# 2026-08-16T11:46Z onward. It excludes: everything before that timestamp, the GKE Autopilot
+# clusters and their nodes, the A100 we ran there, storage, egress, and the spend of every other
+# member of a billing account that is shared with the whole class. Any of those could dominate.
+#
+# Fixing this needs roles/billing.viewer, which is request 4 in OUTREACH.md.
+TOTAL = 20_000.0     # anchor, not a measurement
 RESERVE = 3_000.0    # never spend into this
 SOFT_FRACTION = 0.80  # stop *claiming* at 80% of the spendable pool
 
@@ -48,6 +60,8 @@ def chips_for(accel: str) -> int:
         return 1
     n = int(tail)
     return n // 2 if accel.startswith(("v5p-", "v4-")) else n
+
+
 ZONES = ["us-east1-d", "asia-northeast1-b", "us-east5-a", "us-east5-b", "us-east5-c"]
 
 
@@ -110,9 +124,11 @@ def main() -> None:
     verdict = "OK" if spent < soft else ("THROTTLE" if spent < spendable else "STOP")
     hours_left = (spendable - spent) / burn_per_hour if burn_per_hour else float("inf")
 
-    print(f"spent≈${spent:,.0f} of ${spendable:,.0f} spendable "
-          f"(${state['reserve']:,.0f} reserved) | fleet {chips} chips "
-          f"= ${burn_per_hour:,.2f}/hr | {hours_left:,.1f} hr of runway | {verdict}")
+    # "est." and "nominal" are load-bearing words. The spend is our own arithmetic over our own VMs,
+    # and the pool is an anchor nobody has verified, so neither is a balance.
+    print(f"est. spent≈${spent:,.0f} of ${spendable:,.0f} nominal "
+          f"(${state['reserve']:,.0f} reserved, unverified pool) | fleet {chips} chips "
+          f"= ${burn_per_hour:,.2f}/hr | ~{hours_left:,.1f} hr at this rate | {verdict}")
     for f in fleet:
         print(f"  {f['name']:16s} {f['accel']:9s} {f['zone']:18s} {f['state']}")
     if report_only:

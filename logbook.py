@@ -135,7 +135,9 @@ def publish_health() -> dict:
 
 def latest_fabric() -> tuple[dict, str]:
     """The most recent complete fabric sweep, keyed by (op, chips, payload)."""
-    files = sorted(DATA.glob("fabric*.json"))
+    # by mtime, not by name: lexical order puts fabric_results_64chip_* after
+    # fabric_2026*, so the newest sweep would lose to an older one from another chip.
+    files = sorted(DATA.glob("fabric*.json"), key=lambda p: p.stat().st_mtime)
     for path in reversed(files):
         try:
             blob = json.loads(path.read_text())

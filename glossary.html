@@ -1,0 +1,107 @@
+<!doctype html><meta charset="utf-8">
+<title>The same idea in three dialects</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+ :root{--bg:#fcfcfb;--surface:#fff;--ink:#1c1c20;--ink-2:#42424a;--ink-3:#75757f;--line:#dcd9d4;
+   --band:#efece6;--accent:#b4531f;
+   --mono:ui-monospace,"SF Mono",Menlo,monospace;
+   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+ @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111113;--surface:#191919;
+   --ink:#f1f0ed;--ink-2:#b8b7b2;--ink-3:#86858d;--line:#2f2f34;--band:#212127;--accent:#e08a4c}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--sans)}
+ .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+ header{padding:54px 0 26px;border-bottom:1px solid var(--line)}
+ h1{font-size:clamp(27px,4.4vw,40px);letter-spacing:-.03em;margin:0 0 12px;font-weight:680;
+   line-height:1.13}
+ h2{font-size:15px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+   margin:46px 0 12px;font-weight:620}
+ .sub{color:var(--ink-3);font:500 12px var(--mono)}
+ p{margin:0 0 14px;max-width:76ch;color:var(--ink-2)}
+ .lede{font-size:18px;color:var(--ink)}
+ table{width:100%;border-collapse:collapse;font-size:14px;background:var(--surface);
+   border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0}
+ th,td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:left;
+   vertical-align:top}
+ th{font:600 10px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);
+   background:var(--band)}
+ td.k{font:600 13px var(--sans);color:var(--ink);white-space:nowrap}
+ td.w{color:var(--ink-3);font-size:13.5px}
+ td.n{text-align:right;font-family:var(--mono)}
+ .scroll{overflow-x:auto}
+ ul{max-width:76ch;color:var(--ink-2)} li{margin-bottom:11px}
+ li b{color:var(--ink)}
+ footer{margin-top:50px;padding:26px 0 64px;border-top:1px solid var(--line);color:var(--ink-3);
+   font-size:13.5px}
+ a{color:var(--ink)}
+</style>
+<header><div class="wrap">
+ <h1>The same idea in three dialects, and what each one costs</h1>
+ <p class="sub">2026-08-16 19:33 UTC &middot; measurements from this study, not from a datasheet</p>
+ <p class="lede" style="margin-top:18px">Most of the difficulty in reading accelerator
+ documentation is not conceptual. It is that NVIDIA and Google invented different words for the same
+ wire, that <span class="sub">Tensor Core</span> and <span class="sub">TensorCore</span> are
+ different levels of the hierarchy, and that notation like <span class="sub">TP8 DP4</span> is
+ written as though you already know. This is the translation, with our own numbers attached wherever
+ we measured the thing being named.</p>
+</div></header>
+<div class="wrap">
+
+<h2>1. The same component, in each vendor's dialect</h2>
+<div class="scroll"><table>
+ <thead><tr><th>the thing</th><th>NVIDIA calls it</th><th>Google calls it</th>
+  <th>what it actually is</th></tr></thead>
+ <tbody><tr><td class='k'>chip-to-chip fabric</td><td>NVLink, switched by NVSwitch</td><td>ICI, direct-wired as a 2D or 3D torus</td><td class='w'>The private high-bandwidth network between accelerators that skips PCIe and the host. NVLink is <em>switched</em>, so within a domain every pair is equidistant. ICI is a <em>torus</em>, so traffic hops through intermediate chips and geometry matters.</td></tr><tr><td class='k'>scale-out fabric</td><td>InfiniBand or RoCE, once you leave the NVLink domain</td><td>still ICI, all the way to the edge of the pod</td><td class='w'>This is the real structural difference. A GPU cluster has two tiers with a bandwidth cliff between them at 8 or 72 GPUs. A TPU pod has one fabric to thousands of chips.</td></tr><tr><td class='k'>collectives library</td><td>NCCL</td><td>XLA collectives, inside libtpu</td><td class='w'>The thing that implements all_reduce and friends. On GPU you can call it directly; on TPU it is emitted by the compiler, which is why a TPU collective is harder to hand-tune.</td></tr><tr><td class='k'>kernel language</td><td>CUDA, or Triton</td><td>Pallas, lowering through Mosaic</td><td class='w'>How you write something the built-in ops do not cover. Both are the escape hatch.</td></tr><tr><td class='k'>the compute unit</td><td>SM, Streaming Multiprocessor</td><td>TensorCore, plus its VPU</td><td class='w'>The scheduling unit. An H100 has 132 SMs; a v6e chip has one TensorCore. That difference in count is why a GPU hides memory latency with thread parallelism and a TPU cannot.</td></tr><tr><td class='k'>the matrix unit</td><td>Tensor Core (confusingly, inside an SM)</td><td>MXU</td><td class='w'>The systolic array that does the multiply-accumulate. NVIDIA's 'Tensor Core' and Google's 'TensorCore' are <em>not</em> the same level of the hierarchy, which is a genuinely bad collision of names.</td></tr><tr><td class='k'>on-chip scratch</td><td>shared memory and L1, plus a shared L2</td><td>VMEM and CMEM</td><td class='w'>Fast memory that is not HBM. On a GPU the L2 is a cache and fills on demand; on a TPU the compiler decides statically what lives there, which is the whole subject of our gather result.</td></tr><tr><td class='k'>gather engine</td><td>none, the SMs do it</td><td>SparseCore</td><td class='w'>Dedicated hardware for chasing pointers, present on v4, v5p and v6e. Nothing on the NVIDIA side corresponds to it.</td></tr><tr><td class='k'>graph compiler</td><td>TensorRT, or torch.compile with Inductor</td><td>XLA</td><td class='w'>Turns your model into something the chip runs. XLA is not optional on TPU, which means its decisions are your performance whether you asked or not.</td></tr><tr><td class='k'>intermediate representation</td><td>PTX, then SASS</td><td>StableHLO, then LLO</td><td class='w'>What to read when you need to know what the compiler actually did. Our S(1) finding came out of reading the optimised HLO.</td></tr><tr><td class='k'>how a slice is named</td><td>8&times;H100 means eight GPUs</td><td>v5p-16 means <em>eight chips</em></td><td class='w'>A trap that cost us real money. For v5p and v4 the number counts TensorCores and there are two per chip, so v5p-32 is 16 chips. For v5e and v6e the number counts chips. Four scripts in this repository had this wrong and billed our v5p at double.</td></tr></tbody></table></div>
+<p><b>Intel is a third answer to the fabric question, and worth knowing about.</b> A Gaudi 3 puts
+<span class="sub">24&times;200 GbE RoCE</span> ports on the die itself, so its scale-up network is
+<em>standard Ethernet</em> rather than a proprietary fabric: no NVSwitch, no torus, just RoCE v2 out
+of the chip. That is architecturally the most interesting of the three, because it means the fabric
+is commodity and replaceable. On paper the part is competitive too: 128 GB of HBM2e at 3.7 TB/s is
+more memory <em>and</em> more bandwidth than a v5p's 95 GB at 2.77 TB/s. The problem is not the
+silicon. Falcon Shores, which was to merge Gaudi with Intel's GPU line, was cancelled; Gaudi itself
+is slated for discontinuation across 2026&ndash;27; and its replacement, Jaguar Shores, is not
+expected until 2027. So Intel is the cautionary case in this table: a genuinely good chip is not
+enough without a roadmap and a software ecosystem, and the reason nobody in this class is running on
+one is not that it is slow.</p>
+
+<p>The row worth re-reading is the second one. Because NVLink is switched and ICI is a torus, a GPU
+cluster has two fabrics with a cliff between them, while a TPU pod has one fabric all the way up.
+That is also why geometry matters on a TPU and barely does inside an NVLink domain: on a torus your
+traffic physically hops through chips you may not even own.</p>
+
+<h2>2. The parallelism notation, and what each strategy pays for</h2>
+<div class="scroll"><table>
+ <thead><tr><th>strategy</th><th>what it shards</th><th>what it costs</th>
+  <th>the part people leave out</th></tr></thead>
+ <tbody><tr><td class='k'>Data parallel<br><span class='sub'>DP8</span></td><td>the batch; every device keeps a full copy of the weights</td><td>one all_reduce of gradients per step</td><td class='w'>Cheapest to reason about, most expensive in memory. Nothing is sharded except work.</td></tr><tr><td class='k'>Tensor parallel<br><span class='sub'>TP8</span></td><td>each weight matrix, across devices</td><td>two all_reduce per transformer block, on the critical path</td><td class='w'>Wants the fattest links you have. On v6e a host holds 4 chips, so single-host TP caps at TP4 &mdash; we tried TP8 on one host and it cannot work.</td></tr><tr><td class='k'>Pipeline parallel<br><span class='sub'>PP4</span></td><td>the layers; each stage owns a contiguous block</td><td>point-to-point activation sends, no collective</td><td class='w'>Cheap on bandwidth, costly in idle time: the bubble is (stages-1)/microbatches.</td></tr><tr><td class='k'>Expert parallel<br><span class='sub'>EP8</span></td><td>the experts of an MoE layer</td><td>two all_to_all per MoE layer, to dispatch and to combine</td><td class='w'>We measured the routing tax against a dense layer at matched active FLOPs: 1.07&times; and 0.98&times;. The movement is close to free at these sizes; the earlier 175%-of-peak figure was our own bug.</td></tr><tr><td class='k'>Sequence or context parallel<br><span class='sub'>SP, CP</span></td><td>the sequence dimension of the activations</td><td>all_gather or a ring exchange inside attention</td><td class='w'>How long-context training fits at all. Turns attention into a fabric problem.</td></tr><tr><td class='k'>Fully sharded data parallel<br><span class='sub'>FSDP, or ZeRO-3</span></td><td>weights, gradients <em>and</em> optimiser state across the data-parallel ranks</td><td>all_gather the weights of each layer just before using it, reduce_scatter the gradients after</td><td class='w'>The memory win is 1/N of the model instead of a full copy. The price is two collectives per layer per step instead of one per step, so it trades bandwidth for capacity.</td></tr><tr><td class='k'>ZeRO stages<br><span class='sub'>ZeRO-1, -2, -3</span></td><td>stage 1 the optimiser state, stage 2 also gradients, stage 3 also the weights</td><td>increasing amounts of all_gather and reduce_scatter</td><td class='w'>ZeRO-3 and FSDP are the same idea from two codebases. If someone says FSDP they mean ZeRO-3.</td></tr><tr><td class='k'>Combined<br><span class='sub'>TP8 DP4, or 3D / 4D parallelism</span></td><td>multiply them: TP8&nbsp;DP4 is 32 devices, 8-way tensor inside 4-way data</td><td>the union of their collectives</td><td class='w'>Read right to left for locality: the innermost factor should be the one needing the fattest links, which means TP inside a host or a small hop count, DP outermost.</td></tr></tbody></table></div>
+<p>Read a combined spec right to left for locality. In <span class="sub">TP8 DP4</span> the tensor
+groups are innermost, which is correct, because tensor parallel puts two all_reduce on the critical
+path of every block and therefore wants the fattest, shortest links available. Data parallel
+tolerates distance because it synchronises once per step.</p>
+
+<h2>3. What those collectives actually cost, on TPU v5</h2>
+<div class="scroll"><table>
+ <thead><tr><th>measured on TPU v5</th><th class="n">per op</th>
+  <th class="n">bus bandwidth</th></tr></thead>
+ <tbody><tr><td>all_reduce at 16 chips, 16 MiB per chip</td><td class='n'>0.3755 ms</td><td class='n'>83.8 GB/s</td></tr><tr><td>all_to_all at 16 chips, 16 MiB per chip</td><td class='n'>0.2776 ms</td><td class='n'>56.7 GB/s</td></tr></tbody></table></div>
+<p>Two things this study learned that change how you should place these groups. First, an
+<span class="sub">all_reduce</span> gets <em>faster</em> as chips are added at fixed per-chip payload,
+because a ring gains links, while <span class="sub">all_to_all</span> gets slower. So tensor
+parallel and expert parallel scale in opposite directions and should not be sized by the same rule
+of thumb. Second, and more practically: a mesh spanning four hosts ran 1.44&times; slower than the
+same number of chips inside two hosts, independent of chip count. Where your groups land on host
+boundaries is worth as much as which strategy you chose.</p>
+
+<h2>4. Terminology that has actually cost us something</h2>
+<ul><li><b>v5p-8 is four chips, not eight.</b> For v5p and v4 the suffix counts TensorCores, two per chip. Our budget guard billed a v5p-8 as eight v6e chips, $11.23/hr against a real $5.04, which is about $2,400 of imaginary spend across three weeks and enough to trigger a false shutdown.</li><li><b>There is no v6p.</b> The line is v5p, then v6e, then v7 Ironwood. Generation six shipped only the efficiency part, so v5p's 95 GB per chip is still the most memory a student can get.</li><li><b>JAX process 0 is not gcloud worker 0.</b> On a multi-host slice the process that writes your results file is whichever host JAX called rank 0, and it moves. Our results landed on worker 2 and then worker 3 on consecutive runs.</li><li><b>Quota, capacity, permission and service account are four separate gates.</b> We had 32 A100s of quota, no ability to call compute.instances.create, and got an A100 anyway by asking GKE Autopilot for one, because the node is created by Google's service agent rather than by us. Each gate has to be tested separately; none implies the others.</li><li><b>A collective that works on a whole slice can fail on a subset of it.</b> jax.lax.psum under shard_map returned INTERNAL: RET_CHECK failure for 8- and 16-chip sub-meshes of a v6e-256, on 8 of 48 configurations, while all_to_all succeeded on exactly the same meshes.</li><li><b>The timing process must own a chip in the mesh.</b> Selecting a sub-mesh the calling process owns nothing in measures a no-op. That produced an impossible 3.5 TB/s reading here before we caught it.</li></ul>
+<p>Every one of these is in here because it wasted our time or our money first, which is the only
+reason a list like this is worth writing down.</p>
+
+<footer><div class="wrap">
+ Generated by <span class="sub">build_glossary_page.py</span>; the collective costs are read from the
+ newest sweep in <span class="sub">data/</span> so they cannot go stale. Companion pages:
+ <a href="./">the measurement log</a>, <a href="./gather-cliff.html">the gather cliff</a>,
+ <a href="./torus-shape.html">the wrong variable</a>, <a href="./roadmap.html">chips we can get</a>,
+ <a href="./models.html">what we can run</a>.
+</div></footer>
+</div>

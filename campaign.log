@@ -183,3 +183,105 @@ FileNotFoundError: [Errno 2] No such file or directory: 'kubectl'
 2026-08-16T19:09:39Z cycle 20260816T190511Z: allocation ladder on anh-dev1, the v6e side of the comparison
 2026-08-16T19:11:07+00:00: 21 chips project-wide, 0 held by 0 peers, zones=['us-east1-d', 'us-east5-a']
 2026-08-16T19:11:25Z cycle 20260816T190511Z: probing availability across zones
+  us-east1-d         v6e-8   available      215s
+  us-east5-a         v6e-8   no_capacity    63s
+  us-east5-b         v6e-8   no_capacity    83s
+  us-east5-c         v6e-8   quota          45s
+  us-south1-a        v6e-8   no_capacity    8s
+wrote /Users/an/tpu-irregular-memory-study/gather-cliff.html with 4 series
+wrote /Users/an/tpu-irregular-memory-study/roadmap.html: 10 chips, 14 sourced figures, budgets 47.94/95.94 MiB
+wrote /Users/an/tpu-irregular-memory-study/torus-shape.html: 8 configurations, 4 fast / 4 slow, long axis = index 2
+2026-08-16T19:19:03Z cycle 20260816T190511Z: published (local pages)
+Traceback (most recent call last):
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 208, in <module>
+    main()
+    ~~~~^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 104, in main
+    clusters, tpus = survey_clusters(), survey_tpus()
+                     ~~~~~~~~~~~~~~~^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 68, in survey_clusters
+    nodes = [l for l in sh(["kubectl", "get", "nodes", "--no-headers"]).splitlines() if l.strip()]
+                        ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 41, in sh
+    return subprocess.run(args, capture_output=True, text=True, timeout=timeout).stdout
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 555, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'kubectl'
+2026-08-16T19:19:05Z cycle 20260816T190511Z: cluster page failed
+wrote /Users/an/tpu-irregular-memory-study/models.html with 16 candidates
+  gpt-oss-20b             21B  total     55 GB  min 4 chips  break-even 2,999 tok/s/chip
+  Nemotron-3-Nano-30B     30B  total    112 GB  min 4 chips  break-even 1,949 tok/s/chip
+  Nemotron-3.5-Light-30B    30B  total    112 GB  min 4 chips  break-even 1,949 tok/s/chip
+  Qwen3-30B-A3B           30B  total     87 GB  min 4 chips  break-even 750 tok/s/chip
+  Qwen3-32B               32B  total    133 GB  min 16 chips  break-even 1,392 tok/s/chip
+  Llama-3.3-70B           70B  total    226 GB  min 16 chips  break-even 1,218 tok/s/chip
+  Llama-4-Scout          109B  total    270 GB  min 16 chips  break-even 1,299 tok/s/chip
+  gpt-oss-120b           117B  total    253 GB  min 16 chips  break-even 2,293 tok/s/chip
+  Nemotron-3-Super-120B   120B  total    292 GB  min 16 chips  break-even 975 tok/s/chip
+  Qwen3-235B-A22B        235B  total    520 GB  min 32 chips  break-even 709 tok/s/chip
+  Llama-4-Maverick       400B  total    852 GB  min 32 chips  break-even 487 tok/s/chip
+  Nemotron-3-Ultra-550B   550B  total   1186 GB  min 64 chips  break-even 108 tok/s/chip
+  DeepSeek-V3.2          671B  total   1407 GB  min 64 chips  break-even 975 tok/s/chip
+  Kimi-K2.6             1000B  total   2065 GB  min - chips  break-even 171 tok/s/chip
+  Qwen3.8-2.4T-A95B     2400B  total   4886 GB  min - chips  break-even 65 tok/s/chip
+  Kimi-K3               2800B  total   5686 GB  min - chips  break-even 26 tok/s/chip
+2026-08-16T19:19:23Z cycle 20260816T190511Z: published (live pages)
+2026-08-16T19:19:23Z cycle 20260816T190511Z: done
+2026-08-16T19:24:15Z cycle 20260816T192359Z: running fabric collectives on anh-v5p-32 in us-east5-a
+2026-08-16T19:27:23Z cycle 20260816T192359Z: collected 16 fabric records from w2
+2026-08-16T19:27:25Z cycle 20260816T192359Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T19:28:28Z cycle 20260816T192359Z: collected local gather results
+wrote /Users/an/tpu-irregular-memory-study/gather-cliff.html with 4 series
+wrote /Users/an/tpu-irregular-memory-study/roadmap.html: 10 chips, 14 sourced figures, budgets 47.94/95.94 MiB
+wrote /Users/an/tpu-irregular-memory-study/torus-shape.html: 8 configurations, 4 fast / 4 slow, long axis = index 2
+2026-08-16T19:28:39Z cycle 20260816T192359Z: published (local pages)
+2026-08-16T19:28:39+00:00: 21 chips project-wide, 0 held by 0 peers, zones=['us-east1-d', 'us-east5-a']
+wrote /Users/an/tpu-irregular-memory-study/gather-cliff.html with 4 series
+wrote /Users/an/tpu-irregular-memory-study/roadmap.html: 10 chips, 14 sourced figures, budgets 47.94/95.94 MiB
+wrote /Users/an/tpu-irregular-memory-study/torus-shape.html: 8 configurations, 4 fast / 4 slow, long axis = index 2
+Traceback (most recent call last):
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 208, in <module>
+    main()
+    ~~~~^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 104, in main
+    clusters, tpus = survey_clusters(), survey_tpus()
+                     ~~~~~~~~~~~~~~~^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 68, in survey_clusters
+    nodes = [l for l in sh(["kubectl", "get", "nodes", "--no-headers"]).splitlines() if l.strip()]
+                        ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 41, in sh
+    return subprocess.run(args, capture_output=True, text=True, timeout=timeout).stdout
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 555, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'kubectl'
+2026-08-16T19:29:09Z cycle 20260816T192359Z: cluster page failed
+2026-08-16T19:29:11Z cycle 20260816T192359Z: published (live pages)
+2026-08-16T19:29:11Z cycle 20260816T192359Z: done

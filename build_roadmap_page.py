@@ -35,6 +35,7 @@ CHIPS = [
     ("TPU v7 Ironwood", "G", 2026, 192.0, 7370.0, 4614.0, "fp8", 4, "3D torus",  False),
     ("TPU 8t Sunfish",  "G", 2027, 288.0, 9600.0,    0.0, "fp8", 4, "3D torus",  True),
     ("TPU 8i Zebrafish","G", 2027, 288.0, 7400.0,    0.0, "fp8", 0, "Boardfly",  True),
+    ("Gaudi 3",      "I", 2024, 128.0,  3700.0,  1800.0, "fp8",  0, "24x200G RoCE", False),
     ("A100 80GB",    "N", 2020,  80.0,  2039.0,   312.0, "bf16", 0, "NVLink 3",  False),
     ("H100 SXM",     "N", 2022,  80.0,  3350.0,   989.0, "bf16", 0, "NVLink 4",  False),
     ("B200",         "N", 2024, 192.0,  8000.0,  2250.0, "fp8",  0, "NVLink 5",  False),
@@ -98,6 +99,12 @@ SOURCES = [
      "cerebras.ai/blog/cerebras-cs-3-vs-groq-lpu", "checked 2026-08-16", "vendor, partisan source"),
     ("A100 L2 40 MB, H100 L2 50 MB", "NVIDIA datasheets", "nvidia.com", "checked 2026-08-16",
      "vendor"),
+    ("Gaudi 3: 128 GB HBM2e, 3.7 TB/s, 1.8 PFLOPS fp8/bf16, 5nm, 24x200GbE RoCE on die",
+     "Intel Gaudi 3 white paper and newsroom", "cdrdv2-public.intel.com/817486", "2024, checked "
+     "2026-08-16", "vendor"),
+    ("Falcon Shores cancelled; Jaguar Shores ~2027, HBM4E rumoured; Gaudi discontinued 2026-27",
+     "Intel statements plus press and leaks", "multiple", "checked 2026-08-16",
+     "mixed, partly rumour"),
 ]
 
 UNVERIFIED = [
@@ -260,7 +267,7 @@ def main() -> None:
         f"<td class='sub'>{when}</td><td>{kind}</td></tr>"
         for what, who, where, when, kind in SOURCES)
     spec = "".join(
-        f"<tr><td>{c[0]}</td><td>{'Google' if c[1] == 'G' else 'NVIDIA'}</td>"
+        f"<tr><td>{c[0]}</td><td>{ {'G':'Google','N':'NVIDIA','I':'Intel'}[c[1]] }</td>"
         f"<td class='n'>{c[2]}</td><td class='n'>{c[3]:,.0f}</td>"
         f"<td class='n'>{c[4] / 1000:.2f}</td>"
         f"<td class='n'>{c[5]:,.0f} {c[6]}</td>"

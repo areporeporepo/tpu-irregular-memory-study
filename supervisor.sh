@@ -111,7 +111,7 @@ if [ "${1:-}" != "--status" ]; then
   # than the sum of the per-stage deadlines below it, so a stage never dies for lack of
   # cycle budget, and short enough that a wedge stalls the schedule for tens of minutes
   # rather than forever.
-  ( sleep 2400; pkill -P $$ 2>/dev/null; kill -TERM $$ 2>/dev/null ) &
+  ( sleep 3300; pkill -P $$ 2>/dev/null; kill -TERM $$ 2>/dev/null ) &
   WATCHDOG=$!
   trap 'rm -rf "$LOCK"; kill "$WATCHDOG" 2>/dev/null' EXIT
 fi
@@ -236,6 +236,45 @@ for z in $DEV_ZONES; do
   break
 done
 
+# ---------------------------------------------------------------- publish the results first
+# Order matters more than it looks. The per-stage deadlines below this point sum to more than the
+# whole-cycle budget, so a cycle in which several stages run long can be killed before it publishes
+# anything, which is exactly what happened on 2026-08-16 when the availability probe ate the budget.
+# The fix is not a bigger budget, it is putting the cheap network-free page builds and the push
+# directly after the measurements that produce them. Everything slow now happens *after* the results
+# are already on the site.
+# ---------------------------------------------------------------- publish
+# Publishing happens in two passes, and the order is the point. The cheap local page builds and the
+# push come first; the slow live scrape comes after. On 2026-08-16 the availability probe ate almost
+# the entire cycle budget and the watchdog killed the cycle before it published anything, so two
+# finished result pages sat unpublished for hours. Anything that can be generated without the
+# network now ships before anything that needs it.
+publish() {
+  local why="$1"
+  local ahead
+  ahead=$(git -C "$STUDY" rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
+  if [ -z "$(git -C "$STUDY" status --porcelain 2>/dev/null)" ] && [ "${ahead:-0}" -eq 0 ]; then
+    return 0
+  fi
+  git -C "$STUDY" add data index.html cluster.html gather-cliff.html roadmap.html torus-shape.html glossary.html models.html \
+    logbook.jsonl budget_ledger.json >/dev/null 2>&1
+  git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \
+    commit -q -m "campaign cycle $STAMP ($why)" >/dev/null 2>&1
+  if t 180 git -C "$STUDY" push -q origin main >/dev/null 2>&1; then
+    say "cycle $STAMP: published ($why)"
+  else
+    say "cycle $STAMP: push failed ($why), will retry next cycle"
+  fi
+}
+
+# Pass one: everything that is generated from local JSON. No TPU, no network, seconds not minutes.
+t 120 python3 "$STUDY/logbook.py" build >/dev/null 2>&1
+t 120 python3 "$STUDY/build_gather_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: gather page failed"
+t 120 python3 "$STUDY/build_roadmap_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: roadmap page failed"
+t 120 python3 "$STUDY/build_glossary_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: glossary failed"
+t 120 python3 "$STUDY/build_torus_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: torus page failed"
+publish "local pages"
+
 # ---------------------------------------------------------------- v5p, the SparseCore chip
 # v5p is the only chip in the fleet where the documented SparseCore gather kernel compiles, so it is
 # the only place the allocation cliff can be measured against a working SparseCore baseline. Two of
@@ -306,40 +345,16 @@ if [ "$(date -u +%M)" -lt 20 ]; then
   t 420 bash "$STUDY/probe_availability.sh" >> "$LOG" 2>&1
 fi
 
-# ---------------------------------------------------------------- publish
-# Publishing happens in two passes, and the order is the point. The cheap local page builds and the
-# push come first; the slow live scrape comes after. On 2026-08-16 the availability probe ate almost
-# the entire cycle budget and the watchdog killed the cycle before it published anything, so two
-# finished result pages sat unpublished for hours. Anything that can be generated without the
-# network now ships before anything that needs it.
-publish() {
-  local why="$1"
-  local ahead
-  ahead=$(git -C "$STUDY" rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
-  if [ -z "$(git -C "$STUDY" status --porcelain 2>/dev/null)" ] && [ "${ahead:-0}" -eq 0 ]; then
-    return 0
-  fi
-  git -C "$STUDY" add data index.html cluster.html gather-cliff.html roadmap.html torus-shape.html models.html \
-    logbook.jsonl budget_ledger.json >/dev/null 2>&1
-  git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \
-    commit -q -m "campaign cycle $STAMP ($why)" >/dev/null 2>&1
-  if t 180 git -C "$STUDY" push -q origin main >/dev/null 2>&1; then
-    say "cycle $STAMP: published ($why)"
-  else
-    say "cycle $STAMP: push failed ($why), will retry next cycle"
-  fi
-}
-
-# Pass one: everything that is generated from local JSON. No TPU, no network, seconds not minutes.
-t 120 python3 "$STUDY/logbook.py" build >/dev/null 2>&1
-t 120 python3 "$STUDY/build_gather_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: gather page failed"
-t 120 python3 "$STUDY/build_roadmap_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: roadmap page failed"
-t 120 python3 "$STUDY/build_torus_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: torus page failed"
-publish "local pages"
-
-# Pass two: the pages that need the network, and a second push for whatever they changed. If either
-# of these is killed, pass one has already shipped.
-t 300 python3 "$STUDY/build_cluster_dashboard.py" >> "$LOG" 2>&1 || say "cycle $STAMP: cluster page failed"
+# Pass two: rebuild the result pages now that this cycle's experiments have landed, then the pages
+# that need the network, then a second push. Pass one published them from the previous cycle's JSON,
+# which is at most one cycle stale; this catches them up when the cycle has time. If anything here is
+# killed, pass one has already shipped a good copy.
+t 120 python3 "$STUDY/build_gather_page.py" >> "$LOG" 2>&1 || true
+t 120 python3 "$STUDY/build_roadmap_page.py" >> "$LOG" 2>&1 || true
+t 120 python3 "$STUDY/build_torus_page.py" >> "$LOG" 2>&1 || true
+t 120 python3 "$STUDY/build_glossary_page.py" >> "$LOG" 2>&1 || true
+t 120 python3 "$STUDY/logbook.py" build >/dev/null 2>&1 || true
+t 900 python3 "$STUDY/build_cluster_dashboard.py" >> "$LOG" 2>&1 || say "cycle $STAMP: cluster page failed"
 if [ "$(date -u +%M)" -lt 20 ]; then
   t 360 python3 "$STUDY/build_model_page.py" >> "$LOG" 2>&1 || \
     say "cycle $STAMP: model page failed, keeping the last good copy"
