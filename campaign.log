@@ -3,3 +3,9 @@
 2026-08-16T10:59:32Z cycle 20260816T105739Z: running local gather on anh-dev1 in us-east1-d
 2026-08-16T11:01:05Z cycle 20260816T105739Z: collected local gather results
 2026-08-16T11:01:05Z cycle 20260816T105739Z: done
+11:04:00Z anh-big-256 is READY, capped at 50 minutes from here
+11:04:00Z installing jax across all hosts
+11:04:39Z running the scaling curve out to 256 chips
+11:06:37Z collected the 256-chip curve from worker 1
+11:06:37Z burst complete
+11:06:37Z deleting anh-big-256 (this is the expensive part, so it happens unconditionally)

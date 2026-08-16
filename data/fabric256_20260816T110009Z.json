@@ -1,0 +1,485 @@
+{
+  "meta": {
+    "jax": "0.10.2",
+    "device_kind": "TPU v6 lite",
+    "num_devices": 256,
+    "process_index": 0,
+    "process_count": 64,
+    "host": "t1v-n-a6234a4b-w-1",
+    "python": "3.11.13"
+  },
+  "records": [
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 0.25,
+      "ms": 0.0267,
+      "ms_with_dispatch": 0.5735,
+      "dispatch_ms": 0.5468,
+      "bus_gbs": 8.58,
+      "per_peer_kib": 32.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 8,
+      "per_chip_mib": 0.25,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7) :: target has 8 device_id.\n\t\n\nError encountered while compiling %psum_invariant.7 = f32[1,65536]{1,0:T"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 1.0,
+      "ms": 0.0366,
+      "ms_with_dispatch": 0.5438,
+      "dispatch_ms": 0.5071,
+      "bus_gbs": 25.04,
+      "per_peer_kib": 128.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 8,
+      "per_chip_mib": 1.0,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7) :: target has 8 device_id.\n\t\n\nError encountered while compiling %psum_invariant.7 = f32[1,262144]{1,0:"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 4.0,
+      "ms": 0.0771,
+      "ms_with_dispatch": 0.7044,
+      "dispatch_ms": 0.6273,
+      "bus_gbs": 47.62,
+      "per_peer_kib": 512.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 8,
+      "per_chip_mib": 4.0,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7) :: target has 8 device_id.\n\t\n\nError encountered while compiling %psum_invariant.7 = f32[1,1048576]{1,0"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "per_chip_mib": 16.0,
+      "ms": 0.2359,
+      "ms_with_dispatch": 1.1879,
+      "dispatch_ms": 0.952,
+      "bus_gbs": 62.22,
+      "per_peer_kib": 2048.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 8,
+      "per_chip_mib": 16.0,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7) :: target has 8 device_id.\n\t\n\nError encountered while compiling %psum_invariant.7 = f32[1,4194304]{1,0"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 0.25,
+      "ms": 0.0347,
+      "ms_with_dispatch": 0.5729,
+      "dispatch_ms": 0.5382,
+      "bus_gbs": 7.08,
+      "per_peer_kib": 16.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 16,
+      "per_chip_mib": 0.25,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15) :: target has 16 device_id.\n\t\n\nError encountered while compiling %psum_invariant"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 1.0,
+      "ms": 0.0525,
+      "ms_with_dispatch": 0.5676,
+      "dispatch_ms": 0.5151,
+      "bus_gbs": 18.72,
+      "per_peer_kib": 64.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 16,
+      "per_chip_mib": 1.0,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15) :: target has 16 device_id.\n\t\n\nError encountered while compiling %psum_invariant"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 4.0,
+      "ms": 0.1277,
+      "ms_with_dispatch": 0.7683,
+      "dispatch_ms": 0.6406,
+      "bus_gbs": 30.79,
+      "per_peer_kib": 256.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 16,
+      "per_chip_mib": 4.0,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15) :: target has 16 device_id.\n\t\n\nError encountered while compiling %psum_invariant"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "per_chip_mib": 16.0,
+      "ms": 0.4214,
+      "ms_with_dispatch": 1.4063,
+      "dispatch_ms": 0.9849,
+      "bus_gbs": 37.32,
+      "per_peer_kib": 1024.0,
+      "inner": 32
+    },
+    {
+      "op": "bench_all_reduce",
+      "chips": 16,
+      "per_chip_mib": 16.0,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15) :: target has 16 device_id.\n\t\n\nError encountered while compiling %psum_invariant"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 0.25,
+      "ms": 0.0366,
+      "ms_with_dispatch": 0.574,
+      "dispatch_ms": 0.5374,
+      "bus_gbs": 6.93,
+      "per_peer_kib": 8.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 0.25,
+      "ms": 0.0661,
+      "ms_with_dispatch": 0.5877,
+      "dispatch_ms": 0.5215,
+      "bus_gbs": 7.68,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 1.0,
+      "ms": 0.0557,
+      "ms_with_dispatch": 0.5807,
+      "dispatch_ms": 0.525,
+      "bus_gbs": 18.23,
+      "per_peer_kib": 32.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 1.0,
+      "ms": 0.0686,
+      "ms_with_dispatch": 0.6022,
+      "dispatch_ms": 0.5335,
+      "bus_gbs": 29.61,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 4.0,
+      "ms": 0.1303,
+      "ms_with_dispatch": 0.7712,
+      "dispatch_ms": 0.6409,
+      "bus_gbs": 31.18,
+      "per_peer_kib": 128.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 4.0,
+      "ms": 0.0903,
+      "ms_with_dispatch": 0.8314,
+      "dispatch_ms": 0.7411,
+      "bus_gbs": 90.0,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 32,
+      "per_chip_mib": 16.0,
+      "ms": 0.424,
+      "ms_with_dispatch": 1.4219,
+      "dispatch_ms": 0.9978,
+      "bus_gbs": 38.33,
+      "per_peer_kib": 512.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 32,
+      "per_chip_mib": 16.0,
+      "ms": 0.2432,
+      "ms_with_dispatch": 1.4788,
+      "dispatch_ms": 1.2356,
+      "bus_gbs": 133.65,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 64,
+      "per_chip_mib": 0.25,
+      "ms": 0.0398,
+      "ms_with_dispatch": 0.5876,
+      "dispatch_ms": 0.5478,
+      "bus_gbs": 6.49,
+      "per_peer_kib": 4.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 64,
+      "per_chip_mib": 0.25,
+      "ms": 0.1133,
+      "ms_with_dispatch": 0.6396,
+      "dispatch_ms": 0.5264,
+      "bus_gbs": 4.56,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 64,
+      "per_chip_mib": 1.0,
+      "ms": 0.0595,
+      "ms_with_dispatch": 0.5914,
+      "dispatch_ms": 0.5319,
+      "bus_gbs": 17.35,
+      "per_peer_kib": 16.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 64,
+      "per_chip_mib": 1.0,
+      "ms": 0.1159,
+      "ms_with_dispatch": 0.6648,
+      "dispatch_ms": 0.5489,
+      "bus_gbs": 17.81,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 64,
+      "per_chip_mib": 4.0,
+      "ms": 0.1336,
+      "ms_with_dispatch": 0.7865,
+      "dispatch_ms": 0.653,
+      "bus_gbs": 30.91,
+      "per_peer_kib": 64.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 64,
+      "per_chip_mib": 4.0,
+      "ms": 0.1353,
+      "ms_with_dispatch": 0.8816,
+      "dispatch_ms": 0.7463,
+      "bus_gbs": 61.03,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 64,
+      "per_chip_mib": 16.0,
+      "ms": 0.4307,
+      "ms_with_dispatch": 1.4452,
+      "dispatch_ms": 1.0145,
+      "bus_gbs": 38.34,
+      "per_peer_kib": 256.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 64,
+      "per_chip_mib": 16.0,
+      "ms": 0.2456,
+      "ms_with_dispatch": 1.5084,
+      "dispatch_ms": 1.2629,
+      "bus_gbs": 134.51,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 128,
+      "per_chip_mib": 0.25,
+      "ms": 0.0471,
+      "ms_with_dispatch": 0.6126,
+      "dispatch_ms": 0.5655,
+      "bus_gbs": 5.52,
+      "per_peer_kib": 2.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 128,
+      "per_chip_mib": 0.25,
+      "ms": 0.208,
+      "ms_with_dispatch": 0.7517,
+      "dispatch_ms": 0.5437,
+      "bus_gbs": 2.5,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 128,
+      "per_chip_mib": 1.0,
+      "ms": 0.0654,
+      "ms_with_dispatch": 0.629,
+      "dispatch_ms": 0.5636,
+      "bus_gbs": 15.92,
+      "per_peer_kib": 8.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 128,
+      "per_chip_mib": 1.0,
+      "ms": 0.2091,
+      "ms_with_dispatch": 0.7809,
+      "dispatch_ms": 0.5718,
+      "bus_gbs": 9.95,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 128,
+      "per_chip_mib": 4.0,
+      "ms": 0.1411,
+      "ms_with_dispatch": 0.818,
+      "dispatch_ms": 0.6769,
+      "bus_gbs": 29.49,
+      "per_peer_kib": 32.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 128,
+      "per_chip_mib": 4.0,
+      "ms": 0.2384,
+      "ms_with_dispatch": 0.9963,
+      "dispatch_ms": 0.7579,
+      "bus_gbs": 34.91,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 128,
+      "per_chip_mib": 16.0,
+      "ms": 0.4382,
+      "ms_with_dispatch": 1.4642,
+      "dispatch_ms": 1.026,
+      "bus_gbs": 37.98,
+      "per_peer_kib": 128.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 128,
+      "per_chip_mib": 16.0,
+      "ms": 0.2949,
+      "ms_with_dispatch": 1.5692,
+      "dispatch_ms": 1.2743,
+      "bus_gbs": 112.89,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 256,
+      "per_chip_mib": 0.25,
+      "ms": 0.0471,
+      "ms_with_dispatch": 0.6369,
+      "dispatch_ms": 0.5897,
+      "bus_gbs": 5.54,
+      "per_peer_kib": 1.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 256,
+      "per_chip_mib": 0.25,
+      "ms": 0.0559,
+      "ms_with_dispatch": 0.6089,
+      "dispatch_ms": 0.553,
+      "bus_gbs": 9.35,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 256,
+      "per_chip_mib": 1.0,
+      "ms": 0.0645,
+      "ms_with_dispatch": 0.6265,
+      "dispatch_ms": 0.562,
+      "bus_gbs": 16.2,
+      "per_peer_kib": 4.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 256,
+      "per_chip_mib": 1.0,
+      "ms": 0.0598,
+      "ms_with_dispatch": 0.6309,
+      "dispatch_ms": 0.5711,
+      "bus_gbs": 34.92,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 256,
+      "per_chip_mib": 4.0,
+      "ms": 0.1436,
+      "ms_with_dispatch": 0.828,
+      "dispatch_ms": 0.6845,
+      "bus_gbs": 29.1,
+      "per_peer_kib": 16.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 256,
+      "per_chip_mib": 4.0,
+      "ms": 0.0965,
+      "ms_with_dispatch": 0.8583,
+      "dispatch_ms": 0.7618,
+      "bus_gbs": 86.59,
+      "inner": 32
+    },
+    {
+      "op": "all_to_all",
+      "chips": 256,
+      "per_chip_mib": 16.0,
+      "ms": 0.4379,
+      "ms_with_dispatch": 1.4769,
+      "dispatch_ms": 1.039,
+      "bus_gbs": 38.16,
+      "per_peer_kib": 64.0,
+      "inner": 32
+    },
+    {
+      "op": "all_reduce",
+      "chips": 256,
+      "per_chip_mib": 16.0,
+      "ms": 0.2115,
+      "ms_with_dispatch": 1.4926,
+      "dispatch_ms": 1.2811,
+      "bus_gbs": 158.03,
+      "inner": 32
+    }
+  ]
+}
