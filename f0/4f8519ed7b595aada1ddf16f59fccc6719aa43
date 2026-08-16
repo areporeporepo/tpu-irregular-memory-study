@@ -1,0 +1,26 @@
+data/availability.jsonl
+  s_67b1e088a6a194::t_7a6ea103c1eed7 8
+  s_67b1e088a6a194::t_583edb4397e296 7
+experiment7_serving.sh
+  s_67b1e088a6a194::t_1b69acfa79cb62 1-69
+supervisor.sh
+  s_67b1e088a6a194::t_7a6ea103c1eed7 18,23,91
+budget_ledger.json
+  s_67b1e088a6a194::t_5aa24110be5b4b 4,11-16,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f04f8519ed7b595aada1ddf16f59fccc6719aa43",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
