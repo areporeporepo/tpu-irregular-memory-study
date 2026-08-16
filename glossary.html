@@ -37,7 +37,7 @@
 </style>
 <header><div class="wrap">
  <h1>The same idea in three dialects, and what each one costs</h1>
- <p class="sub">2026-08-16 19:39 UTC &middot; measurements from this study, not from a datasheet</p>
+ <p class="sub">2026-08-16 19:43 UTC &middot; measurements from this study, not from a datasheet</p>
  <p class="lede" style="margin-top:18px">Most of the difficulty in reading accelerator
  documentation is not conceptual. It is that NVIDIA and Google invented different words for the same
  wire, that <span class="sub">Tensor Core</span> and <span class="sub">TensorCore</span> are
@@ -115,6 +115,35 @@ answer is currently "neither".</p>
 <ul><li><b>v5p-8 is four chips, not eight.</b> For v5p and v4 the suffix counts TensorCores, two per chip. Our budget guard billed a v5p-8 as eight v6e chips, $11.23/hr against a real $5.04, which is about $2,400 of imaginary spend across three weeks and enough to trigger a false shutdown.</li><li><b>There is no v6p.</b> The line is v5p, then v6e, then v7 Ironwood. Generation six shipped only the efficiency part, so v5p's 95 GB per chip is still the most memory a student can get.</li><li><b>JAX process 0 is not gcloud worker 0.</b> On a multi-host slice the process that writes your results file is whichever host JAX called rank 0, and it moves. Our results landed on worker 2 and then worker 3 on consecutive runs.</li><li><b>Quota, capacity, permission and service account are four separate gates.</b> We had 32 A100s of quota, no ability to call compute.instances.create, and got an A100 anyway by asking GKE Autopilot for one, because the node is created by Google's service agent rather than by us. Each gate has to be tested separately; none implies the others.</li><li><b>A collective that works on a whole slice can fail on a subset of it.</b> jax.lax.psum under shard_map returned INTERNAL: RET_CHECK failure for 8- and 16-chip sub-meshes of a v6e-256, on 8 of 48 configurations, while all_to_all succeeded on exactly the same meshes.</li><li><b>The timing process must own a chip in the mesh.</b> Selecting a sub-mesh the calling process owns nothing in measures a no-op. That produced an impossible 3.5 TB/s reading here before we caught it.</li></ul>
 <p>Every one of these is in here because it wasted our time or our money first, which is the only
 reason a list like this is worth writing down.</p>
+
+<h2>6. Which half of this page will still be true in 2035</h2>
+<p>Most of what is above has a shelf life. <span class="sub">NCCL</span>,
+<span class="sub">RCCL</span>, <span class="sub">HCCL</span> and <span class="sub">TPC-C</span> will
+be dead names; <span class="sub">v6e</span> already cannot be bought; Gaudi is scheduled for
+discontinuation before this sentence is two years old. Learning those is how you read a paper next
+week, not how you understand anything. So it is worth separating the disposable part of this page
+from the part that is physics.</p>
+<p>The durable fact underneath every architectural choice in the tables above is that <b>moving a
+number costs vastly more energy than computing with it</b>, and the gap is enormous:</p>
+<div class="scroll"><table>
+ <thead><tr><th>operation</th><th class="n">energy</th><th class="n">relative</th></tr></thead>
+ <tbody><tr><td>32-bit integer add</td><td class='n'>0.1 pJ</td><td class='n'>1x</td></tr><tr><td>32-bit float add</td><td class='n'>0.9 pJ</td><td class='n'>9x</td></tr><tr><td>read 32 bits from 8 KB of on-chip SRAM</td><td class='n'>5 pJ</td><td class='n'>~50x</td></tr><tr><td>read 32 bits from off-chip DRAM</td><td class='n'>640 pJ</td><td class='n'>~700x</td></tr></tbody></table></div>
+<p class="sub" style="margin-top:-4px">Horowitz, ISSCC 2014, at 45nm. Process scaling moves the
+absolute numbers and leaves the ratios roughly alone, which is exactly why they are still quoted a
+decade later.</p>
+<p>A DRAM read costs about <b>700 times</b> a floating-point add, and about <b>128 times</b> an
+on-chip SRAM read. Nothing else in this study needs explaining once you have that. A gather computes
+almost nothing per byte it moves, so it sits at the worst point of that ratio, which is why it is the
+operation worth measuring. A SparseCore and Hopper's TMA both exist to make the moving cheaper rather
+than the arithmetic faster. Cerebras and Groq exist because if the 128&times; SRAM-versus-DRAM gap is
+real, the winning move is to delete the DRAM tier. And XLA promoting a table into
+<span class="sub">S(1)</span> is the compiler making exactly that bet on your behalf, at compile time,
+which is the whole subject of our own main result.</p>
+<p>The same asymmetry is why the roofline corner keeps moving right. Arithmetic gets cheaper faster
+than bytes do, so every generation demands more reuse before the arithmetic can be kept busy: 166
+FLOPs per byte on v5p, 560 on v6e, 626 on Ironwood, and about 2,273 on Rubin. That trend is not a
+product decision anybody can reverse; it is what happens when transistors get cheaper and wires do
+not. Learn that ratio and the acronyms become lookup, which is the correct order.</p>
 
 <footer><div class="wrap">
  Generated by <span class="sub">build_glossary_page.py</span>; the collective costs are read from the
