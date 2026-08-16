@@ -1,0 +1,16 @@
+data/contention.jsonl
+  h_ed8409725be97e 9
+index.html
+  h_ed8409725be97e 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "534ce2107605a29abfd1ed28726dc9e522c83b00",
+  "prompts": {},
+  "humans": {
+    "h_ed8409725be97e": {
+      "author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
