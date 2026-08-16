@@ -1,0 +1,600 @@
+<title>Sunfish, Zebrafish, Rubin</title>
+<style>
+  /* Light palette is the base. Nothing here encodes meaning in hue alone: every state is also
+     a shape, a weight or a position, so the page survives a grayscale display filter. */
+  :root {
+    --bg: #f6f5f3;
+    --surface: #ffffff;
+    --surface-2: #efedea;
+    --ink: #16161a;
+    --ink-2: #4a4a52;
+    --ink-3: #75757f;
+    --line: #d8d5d0;
+    --accent: #b4531f;
+    --accent-soft: #e8d9cf;
+    --grid: #e4e1dc;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.12);
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e0e11;
+      --surface: #17171b;
+      --surface-2: #1e1e24;
+      --ink: #f2f1ee;
+      --ink-2: #b6b5b0;
+      --ink-3: #85848c;
+      --line: #2c2c34;
+      --accent: #e08a4c;
+      --accent-soft: #3a2a1d;
+      --grid: #23232a;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 30px -12px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e0e11;
+    --surface: #17171b;
+    --surface-2: #1e1e24;
+    --ink: #f2f1ee;
+    --ink-2: #b6b5b0;
+    --ink-3: #85848c;
+    --line: #2c2c34;
+    --accent: #e08a4c;
+    --accent-soft: #3a2a1d;
+    --grid: #23232a;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 30px -12px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 78px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+
+  h1 { font-size: clamp(38px, 6.5vw, 68px); line-height: 1.02; letter-spacing: -.03em; margin: 0 0 18px; font-weight: 680; }
+  h2 { font-size: clamp(25px, 3.4vw, 35px); line-height: 1.12; letter-spacing: -.022em; margin: 0 0 10px; font-weight: 660; }
+  h3 { font-size: 15px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 22px; font-weight: 620; }
+  p { margin: 0 0 16px; max-width: 68ch; color: var(--ink-2); }
+  p.lede { font-size: 20px; color: var(--ink-2); max-width: 62ch; }
+  strong { color: var(--ink); font-weight: 640; }
+  a { color: var(--ink); text-decoration-color: var(--line); text-underline-offset: 3px; }
+  .mono { font-family: var(--mono); }
+  .tag { display: inline-block; font: 600 11.5px/1 var(--mono); letter-spacing: .08em;
+         text-transform: uppercase; color: var(--ink-3); border: 1px solid var(--line);
+         border-radius: 100px; padding: 6px 11px; margin-bottom: 26px; }
+
+  /* ---------------------------------------------------------------- hero */
+  header { padding: 92px 0 66px; border-bottom: 1px solid var(--line); }
+  .split-stage { margin: 44px 0 8px; }
+  .die { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+  .die-core { fill: var(--ink); opacity: .9; }
+  .die-alt { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: 3 3; }
+  .hbm { fill: var(--surface-2); stroke: var(--ink-3); stroke-width: 1; }
+  .lbl { font: 600 12px var(--mono); fill: var(--ink-2); }
+  .lbl-sm { font: 500 10.5px var(--mono); fill: var(--ink-3); }
+
+  .go .slideL { animation: slideL 1.5s cubic-bezier(.22,1,.36,1) forwards; }
+  .go .slideR { animation: slideR 1.5s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes slideL { to { transform: translateX(-124px); } }
+  @keyframes slideR { to { transform: translateX(124px); } }
+  .fade { opacity: 0; }
+  .go .fade { animation: fade .9s ease forwards; animation-delay: 1.1s; }
+  @keyframes fade { to { opacity: 1; } }
+
+  /* ---------------------------------------------------------------- bars */
+  .bars { display: grid; gap: 14px; margin: 30px 0 8px; }
+  .bar-row { display: grid; grid-template-columns: 120px 1fr 130px; gap: 14px; align-items: center; }
+  .bar-track { height: 34px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; background: var(--ink); transition: width 1.5s cubic-bezier(.22,1,.36,1); }
+  .bar-fill.hatch {
+    background: repeating-linear-gradient(135deg, var(--ink) 0 7px, var(--surface) 7px 13px);
+  }
+  .bar-key { font: 600 13px var(--mono); color: var(--ink-2); }
+  .bar-val { font: 640 17px var(--mono); text-align: right; letter-spacing: -.02em; }
+
+  /* ---------------------------------------------------------------- cards */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+          padding: 22px 22px 24px; box-shadow: var(--shadow); }
+  .card h4 { margin: 0 0 2px; font-size: 20px; letter-spacing: -.015em; }
+  .card .sub { font: 500 12px var(--mono); color: var(--ink-3); margin-bottom: 16px; letter-spacing: .04em; }
+  .spec { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0;
+          border-top: 1px dashed var(--line); font-size: 14.5px; }
+  .spec span:first-child { color: var(--ink-3); }
+  .spec span:last-child { font-family: var(--mono); text-align: right; color: var(--ink); font-weight: 560; }
+  .flag { margin-top: 16px; padding: 12px 14px; border-left: 3px solid var(--accent);
+          background: var(--accent-soft); border-radius: 0 8px 8px 0; font-size: 14.5px; color: var(--ink); }
+
+  /* ---------------------------------------------------------------- moe */
+  .chip-node { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+  .wire { stroke: var(--line); stroke-width: 1.4; fill: none; }
+  .wire-hot { stroke: var(--accent); stroke-width: 2.4; fill: none; stroke-dasharray: 5 7; }
+  .go .wire-hot { animation: dash 1.1s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -24; } }
+  .tok { fill: var(--ink); }
+  .go .tok { animation: ride 3.4s cubic-bezier(.5,0,.5,1) infinite; offset-rotate: 0deg; }
+  @keyframes ride { 0% { offset-distance: 0%; opacity: 0; } 8% { opacity: 1; }
+                    92% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+
+  /* ---------------------------------------------------------------- hops */
+  .hop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 26px; }
+  .packet { fill: var(--accent); stroke: var(--ink); stroke-width: 1; }
+  .go .p-slow { animation: ride 4.2s linear infinite; }
+  .go .p-fast { animation: ride 1.85s linear infinite; }
+  .hopcount { font: 700 46px var(--mono); letter-spacing: -.03em; }
+
+  /* ---------------------------------------------------------------- band */
+  .band { margin: 26px 0 6px; }
+  .band-track { position: relative; height: 58px; border: 1px solid var(--ink); border-radius: 4px;
+                background: var(--surface); overflow: hidden; }
+  .band-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--ink);
+               transition: width 1.8s cubic-bezier(.22,1,.36,1); }
+  .band-note { display: flex; justify-content: space-between; font: 600 12.5px var(--mono);
+               color: var(--ink-3); margin-top: 8px; }
+
+  /* ---------------------------------------------------------------- loop */
+  .loop-svg .arc { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-dasharray: 6 6; }
+  .go .loop-svg .arc { animation: dash 2.4s linear infinite; }
+  .box { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 26px; font-size: 14.5px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 600 11.5px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  td:first-child { font-family: var(--mono); font-weight: 560; white-space: nowrap; }
+
+  .scroller { overflow-x: auto; }
+  .fine { font-size: 13.5px; color: var(--ink-3); }
+  ol { color: var(--ink-2); max-width: 68ch; } li { margin: 9px 0; }
+  footer { padding: 54px 0 78px; color: var(--ink-3); font-size: 13.5px; }
+  footer a { color: var(--ink-2); }
+
+  @media (max-width: 720px) {
+    .two, .hop-grid { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 84px 1fr 92px; }
+    .bar-val { font-size: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="tag">August 2026 &middot; state of play</div>
+    <h1>Sunfish, Zebrafish,<br>Rubin</h1>
+    <p class="lede">In 2026 both Google and NVIDIA stopped building one chip. They split their
+      silicon in half, by <em>phase</em>, and the reason is the same on both sides: the expensive
+      part of an AI workload is no longer the multiplying. It is the moving.</p>
+
+    <div class="split-stage">
+      <svg viewBox="0 0 900 200" width="100%" height="200" role="img"
+           aria-label="One die separating into a training die and an inference die">
+        <g class="slideL">
+          <rect class="die" x="356" y="46" width="94" height="94" rx="9"/>
+          <rect class="die-core" x="374" y="64" width="26" height="26" rx="3"/>
+          <rect class="die-core" x="406" y="64" width="26" height="26" rx="3"/>
+          <rect class="hbm" x="374" y="98" width="58" height="24" rx="3"/>
+          <text class="lbl-sm" x="403" y="162" text-anchor="middle">TPU 8t &middot; Sunfish</text>
+          <text class="lbl-sm" x="403" y="178" text-anchor="middle">training</text>
+        </g>
+        <g class="slideR">
+          <rect class="die" x="450" y="46" width="94" height="94" rx="9"/>
+          <rect class="die-core" x="468" y="64" width="26" height="26" rx="3"/>
+          <rect class="die-alt" x="500" y="64" width="26" height="26" rx="3"/>
+          <rect class="hbm" x="468" y="98" width="58" height="24" rx="3"/>
+          <text class="lbl-sm" x="497" y="162" text-anchor="middle">TPU 8i &middot; Zebrafish</text>
+          <text class="lbl-sm" x="497" y="178" text-anchor="middle">inference</text>
+        </g>
+        <g class="fade">
+          <text class="lbl" x="120" y="99" text-anchor="middle">one general-purpose chip</text>
+          <path class="wire" d="M120 112 L120 132 L640 132 L640 112"/>
+          <text class="lbl" x="770" y="99" text-anchor="middle">two specialised chips</text>
+        </g>
+      </svg>
+    </div>
+    <p class="fine">Everything on this page is dated. Where a number came from a measurement on a
+      live TPU v6e rather than a vendor slide, it says so.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h3>1 &middot; The money, so the rest is not abstract</h3>
+    <h2>Capital expenditure crossed the point where architecture is decided by economics</h2>
+    <p>The four large hyperscalers are spending roughly <strong>$725 to $760 billion</strong> on
+      infrastructure in 2026, up about 77% from around $410 billion in 2025, and analysts at
+      Evercore and Bank of America both project the 2027 figure passes <strong>one
+      trillion</strong>. Alphabet alone guided to $175 to $185 billion for 2026, roughly double its
+      $91.4 billion in 2025.</p>
+
+    <div class="bars" id="capex">
+      <div class="bar-row">
+        <span class="bar-key">2025</span>
+        <div class="bar-track"><div class="bar-fill" data-w="41"></div></div>
+        <span class="bar-val">$410B</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-key">2026</span>
+        <div class="bar-track"><div class="bar-fill" data-w="72.5"></div></div>
+        <span class="bar-val">$725B</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-key">2027 est.</span>
+        <div class="bar-track"><div class="bar-fill hatch" data-w="100"></div></div>
+        <span class="bar-val">$1T+</span>
+      </div>
+    </div>
+    <p class="fine">Hatched because 2027 is a forecast, not a booking.</p>
+
+    <p style="margin-top:26px">Google projects <strong>4.3 million TPUs shipped in 2026, 10 million
+      in 2027, and more than 35 million in 2028</strong>. Anthropic's commitment alone reaches 3.5
+      gigawatts of compute coming online in 2027. At that volume, an architectural choice is not a
+      preference. It is a multi-billion dollar bet on what the workload will be.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>2 &middot; Google's split</h3>
+    <h2>Two chips, and the difference is what they do with the data-movement budget</h2>
+    <p>Announced at Cloud Next in April 2026, both on TSMC 2nm, both targeted at <strong>late
+      2027</strong>. Ironwood, the seventh generation, went generally available at the same event.</p>
+
+    <div class="two">
+      <div class="card">
+        <h4>TPU 8t &middot; Sunfish</h4>
+        <div class="sub">training &middot; designed with Broadcom</div>
+        <div class="spec"><span>Compute dies</span><span>2 + 1 I/O chiplet</span></div>
+        <div class="spec"><span>Memory</span><span>8 stacks, 12-high HBM3e</span></div>
+        <div class="spec"><span>Bandwidth vs Ironwood</span><span>~30% higher</span></div>
+        <div class="spec"><span>Superpod</span><span>9,600 chips, 2 PB HBM</span></div>
+        <div class="spec"><span>Topology</span><span>3D torus, kept</span></div>
+        <div class="spec"><span>SparseCore</span><span>kept</span></div>
+        <div class="spec"><span>Price-performance</span><span>up to 2.8&times; Ironwood</span></div>
+      </div>
+      <div class="card">
+        <h4>TPU 8i &middot; Zebrafish</h4>
+        <div class="sub">inference &middot; designed with MediaTek</div>
+        <div class="spec"><span>Compute dies</span><span>1 + 1 I/O die</span></div>
+        <div class="spec"><span>Memory</span><span>6 stacks, 288 GB HBM</span></div>
+        <div class="spec"><span>On-chip SRAM</span><span>384 MB, ~3&times; Ironwood</span></div>
+        <div class="spec"><span>Scale</span><span>1,152 chips via OCS</span></div>
+        <div class="spec"><span>Topology</span><span>Boardfly, high-radix</span></div>
+        <div class="spec"><span>SparseCore</span><span>replaced by a CAE</span></div>
+        <div class="spec"><span>Price-performance</span><span>up to 1.8&times; Ironwood</span></div>
+      </div>
+    </div>
+
+    <div class="flag">
+      <strong>The detail that gives the game away.</strong> On 8i, four SparseCores are removed and
+      a <span class="mono">Collectives Acceleration Engine</span> is put in their place, cutting
+      on-chip collective latency by <strong>5&times;</strong>. Google spent inference transistors on
+      a unit whose entire job is moving data between chips. Not one extra matrix unit.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>3 &middot; NVIDIA's split</h3>
+    <h2>The same bet, arrived at independently, with different letters on it</h2>
+    <p>Vera Rubin entered full production in June 2026. The interesting part is not the flagship,
+      it is that NVIDIA also broke inference in half: <strong>Rubin CPX</strong> handles prefill,
+      <strong>VR200 NVL72</strong> handles decode, and they are deliberately different silicon.</p>
+
+    <div class="two">
+      <div class="card">
+        <h4>Rubin CPX</h4>
+        <div class="sub">prefill &middot; massive context</div>
+        <div class="spec"><span>Memory</span><span>128 GB GDDR7, not HBM4</span></div>
+        <div class="spec"><span>Compute</span><span>30 PFLOPS NVFP4</span></div>
+        <div class="spec"><span>Why GDDR7</span><span>prefill is compute-bound</span></div>
+      </div>
+      <div class="card">
+        <h4>VR200 NVL72</h4>
+        <div class="sub">decode &middot; token generation</div>
+        <div class="spec"><span>Memory</span><span>HBM4</span></div>
+        <div class="spec"><span>Why HBM</span><span>decode is bandwidth-bound</span></div>
+        <div class="spec"><span>Rack pairing</span><span>NVL144 CPX + VR200</span></div>
+      </div>
+    </div>
+    <p style="margin-top:22px">An NVL144 CPX rack reaches 8 exaflops, 100 TB of fast memory and
+      <strong>1.7 PB/s of aggregate bandwidth</strong> at about 370 kW, roughly 7.5&times; a GB300
+      NVL72. Rubin Ultra follows in 2027 in a 600 kW rack; Feynman in 2028 brings co-packaged
+      optics, which is the same admission again: the wire is the problem.</p>
+    <div class="flag">
+      Two companies, different customers, different fabs, different decades of institutional
+      habit, and both concluded in the same year that <strong>prefill and decode want different
+      chips</strong>. When competitors converge like that, they are not copying. They are reading
+      the same profile.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>4 &middot; The workload that forced it</h3>
+    <h2>A mixture-of-experts token spends its life in transit</h2>
+    <p>Routing a token through an MoE layer is: score the experts, take the top-k, permute tokens
+      by expert, dispatch them <em>across chips</em>, run a modest amount of matrix maths, gather
+      the outputs back, and reduce. Six of those seven steps are data movement.</p>
+
+    <svg viewBox="0 0 900 260" width="100%" height="260" role="img"
+         aria-label="Tokens routed from a router chip out to expert chips and gathered back">
+      <path id="r1" class="wire" d="M170 130 C 300 130, 320 46, 470 46"/>
+      <path id="r2" class="wire" d="M170 130 C 300 130, 320 102, 470 102"/>
+      <path id="r3" class="wire-hot" d="M170 130 C 300 130, 320 158, 470 158"/>
+      <path id="r4" class="wire" d="M170 130 C 300 130, 320 214, 470 214"/>
+      <path id="g1" class="wire" d="M596 46 C 700 46, 700 130, 790 130"/>
+      <path id="g2" class="wire" d="M596 102 C 700 102, 700 130, 790 130"/>
+      <path id="g3" class="wire-hot" d="M596 158 C 700 158, 700 130, 790 130"/>
+      <path id="g4" class="wire" d="M596 214 C 700 214, 700 130, 790 130"/>
+
+      <rect class="chip-node" x="86" y="104" width="84" height="52" rx="7"/>
+      <text class="lbl-sm" x="128" y="128" text-anchor="middle">router</text>
+      <text class="lbl-sm" x="128" y="144" text-anchor="middle">top-k</text>
+
+      <rect class="chip-node" x="470" y="24" width="126" height="44" rx="7"/>
+      <text class="lbl-sm" x="533" y="51" text-anchor="middle">expert 0 &middot; chip 3</text>
+      <rect class="chip-node" x="470" y="80" width="126" height="44" rx="7"/>
+      <text class="lbl-sm" x="533" y="107" text-anchor="middle">expert 1 &middot; chip 17</text>
+      <rect class="chip-node" x="470" y="136" width="126" height="44" rx="7"/>
+      <text class="lbl-sm" x="533" y="163" text-anchor="middle">expert 2 &middot; chip 41</text>
+      <rect class="chip-node" x="470" y="192" width="126" height="44" rx="7"/>
+      <text class="lbl-sm" x="533" y="219" text-anchor="middle">expert 3 &middot; chip 88</text>
+
+      <rect class="chip-node" x="790" y="104" width="84" height="52" rx="7"/>
+      <text class="lbl-sm" x="832" y="134" text-anchor="middle">reduce</text>
+
+      <circle class="tok" r="5" style="offset-path: path('M170 130 C 300 130, 320 158, 470 158'); animation-delay: 0s"/>
+      <circle class="tok" r="5" style="offset-path: path('M170 130 C 300 130, 320 46, 470 46'); animation-delay: .5s"/>
+      <circle class="tok" r="5" style="offset-path: path('M170 130 C 300 130, 320 214, 470 214'); animation-delay: 1.1s"/>
+      <circle class="tok" r="5" style="offset-path: path('M596 158 C 700 158, 700 130, 790 130'); animation-delay: 1.7s"/>
+      <circle class="tok" r="5" style="offset-path: path('M596 46 C 700 46, 700 130, 790 130'); animation-delay: 2.2s"/>
+      <text class="lbl-sm" x="320" y="248" text-anchor="middle">all-to-all dispatch</text>
+      <text class="lbl-sm" x="700" y="248" text-anchor="middle">gather and weighted reduce</text>
+    </svg>
+
+    <p style="margin-top:20px">On Google's silicon the permute, dispatch, gather and reduce follow
+      the <strong>same gather/scatter/reduce pattern as the embedding pipeline</strong>, which is
+      what SparseCore was built for, with its sort support covering the top-k. That is why the
+      routing question and the recommender question turn out to be the same hardware question.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>5 &middot; The number that explains Boardfly</h3>
+    <h2>Sixteen hops become seven</h2>
+    <p>In a 3D torus, any chip can eventually reach any other, but a worst-case crossing on
+      Ironwood takes up to 16 hops. Fine when gradients move once per step. Ruinous when
+      <em>every token</em> may need any chip. So 8i drops the torus for a high-radix design with
+      optical circuit switches, and caps the diameter at seven.</p>
+
+    <div class="hop-grid">
+      <div class="card">
+        <div class="sub">3D torus &middot; TPU 8t keeps it</div>
+        <svg viewBox="0 0 360 150" width="100%" height="150" role="img" aria-label="A packet taking many hops across a torus">
+          <path id="slowpath" class="wire"
+                d="M24 118 L70 118 L70 78 L116 78 L116 118 L162 118 L162 40 L208 40 L208 118 L254 118 L254 78 L300 78 L300 118 L336 118"/>
+          <circle class="packet p-slow" r="6" style="offset-path: path('M24 118 L70 118 L70 78 L116 78 L116 118 L162 118 L162 40 L208 40 L208 118 L254 118 L254 78 L300 78 L300 118 L336 118')"/>
+          <text class="hopcount" x="24" y="30" fill="var(--ink)">16</text>
+          <text class="lbl-sm" x="76" y="30">hops, worst case</text>
+        </svg>
+      </div>
+      <div class="card">
+        <div class="sub">Boardfly high-radix &middot; TPU 8i</div>
+        <svg viewBox="0 0 360 150" width="100%" height="150" role="img" aria-label="A packet taking few hops across a high radix network">
+          <path id="fastpath" class="wire" d="M24 118 L128 62 L232 62 L336 118"/>
+          <circle class="packet p-fast" r="6" style="offset-path: path('M24 118 L128 62 L232 62 L336 118')"/>
+          <text class="hopcount" x="24" y="30" fill="var(--ink)">7</text>
+          <text class="lbl-sm" x="60" y="30">hops, worst case</text>
+        </svg>
+      </div>
+    </div>
+    <p style="margin-top:22px" class="fine">Both dots leave at the same moment in the loop above.
+      The difference in arrival time is the entire architectural argument for 8i, and it is why its
+      quoted advantage is largest <strong>at low-latency targets on large MoE models</strong>
+      rather than on throughput benchmarks.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>6 &middot; Measured here, today</h3>
+    <h2>Irregular access on current silicon runs at 0.08% of the memory it is attached to</h2>
+    <p>On a live TPU v6e, gathering 1 million indices out of a 4.2 million row table takes
+      <strong>6.25 ms</strong> on the TensorCore path. That is about <strong>1.3 GB/s
+      effective</strong>, against roughly <strong>1,600 GB/s</strong> of HBM bandwidth sitting
+      right there on the package.</p>
+
+    <div class="band">
+      <div class="band-track"><div class="band-fill" data-w="100"></div></div>
+      <div class="band-note"><span>HBM bandwidth available &middot; 1,600 GB/s</span><span>100%</span></div>
+    </div>
+    <div class="band">
+      <div class="band-track"><div class="band-fill" data-w="0.08"></div></div>
+      <div class="band-note"><span>Achieved by a TensorCore gather &middot; 1.3 GB/s</span><span>0.08%</span></div>
+    </div>
+
+    <p style="margin-top:26px">The second bar is not a rendering error. That gap is the reason
+      SparseCore exists, the reason 8i grew a collectives engine, the reason NVIDIA and Sakana
+      spent ICML 2026 on tile-wise sparse formats, and the reason a network diameter got cut in
+      half. <strong>Every roadmap item on this page is a different attempt to close the same
+      gap.</strong></p>
+    <p class="fine">Measured 16 August 2026 on a v6e-1 in us-east5-a, JAX 0.10.2, single chip.
+      The SparseCore path via <span class="mono">jax.experimental.pallas.tpu_sc</span> is the
+      comparison worth running next, and the documentation claims 4 to 5&times;.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>7 &middot; The research pattern underneath</h3>
+    <h2>An agent in a loop with something that can tell it that it is wrong</h2>
+    <p>The other convergence of 2025 and 2026 is methodological. Everyone doing serious
+      optimisation work has built the same machine: a language model proposes, a real evaluator
+      scores, and compute does the searching.</p>
+
+    <svg class="loop-svg" viewBox="0 0 900 190" width="100%" height="190" role="img"
+         aria-label="A loop from proposal to evaluation to selection and back">
+      <rect class="box" x="70" y="66" width="176" height="58" rx="9"/>
+      <text class="lbl" x="158" y="92" text-anchor="middle">model proposes</text>
+      <text class="lbl-sm" x="158" y="110" text-anchor="middle">a kernel, a heuristic</text>
+
+      <rect class="box" x="362" y="66" width="176" height="58" rx="9"/>
+      <text class="lbl" x="450" y="92" text-anchor="middle">evaluator scores</text>
+      <text class="lbl-sm" x="450" y="110" text-anchor="middle">profiler, compiler, tool</text>
+
+      <rect class="box" x="654" y="66" width="176" height="58" rx="9"/>
+      <text class="lbl" x="742" y="92" text-anchor="middle">keep what wins</text>
+      <text class="lbl-sm" x="742" y="110" text-anchor="middle">and mutate it</text>
+
+      <path class="arc" d="M246 95 L362 95"/>
+      <path class="arc" d="M538 95 L654 95"/>
+      <path class="arc" d="M742 124 C 742 178, 158 178, 158 124"/>
+      <circle class="tok" r="4.5" style="offset-path: path('M246 95 L362 95'); animation-duration: 2s"/>
+      <circle class="tok" r="4.5" style="offset-path: path('M538 95 L654 95'); animation-duration: 2s; animation-delay:.6s"/>
+    </svg>
+
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Work</th><th>Proposer</th><th>Evaluator in the loop</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>AlphaEvolve</td><td>Gemini</td><td>correctness plus benchmark timing</td>
+              <td>32.5% faster FlashAttention; ~9% storage cut from discovered compiler passes</td></tr>
+          <tr><td>Magellan</td><td>LLM plus autotuner</td><td>LLVM, end to end</td>
+              <td>inlining heuristics beating decades of hand tuning</td></tr>
+          <tr><td>JAXBench</td><td>LLM agents</td><td>JAX profiler on a real TPU v6e</td>
+              <td>agents 1.36&times; over XLA; hand-tuned Pallas still 2.08&times;</td></tr>
+          <tr><td>MLCAD 2026</td><td>agentic LLM flow</td><td>EDA timing optimisation</td>
+              <td>a contest, closed June 2026</td></tr>
+          <tr><td>NVIDIA + Sakana</td><td>humans, so far</td><td>GPU kernels, unstructured sparsity</td>
+              <td>TwELL format, 20%+ speedups at billion-parameter scale, ICML 2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flag">
+      <strong>The method is commoditised. The evaluator is scarce.</strong> Anyone can call a
+      model. Almost nobody can score its output against a real SparseCore, and almost nobody
+      scoring EDA output holds a commercial sign-off licence. The gap between 1.36&times; and
+      2.08&times; in that table is an open problem with a public scoreboard.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>8 &middot; Where the public money went</h3>
+    <h2>The labs bought the same bet</h2>
+    <p>The Department of Energy, NVIDIA and Oracle are building <strong>Solstice</strong>, 100,000
+      Blackwell GPUs, alongside <strong>Equinox</strong> at 10,000 GPUs delivering in 2026, both at
+      Argonne, for a combined 2,200 exaflops of AI performance, wired into experimental facilities
+      like the Advanced Photon Source. Argonne has three more systems planned: Tara, Minerva and
+      Janus. Nine new DOE supercomputers were announced in total.</p>
+    <p>This matters for anyone aiming at a lab: the people who will run those machines are hiring
+      for the ability to <strong>model a machine before it exists</strong>, because that is how
+      procurement decisions get made. Calibrating a performance model on hardware you have and
+      projecting it onto hardware you do not is not a student exercise. It is the job.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>9 &middot; The other scarce evaluator</h3>
+    <h2>These chips were designed with tools that sit on a Stanford EE licence</h2>
+    <p>TPU 8t was designed with Broadcom, 8i with MediaTek, both on TSMC 2nm. That work runs
+      through the same commercial flows a Stanford EE student can log into: Cadence Genus and
+      Innovus, Synopsys synthesis and place-and-route, Siemens Catapult for high-level synthesis.
+      The tools are not the bottleneck for a student. <strong>Access to them plus real compute
+      is</strong>, and that combination is rare enough to be a research position in itself.</p>
+
+    <p>The live example is macro placement. AlphaChip is still contested in 2026 rather than
+      settled: Synopsys's VP for AI and ML said publicly that reinforcement learning in core EDA
+      algorithms "hasn't really panned out", neither Google nor Ricursive has published results on
+      modern public benchmarks, and the UCSD and TILOS
+      <span class="mono">MacroPlacement</span> project had to build the Cadence Genus and Innovus
+      reference flows itself because the commercial baseline was the missing piece. The argument
+      does not resolve because the people with the reinforcement learning rarely have tool
+      baselines, and the people with the tools rarely have the compute to train the agent.</p>
+
+    <div class="flag">
+      <strong>Same shape as section 7.</strong> A commercial sign-off tool is an evaluator: slow,
+      expensive, authoritative, and exactly what an agent needs to be told it is wrong by. The
+      MLCAD 2026 contest was already an agentic LLM flow scored on timing optimisation. That
+      contest closed in June 2026; the next windows are MLCAD 2027 and ISPD 2027 in Taipei,
+      31 March to 2 April, with calls usually out in late 2026.
+    </div>
+
+    <p class="fine" style="margin-top:18px">One practical caution before any of this is published:
+      commercial EDA licences typically restrict publishing benchmark results. MacroPlacement
+      navigates this carefully. Ask the department's CAD administrator in writing first, and if the
+      answer is no, results can still be reported against "a leading commercial tool".</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h3>10 &middot; What follows from all of it</h3>
+    <h2>Three things are true at once, and they point the same way</h2>
+    <ol>
+      <li><strong>The bottleneck is irregular data movement</strong>, and both vendors just spent
+        their 2027 transistor budget saying so.</li>
+      <li><strong>The tooling to study it without owning the chip exists and is current</strong>:
+        ASTRA-sim 3.0 for collectives, SCALE-Sim for systolic arrays, Calculon for analytical
+        co-design, StableHLO-based cross-architecture modelling from April 2026. All of them are
+        calibrated mostly against NVIDIA GPUs, and <em>none of them model SparseCore</em>.</li>
+      <li><strong>The agent-plus-evaluator loop turns compute into results</strong>, and the
+        scoreboard for TPU kernels is public and unfinished.</li>
+    </ol>
+    <p style="margin-top:20px">Which leaves an unusually well-shaped opening: measure the
+      irregular primitives on a v6e, including the SparseCore path nobody has benchmarked publicly,
+      use them to calibrate the open simulators that currently guess at TPUs, and point the
+      resulting model at the one workload the whole industry just redesigned itself around.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="fine" style="margin-bottom:10px"><strong>Sources.</strong> Vendor announcements and
+      papers, retrieved 16 August 2026. Measurements marked as such were taken on
+      <span class="mono">soe-hpccenter</span> the same day.</p>
+    <p class="fine">
+      <a href="https://cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive">TPU 8t and 8i technical deep dive</a> &middot;
+      <a href="https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/eighth-generation-tpu-agentic-era/">Google, two chips for the agentic era</a> &middot;
+      <a href="https://www.tomshardware.com/tech-industry/semiconductors/google-splits-its-tpu-into-two-chips-for-the-first-time-with-training-and-inference-variants">Tom's Hardware on the TPU split</a> &middot;
+      <a href="https://developer.nvidia.com/blog/inside-the-nvidia-rubin-platform-six-new-chips-one-ai-supercomputer/">Inside the NVIDIA Rubin platform</a> &middot;
+      <a href="https://nvidianews.nvidia.com/news/nvidia-unveils-rubin-cpx-a-new-class-of-gpu-designed-for-massive-context-inference">NVIDIA unveils Rubin CPX</a> &middot;
+      <a href="https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion">2026 capex</a> &middot;
+      <a href="https://arxiv.org/html/2607.20466">JAXBench</a> &middot;
+      <a href="https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/">AlphaEvolve</a> &middot;
+      <a href="https://arxiv.org/html/2606.10440v1">ASTRA-sim 3.0</a> &middot;
+      <a href="https://scalesim-project.github.io/tutorial-isca2026.html">SCALE-Sim</a> &middot;
+      <a href="https://arxiv.org/html/2604.12090v1">StableHLO cross-architecture modelling</a> &middot;
+      <a href="https://docs.jax.dev/en/latest/pallas/tpu/sparsecore.html">Pallas SparseCore kernels</a> &middot;
+      <a href="https://www.energy.gov/articles/energy-department-announces-new-partnership-nvidia-and-oracle-build-largest-doe-ai">DOE, NVIDIA and Oracle</a> &middot;
+      <a href="https://pub.sakana.ai/sparser-faster-llms/">NVIDIA and Sakana on sparsity</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Motion starts when a section is actually on screen, so nothing animates off-stage.
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('go');
+      e.target.querySelectorAll('.bar-fill, .band-fill').forEach(el => {
+        el.style.width = el.dataset.w + '%';
+      });
+      io.unobserve(e.target);
+    }
+  }, { threshold: 0.25 });
+  document.querySelectorAll('section, header').forEach(el => io.observe(el));
+</script>

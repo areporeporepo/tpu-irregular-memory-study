@@ -1,0 +1,5 @@
+# Spot-VM measurement scratch that the campaign regenerates
+data/*.stdout
+launchd.out.log
+launchd.err.log
+.cycle.lock/
