@@ -1,0 +1,60 @@
+budget_guard.py
+  s_67b1e088a6a194::t_e89e6a550da26c 33-50
+  s_67b1e088a6a194::t_3d7819f37c9e6f 74
+budget_ledger.json
+  s_67b1e088a6a194::t_7d6057b72f8a31 4,29-46,49
+build_cluster_dashboard.py
+  s_67b1e088a6a194::t_013aa35d93b0f3 98
+  s_67b1e088a6a194::t_33f81156563279 50-63
+data/cluster_state.jsonl
+  s_67b1e088a6a194::t_24401601201afc 2
+build_gather_page.py
+  s_67b1e088a6a194::t_dde65f2fd550c3 293,316,477-483
+  s_67b1e088a6a194::t_03b7a9d56f8f0d 219-280
+  s_67b1e088a6a194::t_864c0c3f7dfaa8 484
+observe_contention.py
+  s_67b1e088a6a194::t_d5023b2fea076d 33-37,45-56
+  s_67b1e088a6a194::t_6eb3ee5bc1c512 75,77-78
+  s_67b1e088a6a194::t_fd3cfc41b17902 57-58
+gather-cliff.html
+  s_67b1e088a6a194::t_dde65f2fd550c3 66,240-246
+  s_67b1e088a6a194::t_d0bb8adaec366f 247
+supervisor.sh
+  s_67b1e088a6a194::t_52c8a55c64770c 60
+  s_67b1e088a6a194::t_b1130249c1e85b 39-47,52-58
+  s_67b1e088a6a194::t_6e87bb4411d8b3 89-93
+  s_67b1e088a6a194::t_51aae42f3d4ce1 162
+  s_67b1e088a6a194::t_fa610a38a9da08 98,121-122,137,142,167-168,173,175-176,181,200,203,205,207-208,210,224,229,232-233,235-236,239,253,258,260-261,263-264,267,301-302
+  s_67b1e088a6a194::t_261e6b1b227c0f 30-38,48-51,59,61-75
+cluster.html
+  s_67b1e088a6a194::t_24401601201afc 31,34,51,58
+data/contention.jsonl
+  s_67b1e088a6a194::t_24401601201afc 4
+  s_67b1e088a6a194::t_bfdded41a4bd26 3
+index.html
+  s_67b1e088a6a194::t_e8c73580f9d9c0 59,62-66,98
+logbook.jsonl
+  s_67b1e088a6a194::t_5b3993ba60f6c9 64-65
+campaign.log
+  s_67b1e088a6a194::t_794a9a4b6ae4a8 71-78
+data/availability.jsonl
+  s_67b1e088a6a194::t_00397e5aa552e5 17
+data/fabric_20260816T170117Z.json
+  s_67b1e088a6a194::t_92e650708fcc39 1-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "28d5480cf0e6e8a44c93b211e9a00f67be6d1e73",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
