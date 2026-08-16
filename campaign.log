@@ -58,3 +58,13 @@ availability series now 16 observations
 2026-08-16T12:34:28Z cycle 20260816T120856Z: published
 2026-08-16T12:34:28Z cycle 20260816T120856Z: done
 12:41:52Z claiming v6e-8 in us-east1-d
+12:45:28Z anh-burst-8 READY
+12:46:22Z jax ready on anh-burst-8
+12:46:40Z running experiment2_fabric_collectives on v6e-8
+12:46:47Z running experiment4_geometry on v6e-8
+12:46:53Z running experiment8_dense_vs_moe on v6e-8
+12:47:00Z running experiment6_capture_artifacts on v6e-8
+12:50:10Z burst on v6e-8 complete
+12:50:10Z deleting anh-burst-8 unconditionally
+2026-08-16T12:53:08Z cycle 20260816T125249Z: running fabric collectives on anh-steady-16 in us-east1-d
+12:53:42Z deleted anh-burst-8

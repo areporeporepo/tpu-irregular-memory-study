@@ -1,0 +1,338 @@
+<title>Where Does the Data Live?</title>
+<style>
+  :root{--bg:#f6f5f3;--surface:#fff;--surface-2:#efedea;--ink:#16161a;--ink-2:#4a4a52;--ink-3:#75757f;
+        --line:#d8d5d0;--accent:#b4531f;--accent-soft:#e8d9cf;
+        --mono:ui-monospace,"SF Mono",Menlo,monospace;
+        --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+        --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px -12px rgba(0,0,0,.12)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e0e11;--surface:#17171b;--surface-2:#1e1e24;--ink:#f2f1ee;--ink-2:#b6b5b0;--ink-3:#85848c;
+    --line:#2c2c34;--accent:#e08a4c;--accent-soft:#3a2a1d;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 30px -12px rgba(0,0,0,.7)}}
+  :root[data-theme="dark"]{--bg:#0e0e11;--surface:#17171b;--surface-2:#1e1e24;--ink:#f2f1ee;
+    --ink-2:#b6b5b0;--ink-3:#85848c;--line:#2c2c34;--accent:#e08a4c;--accent-soft:#3a2a1d;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 30px -12px rgba(0,0,0,.7)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 24px}
+  header{padding:78px 0 40px;border-bottom:1px solid var(--line)}
+  section{padding:60px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  h1{font-size:clamp(34px,5.6vw,58px);line-height:1.03;letter-spacing:-.03em;margin:0 0 16px;font-weight:680}
+  h2{font-size:clamp(23px,3.2vw,32px);line-height:1.14;letter-spacing:-.02em;margin:0 0 12px;font-weight:660}
+  h3{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px;font-weight:620}
+  h4{margin:26px 0 8px;font-size:18px;letter-spacing:-.01em}
+  p{margin:0 0 15px;max-width:72ch;color:var(--ink-2)}
+  p.lede{font-size:20px;max-width:64ch}
+  strong{color:var(--ink);font-weight:640}
+  .mono{font-family:var(--mono)}
+  .tag{display:inline-block;font:600 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+       color:var(--ink-3);border:1px solid var(--line);border-radius:100px;padding:6px 11px;margin-bottom:22px}
+  table{width:100%;border-collapse:collapse;margin-top:20px;font-size:14px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font:600 10.5px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+     background:var(--surface-2)}
+  td:first-child{font-family:var(--mono);font-weight:560;white-space:nowrap}
+  .num{font-family:var(--mono);text-align:right;white-space:nowrap}
+  .scroll{overflow-x:auto}
+  .box{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--ink);
+       border-radius:0 11px 11px 0;padding:15px 18px;margin:18px 0;box-shadow:var(--shadow)}
+  .box.hot{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box .f{font:400 17px/1.7 var(--mono)}
+  pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+      overflow-x:auto;font:12.5px/1.6 var(--mono);color:var(--ink)}
+  .yes{color:var(--ink);font-weight:640}
+  .no{color:var(--ink-3)}
+  ol,ul{color:var(--ink-2);max-width:72ch}li{margin:7px 0}
+  .fine{font-size:13.5px;color:var(--ink-3)}
+  footer{padding:40px 0 70px;color:var(--ink-3);font-size:13.5px}
+  a{color:var(--ink)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+<header><div class="wrap">
+  <div class="tag">A teaching page &middot; August 2026</div>
+  <h1>Where Does<br>the Data Live?</h1>
+  <p class="lede">Seven companies are building AI accelerators and they look nothing alike. But every
+  one of them is answering the same question, and once you know the question the whole zoo sorts
+  itself into a single line. This page is that line, plus the practical business of getting thirty
+  students onto real hardware.</p>
+</div></header>
+
+<section><div class="wrap">
+  <h3>1 &middot; The question every accelerator answers</h3>
+  <h2>Arithmetic is cheap. Moving the operands is not.</h2>
+  <p>A modern accelerator can multiply far faster than it can be fed. On a TPU v6e the ratio is
+  stark and public: <strong>918 TFLOP/s of arithmetic against 1,638 GB/s of memory bandwidth.</strong>
+  Divide them and you get the number that governs everything.</p>
+
+  <div class="box">
+    <div class="f">I* = P<sub>peak</sub> / B = 918e12 / 1638e9 ≈ <b>560 FLOPs per byte</b></div>
+    <p class="fine" style="margin:8px 0 0">A kernel must do 560 arithmetic operations for every byte
+    it loads, or the memory system is the limit and the multipliers idle. Almost nothing in a
+    transformer naturally clears 560 except a large matmul.</p>
+  </div>
+
+  <p>So every accelerator design is a bet about <em>where to put the data so the multipliers stay
+  fed</em>. That is the single axis the whole industry varies along, and it is the right way to teach
+  the zoo:</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>design</th><th>where the data lives</th><th>who manages movement</th><th>the bet</th></tr></thead>
+    <tbody>
+      <tr><td>NVIDIA GPU</td><td>HBM, with a deep hardware cache hierarchy</td><td>hardware, mostly automatic</td><td>generality; caches will catch most access patterns</td></tr>
+      <tr><td>Google TPU</td><td>HBM plus a large software-managed scratchpad</td><td>the compiler, ahead of time</td><td>static shapes let a compiler beat a cache</td></tr>
+      <tr><td>Groq LPU</td><td><strong>entirely on-chip SRAM</strong>, ~80 TB/s</td><td>the compiler, deterministically</td><td>abolish HBM; if the model fits, latency collapses</td></tr>
+      <tr><td>Cerebras WSE</td><td>on a wafer-sized die, no off-chip hop</td><td>the fabric on the wafer</td><td>make the chip so big that "off-chip" rarely happens</td></tr>
+      <tr><td>AWS Trainium</td><td>HBM, cost-tuned</td><td>compiler (Neuron)</td><td>same shape as a TPU, priced as the alternative</td></tr>
+      <tr><td>AMD Instinct</td><td>HBM, very wide</td><td>hardware, GPU-like</td><td>out-bandwidth NVIDIA: MI455X claims 19.6 TB/s</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>The software stack, per vendor</h4>
+  <p>The hardware table above is the part everyone shows. The stack table is the part that decides
+  whether an enterprise can actually adopt the chip, and it is where the differences are brutal.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>vendor</th><th>kernel language</th><th>compiler / graph</th><th>collectives</th>
+      <th>serving</th><th>install story</th></tr></thead>
+    <tbody>
+      <tr><td>NVIDIA</td><td>CUDA, Triton</td><td>Dynamo → Inductor, or none</td><td>NCCL, tunable</td>
+        <td>vLLM, SGLang, TRT-LLM</td><td class="yes">pip install, works</td></tr>
+      <tr><td>Google TPU</td><td>Pallas → Mosaic</td><td>XLA, whole-program AOT</td><td>implicit, XLA picks</td>
+        <td>vLLM + tpu-inference, MaxText</td><td class="no">exact version pairs; 0.26.0 pins a libtpu that does not exist</td></tr>
+      <tr><td>AMD</td><td>HIP, Triton</td><td>Inductor via ROCm</td><td>RCCL</td>
+        <td>vLLM (ROCm build)</td><td>improving; container recommended</td></tr>
+      <tr><td>AWS Trainium</td><td>NKI</td><td>Neuron compiler, AOT</td><td>Neuron collectives</td>
+        <td>vLLM (neuron), TNx</td><td>AWS-managed AMIs</td></tr>
+      <tr><td>Groq</td><td>none exposed</td><td>Groq compiler, fully static</td><td>n/a, single-tenant chain</td>
+        <td>Groq API only</td><td class="no">no self-hosting; the API <em>is</em> the product</td></tr>
+      <tr><td>Cerebras</td><td>limited</td><td>Cerebras SDK</td><td>hidden by wafer</td>
+        <td>Cerebras cloud</td><td class="no">appliance or cloud</td></tr>
+      <tr><td>Intel</td><td>SYCL / oneAPI</td><td>oneDNN, IPEX</td><td>oneCCL</td>
+        <td>vLLM (habana fork)</td><td>Gaudi being discontinued; Jaguar Shores 2027</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="box hot">
+    <p style="margin:0 0 8px"><strong>Which stack lets an enterprise scale?</strong> Rank by
+    switching cost, not by peak FLOPs, and the answer is uncomfortable for everyone except NVIDIA.</p>
+    <ol style="margin:0">
+      <li><strong>NVIDIA</strong> wins on ecosystem gravity: every kernel, every serving framework and
+        every new model lands here first. <span class="mono">pip install vllm</span> works.</li>
+      <li><strong>TPU</strong> wins on price per unit of work if you are already in JAX, and loses
+        badly on day-one friction. We hit six independent install walls in one day, documented in the
+        companion log. That friction is why no third party serves on TPU.</li>
+      <li><strong>Trainium</strong> is the same architectural bet as TPU with AWS distribution, so its
+        adoption question is identical: how much JAX-or-Neuron rewriting will you tolerate.</li>
+      <li><strong>Groq and Cerebras</strong> are not adoption decisions at all, they are API or
+        appliance decisions. You cannot port to them; you call them.</li>
+      <li><strong>AMD</strong> is the live question of 2026-27. MI455X's claimed 19.6 TB/s is the
+        first credible bandwidth lead over NVIDIA, and ROCm's vLLM support is now real. If a
+        migration is going to happen, it happens here first.</li>
+    </ol>
+  </div>
+
+  <p style="margin-top:18px"><strong>Teach this before any vendor slide.</strong> A student who knows
+  the 560 number can look at any new chip announcement and immediately ask the only question that
+  matters: did they raise the arithmetic, the bandwidth, or the distance? Almost every 2027 part on
+  the next table raised the last two.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>2 &middot; The 2026 landscape, honestly</h3>
+  <h2>Two shipping stacks, one wafer, one bet on SRAM, and Intel restarting</h2>
+
+  <div class="scroll"><table>
+    <thead><tr><th>part</th><th>role</th><th class="num">memory</th><th class="num">compute</th><th>status, Aug 2026</th></tr></thead>
+    <tbody>
+      <tr><td>NVIDIA VR200</td><td>decode / general</td><td class="num">HBM4</td><td class="num">—</td><td>Rubin in production since June 2026</td></tr>
+      <tr><td>NVIDIA Rubin CPX</td><td><strong>prefill only</strong></td><td class="num">128 GB GDDR7</td><td class="num">30 PF NVFP4</td><td>end of 2026; deliberately not HBM</td></tr>
+      <tr><td>Google TPU v6e</td><td>train + serve</td><td class="num">32 GB, 1.64 TB/s</td><td class="num">918 TF bf16</td><td>what this study measured</td></tr>
+      <tr><td>Google TPU v7x</td><td>train + serve</td><td class="num">192 GB, 7.37 TB/s</td><td class="num">4,614 TF fp8</td><td>GA at Cloud Next 2026</td></tr>
+      <tr><td>Google TPU 8t</td><td><strong>training only</strong></td><td class="num">12-high HBM3e</td><td class="num">—</td><td>late 2027, 2 nm, Broadcom</td></tr>
+      <tr><td>Google TPU 8i</td><td><strong>inference only</strong></td><td class="num">288 GB + 384 MB SRAM</td><td class="num">—</td><td>late 2027, 2 nm, MediaTek</td></tr>
+      <tr><td>AMD MI455X</td><td>train + serve</td><td class="num"><strong>19.6 TB/s</strong></td><td class="num">40 PF fp4</td><td>H2 2026, Helios racks</td></tr>
+      <tr><td>AWS Trainium3</td><td>train + serve</td><td class="num">144 GB HBM3e</td><td class="num">2.52 PF fp8</td><td>shipping; 30-40% better price-perf on AWS</td></tr>
+      <tr><td>Groq LPU</td><td>inference only</td><td class="num">SRAM, 80 TB/s</td><td class="num">750 TOPS int8</td><td>shipping; sub-millisecond latency</td></tr>
+      <tr><td>Cerebras WSE-3</td><td>training</td><td class="num">wafer-scale</td><td class="num">125 PF</td><td>shipping; 24T params data-parallel</td></tr>
+      <tr><td>Intel Gaudi 3</td><td>inference</td><td class="num">HBM2e</td><td class="num">—</td><td><strong>discontinued</strong> as next-gen GPUs land</td></tr>
+      <tr><td>Intel Jaguar Shores</td><td>train + serve</td><td class="num">—</td><td class="num">—</td><td>2027, the real Intel entry; Falcon Shores is internal only</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="box hot">
+    <p style="margin:0"><strong>The pattern to make students find for themselves.</strong> Give them
+    that table with the "role" column blanked and ask what changed between 2024 and 2027. The answer
+    is that the industry <em>split the chip by phase</em>. NVIDIA separated prefill from decode;
+    Google separated training from inference. Two competitors, different fabs, same year, same
+    conclusion. Then ask why, and the answer is on the next section.</p>
+  </div>
+  <p class="fine">Note for honesty in lectures: Groq's 80 TB/s and Cerebras' 125 PFLOPS are real but
+  come with a hard constraint, which is that the model must fit in the SRAM or on the wafer. Quote
+  peak numbers only alongside the constraint that makes them achievable.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>3 &middot; From the transformer to the hardware</h3>
+  <h2>Four operations, four different bottlenecks</h2>
+  <p>"Attention Is All You Need" is eight pages of maths with no mention of memory. Read it again
+  with the 560 number in hand and every hardware decision of the last decade follows.</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>operation</th><th>cost</th><th>arithmetic intensity</th><th>bottleneck</th><th>hardware answer</th></tr></thead>
+    <tbody>
+      <tr><td>FFN matmul</td><td>O(L·d²)</td><td class="num">high, ≫560</td><td>compute</td><td>systolic arrays, tensor cores. This is the easy part.</td></tr>
+      <tr><td>Attention scores</td><td>O(L²·d)</td><td class="num">falls with L</td><td>memory at long L</td><td>FlashAttention, Splash Attention: never materialise the L×L matrix</td></tr>
+      <tr><td>KV cache read</td><td>O(L·d) per token</td><td class="num">≈ 1</td><td><strong>bandwidth</strong></td><td>HBM4, 384 MB of on-chip SRAM on 8i, paged attention</td></tr>
+      <tr><td>MoE routing</td><td>O(tokens) all-to-all</td><td class="num">≈ 0</td><td><strong>network</strong></td><td>collectives engines, 7-hop fabrics, SparseCore</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>The crossover worth putting on the board</h4>
+  <div class="box">
+    <div class="f">C* = P / (2 · L<sub>attn</sub> · h<sub>kv</sub> · d<sub>head</sub> · b)</div>
+    <p class="fine" style="margin:8px 0 0">The context length at which the KV cache equals the
+    weights. For a 4B model at batch 32, C* ≈ 13k tokens. At 262k context that model holds
+    <b>8 GB of weights and 155 GB of KV cache</b>, a ratio of 19 to 1.</p>
+  </div>
+  <p>That single ratio explains prefill/decode disaggregation, 8i's SRAM, HBM being sold out through
+  2026, and why Groq's all-SRAM bet exists at all. It is the most valuable equation to hand a class,
+  because they can derive the industry's roadmap from it in one lecture.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>4 &middot; The lesson no textbook contains</h3>
+  <h2>Quota is not capacity, and both are not availability</h2>
+  <p>Students will spend more time failing to get a machine than failing to write a kernel. Teach
+  the distinction explicitly, because the three failures look identical in a terminal and have
+  opposite correct responses.</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>failure</th><th>what it says</th><th>correct response</th></tr></thead>
+    <tbody>
+      <tr><td>quota</td><td><span class="mono">Quota exceeded</span>, or a grant of literally 0</td><td>Retrying is useless. Change zone, or ask for a grant.</td></tr>
+      <tr><td>capacity</td><td><span class="mono">no more capacity in the zone</span></td><td>Retrying is exactly right; capacity churns by the minute.</td></tr>
+      <tr><td>permission</td><td><span class="mono">does not have permission for accelerator type</span>, or <span class="mono">Required compute.instances.create permission</span></td><td>An IAM or per-type grant problem. Only an admin fixes it, and retrying anywhere will not help.</td></tr>
+    </tbody>
+  </table></div>
+
+  <p><strong>Measured on this project, 16 August 2026.</strong> A single class project, nine zones
+  probed hourly for a <span class="mono">v6e-8</span>:</p>
+  <div class="scroll"><table>
+    <thead><tr><th>zone</th><th>verdict</th><th>note</th></tr></thead>
+    <tbody>
+      <tr><td>us-east1-d</td><td class="yes">available</td><td>the only reliable multi-chip zone we found</td></tr>
+      <tr><td>asia-northeast1-b</td><td class="yes">available</td><td>also worked, higher latency to everything else</td></tr>
+      <tr><td>us-east5-a / -b</td><td class="no">no capacity</td><td>refusals took 61s and 213s: admitted, then rolled back</td></tr>
+      <tr><td>us-east5-c</td><td class="no">quota</td><td>a grant of zero. No amount of retrying helps.</td></tr>
+      <tr><td>us-south1-a</td><td class="no">no capacity</td><td>refused in 7s: an instant, honest no</td></tr>
+      <tr><td>us-central1-a</td><td class="no">no capacity</td><td></td></tr>
+      <tr><td>europe-west4-a</td><td class="no">no capacity</td><td></td></tr>
+    </tbody>
+  </table></div>
+  <div class="box hot">
+    <p style="margin:0 0 8px"><strong>Three gates, not one.</strong> Quota, capacity and permission are
+    independent, and a number on a quota page is evidence about none of the others. Measured on this
+    one project in a single day: v6e spot had all three; v6e on-demand had quota but no permission in
+    the zone that had capacity; us-east5 had permission but no capacity; and the GPU quota of 32
+    A100s turned out to have no <span class="mono">compute.instances.create</span> permission at all,
+    so those GPUs were never usable. Teach students to read the error, not the quota page.</p>
+    <p style="margin:0"><strong>Two more facts worth telling them on day one.</strong> First,
+    <em>paying more does not conjure chips</em>: an on-demand request at 1.92&times; the spot price
+    was refused in the same zone with the same capacity error. Second, <em>the zone matters more than
+    the quota</em>: this project holds a grant for 512 chips and could obtain 32.</p>
+  </div>
+  <p class="fine">This table is regenerated hourly by <span class="mono">probe_availability.sh</span>
+  in the companion repository, and the raw series is <span class="mono">data/availability.jsonl</span>.
+  An instructor can point students at the current version instead of guessing.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>5 &middot; Thirty students on one cluster</h3>
+  <h2>The GKE arrangement that keeps one student from eating the class</h2>
+  <p>The failure mode is predictable: one student's notebook holds eight chips for a weekend while
+  twenty-nine wait. Four Kubernetes pieces prevent it, and they are worth teaching as
+  infrastructure literacy rather than hiding behind a helper script.</p>
+
+  <ol>
+    <li><strong>A namespace per student.</strong> The unit of isolation, and the thing RBAC binds to.</li>
+    <li><strong>A ResourceQuota per namespace.</strong> Hard caps on accelerator count, pods and
+      storage. Without this, nothing else matters.</li>
+    <li><strong>Kueue for queuing.</strong> A ClusterQueue per student inside one cohort, so idle
+      quota is <em>borrowed</em> rather than wasted. This is the piece that turns a first-come
+      free-for-all into a fair queue, and it is what makes a 30-student class work on hardware
+      sized for 8.</li>
+    <li><strong>Taints and PriorityClasses.</strong> Taint accelerator nodes so CPU-only pods cannot
+      squat on them, and give graded assignments a higher priority class than exploration.</li>
+  </ol>
+
+  <h4>Sketch for a class of 30</h4>
+<pre>« node pools »
+  cpu-pool          e2-standard-8, autoscaling 0-30   # notebooks, editors, data prep
+  tpu-pool          v6e-8, 2 node pools of 2 hosts    # GKE treats a multi-host slice as ATOMIC:
+                                                      # hosts = nodes in the pool, all or nothing
+  gpu-pool          a2-highgpu-1g, autoscaling 0-4    # the NVIDIA half of the course
+
+« per student »
+  namespace         student-NN
+  ResourceQuota     requests.google.com/tpu: 8
+                    count/pods: 10
+  LocalQueue        student-NN  ->  ClusterQueue student-NN
+
+« one cohort, so idle quota flows »
+  ClusterQueue student-NN
+    cohort: class-cohort
+    nominalQuota: 8 chips        # what they are guaranteed
+    borrowingLimit: 24 chips     # what they may take when others are idle
+    preemption: reclaimWithinCohort=Any
+
+« multi-host TPU jobs »
+  JobSet + Kueue                 # a multi-host slice must be scheduled as one unit
+  taint: google.com/tpu=present:NoSchedule</pre>
+
+  <p><strong>The one non-obvious thing.</strong> GKE treats a multi-host TPU slice as
+  <em>atomic</em>: the number of hosts equals the number of nodes in the pool and the scheduler gives
+  you all of it or none. That is why <span class="mono">JobSet</span> exists, and why a student
+  cannot get "half a slice" the way they can get half a GPU node.</p>
+  <p class="fine">Practical order of setup: reserve capacity in one zone first, because none of the
+  above helps if the zone is empty. Then node pools, then namespaces and quotas, then Kueue, then
+  hand out kubeconfigs. Test the whole thing with two fake students before thirty real ones arrive.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>6 &middot; What to assign</h3>
+  <h2>Assignments where the hardware teaches the lesson, not the slides</h2>
+  <p>Each of these produced a real result in this study, which is the argument that they are worth a
+  student's week. Each also fails informatively, which matters more.</p>
+  <ol>
+    <li><strong>Find the roofline corner yourself.</strong> Measure a matmul and a gather. Expect
+      84% of peak and 0.08% of bandwidth on the same chip, and explain the four-order gap.</li>
+    <li><strong>Measure a collective, then find your own harness bug.</strong> Time an all-reduce
+      naively, then chain 32 of them inside one compiled call. The number moves by 20&times;, and the
+      difference is host dispatch, not the network.</li>
+    <li><strong>Predict the topology from timings.</strong> Measure all-to-all at 8, 16 and 32 chips,
+      then reconstruct the bisection width. Check it against the published topology afterwards.</li>
+    <li><strong>Compute C* for a model you like</strong>, then verify it by watching memory at
+      increasing context until KV overtakes weights.</li>
+    <li><strong>Dense against MoE at matched active FLOPs.</strong> Same arithmetic, different
+      movement. The gap is the routing tax, and it is the reason 8i exists.</li>
+    <li><strong>Port one kernel to two vendors.</strong> Same maths in Pallas and in Triton. The
+      lesson is which layer owns the decisions, and it lands harder than any lecture on it.</li>
+  </ol>
+  <div class="box">
+    <p style="margin:0"><strong>Grade the verification, not the number.</strong> Three of this
+    study's own measurements were artifacts: a chained-op timing that had not converged, a
+    sub-mesh whose timing process owned no chips in the mesh, and a gather sweep that was
+    non-monotonic. All three were caught by checks, not by cleverness. A student who reports a wrong
+    number with the check that would have caught it has learned more than one who reports a right
+    number by luck.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  Companion pages: <a href="./">the measurement log</a> and
+  <a href="./stacks-and-physics.html">Two Stacks, One Roofline</a>.
+  Vendor figures from published specifications and announcements retrieved 16 August 2026; TPU v6e
+  numbers measured directly. Availability data from this project's own hourly probes, which is the
+  only part of this page no vendor can supply.
+</div></footer>
