@@ -1,0 +1,42 @@
+build_torus_page.py
+  s_67b1e088a6a194::t_f9a2325d4eea9c 25-26,185
+  s_67b1e088a6a194::t_7b0ed2fa1ef258 108-112
+  s_67b1e088a6a194::t_43e5955b80f9af 1-24,27-73,90-107,113-184,186-270
+  s_67b1e088a6a194::t_51d544adb8f9a1 74-89
+supervisor.sh
+  s_67b1e088a6a194::t_f0b085fcda601e 322,337
+logbook.jsonl
+  s_67b1e088a6a194::t_0129cac464ce13 70
+logbook.py
+  s_67b1e088a6a194::t_f0b085fcda601e 271-272
+campaign.log
+  s_67b1e088a6a194::t_ff576958bd81cc 143
+  s_67b1e088a6a194::t_ad3eda06965981 140-142
+  s_67b1e088a6a194::t_e9b52022c5f81f 144-146
+experiment11_torus_shape.py
+  s_67b1e088a6a194::t_c06483417d4884 144-147,149-151
+  s_67b1e088a6a194::t_982758824ff57a 1-143,148,152-203
+torus-shape.html
+  s_67b1e088a6a194::t_5fd8115ae72fe6 1-31,33-45,47-56,70,96-105,119,145-183
+  s_67b1e088a6a194::t_f9a2325d4eea9c 32,46,57-69,71-95,106-118,120-144
+index.html
+  s_67b1e088a6a194::t_f0b085fcda601e 62,69,71,78-79,104
+data/torus_shape_v5p.json
+  s_67b1e088a6a194::t_9640d6e62fed8c 1-414
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f07f4ed7356522f58727d25376b61ad693403344",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
