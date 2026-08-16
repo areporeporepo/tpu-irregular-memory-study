@@ -1,0 +1,24 @@
+data/availability.jsonl
+  h_ed8409725be97e 15-16
+data/serving_Qwen_Qwen3-4B_20260816T122358Z.log
+  h_ed8409725be97e 1-8
+data/serving_Qwen_Qwen3.8-27B_20260816T122358Z.log
+  h_ed8409725be97e 1-8
+data/serving_install_20260816T122358Z.log
+  h_ed8409725be97e 1-8
+data/serving_results.jsonl
+  h_ed8409725be97e 3-4
+index.html
+  h_ed8409725be97e 57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dcb5e9d5b2521e9a2116f54715e8343394196305",
+  "prompts": {},
+  "humans": {
+    "h_ed8409725be97e": {
+      "author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
