@@ -1,0 +1,22 @@
+data/availability.jsonl
+  h_ed8409725be97e 25-29
+gather-cliff.html
+  h_ed8409725be97e 66,187-195,198,235,341
+index.html
+  h_ed8409725be97e 62,66,68-69,104
+roadmap.html
+  h_ed8409725be97e 54
+torus-shape.html
+  h_ed8409725be97e 46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "09c88964ce066d8387419573b3a2c6399073cbc3",
+  "prompts": {},
+  "humans": {
+    "h_ed8409725be97e": {
+      "author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
