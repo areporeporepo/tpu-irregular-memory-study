@@ -28,7 +28,7 @@ say() { printf '%s %s\n' "$(date -u +%H:%M:%SZ)" "$*" | tee -a "$STUDY/campaign.
 
 say "serving test on $NAME: installing vllm and the TPU backend on worker 0"
 gcloud compute tpus tpu-vm ssh "$NAME" --zone="$ZONE" --worker=0 --command='
-  python3.11 -m pip install -q vllm tpu-inference 2>&1 | tail -2
+  python3.11 -m pip install -q "vllm==0.25.0" "tpu-inference==0.25.0" 2>&1 | tail -2
   python3.11 -c "import vllm; print(\"vllm\", vllm.__version__)"
   python3.11 -c "import tpu_inference; print(\"tpu_inference present\")" 2>&1 | tail -1
 ' > "$DATA/serving_install_${STAMP}.log" 2>&1

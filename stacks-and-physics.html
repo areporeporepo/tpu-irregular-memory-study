@@ -1,0 +1,299 @@
+<title>Two Stacks, One Roofline</title>
+<style>
+  :root {
+    --bg:#f6f5f3; --surface:#fff; --surface-2:#efedea; --ink:#16161a; --ink-2:#4a4a52;
+    --ink-3:#75757f; --line:#d8d5d0; --accent:#b4531f; --accent-soft:#e8d9cf; --grid:#e4e1dc;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px -12px rgba(0,0,0,.12);
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#0e0e11; --surface:#17171b; --surface-2:#1e1e24; --ink:#f2f1ee; --ink-2:#b6b5b0;
+    --ink-3:#85848c; --line:#2c2c34; --accent:#e08a4c; --accent-soft:#3a2a1d; --grid:#23232a;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 30px -12px rgba(0,0,0,.7);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e0e11; --surface:#17171b; --surface-2:#1e1e24; --ink:#f2f1ee; --ink-2:#b6b5b0;
+    --ink-3:#85848c; --line:#2c2c34; --accent:#e08a4c; --accent-soft:#3a2a1d; --grid:#23232a;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 30px -12px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.62 var(--sans);
+       -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  header{padding:80px 0 40px;border-bottom:1px solid var(--line)}
+  section{padding:64px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  h1{font-size:clamp(34px,5.6vw,58px);line-height:1.03;letter-spacing:-.03em;margin:0 0 16px;font-weight:680}
+  h2{font-size:clamp(23px,3.2vw,32px);line-height:1.14;letter-spacing:-.02em;margin:0 0 12px;font-weight:660}
+  h3{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 20px;font-weight:620}
+  p{margin:0 0 15px;max-width:70ch;color:var(--ink-2)}
+  p.lede{font-size:20px;max-width:62ch}
+  strong{color:var(--ink);font-weight:640}
+  .mono{font-family:var(--mono)}
+  .tag{display:inline-block;font:600 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+       color:var(--ink-3);border:1px solid var(--line);border-radius:100px;padding:6px 11px;margin-bottom:24px}
+
+  /* the equation blocks: the physics, set apart from the prose */
+  .eq{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--ink);
+      border-radius:0 11px 11px 0;padding:16px 20px;margin:20px 0;box-shadow:var(--shadow)}
+  .eq .f{font:400 19px/1.7 var(--mono);color:var(--ink);letter-spacing:-.01em}
+  .eq .n{font-size:14px;color:var(--ink-3);margin-top:8px}
+  .eq.measured{border-left-color:var(--accent);background:var(--accent-soft)}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:18px 20px;box-shadow:var(--shadow)}
+  .card h4{margin:0 0 3px;font-size:19px;letter-spacing:-.015em}
+  .card .sub{font:500 12px var(--mono);color:var(--ink-3);margin-bottom:14px;letter-spacing:.04em}
+
+  /* stack diagram: layers, drawn as boxes, one per row */
+  .layer{border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-bottom:7px;
+         background:var(--surface-2);font:13.5px/1.35 var(--sans)}
+  .layer b{font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;display:block;color:var(--ink)}
+  .layer span{color:var(--ink-3);font-size:12.5px}
+  .layer.hot{border-color:var(--ink);border-width:1.5px;background:var(--surface)}
+  .layer.gap{border-style:dashed;color:var(--ink-3)}
+  .arrow{text-align:center;color:var(--ink-3);font-size:13px;margin:-3px 0 4px}
+
+  table{width:100%;border-collapse:collapse;margin-top:22px;font-size:14.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font:600 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  td:first-child{font-family:var(--mono);font-weight:560;white-space:nowrap}
+  .num{font-family:var(--mono);text-align:right}
+  .scroll{overflow-x:auto}
+  .fine{font-size:13.5px;color:var(--ink-3)}
+  .go .draw{animation:draw 1.6s ease forwards}
+  @keyframes draw{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+  .rl{stroke:var(--ink);stroke-width:2.4;fill:none;stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+  .lbl{font:600 12px var(--mono);fill:var(--ink-2)}
+  .lbl-s{font:500 10.5px var(--mono);fill:var(--ink-3)}
+  .pt{fill:var(--accent);stroke:var(--ink);stroke-width:1}
+  footer{padding:40px 0 70px;color:var(--ink-3);font-size:13.5px}
+  a{color:var(--ink)}
+  @media (max-width:760px){.two{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+<header><div class="wrap">
+  <div class="tag">Measured on TPU v6e &middot; 16 August 2026</div>
+  <h1>Two Stacks,<br>One Roofline</h1>
+  <p class="lede">How a JAX program becomes TPU instructions, how a PyTorch program becomes GPU
+    instructions, why the two ended up shaped so differently, and the four pieces of arithmetic
+    that predicted every number this study measured.</p>
+</div></header>
+
+<section><div class="wrap">
+  <h3>1 &middot; The two stacks, layer by layer</h3>
+  <h2>One compiles the whole program ahead of time. The other calls fast libraries and compiles when asked.</h2>
+
+  <div class="two">
+    <div class="card">
+      <h4>TPU</h4>
+      <div class="sub">jax &rarr; stablehlo &rarr; xla:tpu &rarr; libtpu</div>
+      <div class="layer"><b>JAX / Flax</b><span>Python, functional, pure. Or PyTorch via torchax, which is a torch API on JAX.</span></div>
+      <div class="arrow">&darr; trace</div>
+      <div class="layer"><b>jaxpr</b><span>A flat, typed, side-effect-free graph. Shapes are static here, which is the whole bargain.</span></div>
+      <div class="arrow">&darr; lower</div>
+      <div class="layer"><b>StableHLO</b><span>The portable IR. This is the interface a cross-architecture cost model reads.</span></div>
+      <div class="arrow">&darr; compile</div>
+      <div class="layer hot"><b>XLA:TPU</b><span>Fusion, layout assignment, rematerialisation, <em>and collective algorithm selection</em>. Whole-program, ahead of time. This layer owns the decisions Triton hands to you.</span></div>
+      <div class="arrow">&darr; escape hatch</div>
+      <div class="layer"><b>Pallas &rarr; Mosaic</b><span>Hand-written kernels when the compiler is wrong. Verified working on v6e for TensorCore; <span class="mono">tpu_sc</span> for SparseCore is not implemented on this generation.</span></div>
+      <div class="arrow">&darr;</div>
+      <div class="layer"><b>libtpu &rarr; 2D torus</b><span>ICI links between chips. No user-visible collective library: XLA chose the algorithm for you two layers up.</span></div>
+      <div class="arrow">&darr; serving</div>
+      <div class="layer gap"><b>vLLM + tpu-inference</b><span>A JAX-native plugin. Only the 0.25.0 pair installs; 0.26.0 pins a libtpu that was never published.</span></div>
+    </div>
+
+    <div class="card">
+      <h4>NVIDIA</h4>
+      <div class="sub">pytorch &rarr; inductor &rarr; triton/ptx &rarr; cuda</div>
+      <div class="layer"><b>PyTorch</b><span>Eager by default. Every op dispatches immediately, which is why the model is easy to debug and slow by default.</span></div>
+      <div class="arrow">&darr; optional</div>
+      <div class="layer"><b>TorchDynamo &rarr; FX graph</b><span>Captures a graph only when asked, and can fall back to Python mid-graph. Dynamic shapes survive.</span></div>
+      <div class="arrow">&darr;</div>
+      <div class="layer"><b>Inductor</b><span>Generates Triton for the fusible parts, calls libraries for the rest.</span></div>
+      <div class="arrow">&darr; escape hatch, used constantly</div>
+      <div class="layer hot"><b>Triton &rarr; PTX &rarr; SASS</b><span>Where the performance culture lives. FlashAttention and Unsloth are both this layer. The user, not the compiler, owns tiling and scheduling.</span></div>
+      <div class="arrow">&darr; or</div>
+      <div class="layer"><b>cuBLAS / cuDNN / CUTLASS</b><span>Vendor kernels, hand-tuned per architecture, chosen at runtime by heuristic.</span></div>
+      <div class="arrow">&darr;</div>
+      <div class="layer"><b>NCCL &rarr; NVLink / IB</b><span>An explicit collective library the user calls and can tune. Ring or tree, chosen by NCCL, overridable by environment variable.</span></div>
+      <div class="arrow">&darr; serving</div>
+      <div class="layer"><b>vLLM (native)</b><span><span class="mono">pip install vllm</span> works. This is the difference the market notices.</span></div>
+    </div>
+  </div>
+
+  <p style="margin-top:24px"><strong>The structural difference in one sentence.</strong> On TPU the
+  compiler makes the performance decisions and there are few knobs, so the floor is high and the
+  ceiling is the compiler's. On GPU the user makes them and there are many knobs, so the floor is
+  lower and the ceiling is whoever writes the best kernel. That is why Unsloth exists on GPU and
+  has no TPU equivalent: it is a project that beats a default, and the TPU default is already
+  <strong>84.2% of peak</strong> on a dense matmul, measured here.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>2 &middot; The roofline</h3>
+  <h2>Every kernel is either short of the flat part or short of the slope</h2>
+  <p>One inequality governs all of it. A kernel doing <span class="mono">W</span> FLOPs while moving
+  <span class="mono">Q</span> bytes has arithmetic intensity <span class="mono">I = W/Q</span>, and
+  its achievable rate is bounded by whichever runs out first, the arithmetic units or the memory
+  system.</p>
+
+  <div class="eq">
+    <div class="f">P ≤ min( P<sub>peak</sub> , I × B )</div>
+    <div class="n">P<sub>peak</sub> = 918 TFLOP/s bf16 on v6e. B = 1,638 GB/s of HBM. The corner,
+      where the two terms meet, sits at I* = P<sub>peak</sub>/B ≈ <b>560 FLOPs per byte</b>. Above
+      that intensity a kernel can reach peak; below it, it cannot, no matter how well written.</div>
+  </div>
+
+  <svg viewBox="0 0 900 300" width="100%" height="300" role="img" aria-label="Roofline with two measured points">
+    <line x1="80" y1="250" x2="860" y2="250" stroke="var(--line)"/>
+    <line x1="80" y1="30" x2="80" y2="250" stroke="var(--line)"/>
+    <path class="rl draw" style="--len:900" d="M80 250 L520 60 L860 60"/>
+    <text class="lbl" x="600" y="48">P_peak = 918 TFLOP/s</text>
+    <text class="lbl-s" x="300" y="150" transform="rotate(-23 300 150)">slope = 1,638 GB/s</text>
+    <circle class="pt" cx="700" cy="65" r="7"/>
+    <text class="lbl" x="640" y="92">matmul: 773 TFLOP/s</text>
+    <text class="lbl-s" x="640" y="108">84.2% of peak, I ≈ 1,365</text>
+    <circle class="pt" cx="96" cy="248" r="7"/>
+    <text class="lbl" x="110" y="243">gather: 1.3 GB/s</text>
+    <text class="lbl-s" x="110" y="259">I ≈ 1, and not even on the slope</text>
+    <text class="lbl-s" x="80" y="284">arithmetic intensity, FLOPs per byte &rarr;</text>
+  </svg>
+
+  <p><strong>Why the gather is not merely slow but off the model.</strong> A row gather does one
+  useful transfer per index, so <span class="mono">I ≈ 1</span>, which the roofline says should give
+  about 1,638 GB/s ÷ 1 ≈ its bandwidth limit. We measured <strong>1.3 GB/s, 0.079% of that</strong>.
+  The roofline assumes streaming access, and the memory system moves a wide burst per transaction.
+  Ask for 4 scattered bytes and the DRAM still moves its granule, so the <em>useful</em> fraction of
+  each transaction collapses. This is the one case where the honest model is not the roofline but
+  the transaction: <span class="mono">effective B = B × (useful bytes / granule)</span>.</p>
+  <p class="fine">And a granule effect explains our other negative result. We predicted sorting the
+  indices would recover bandwidth by improving locality, and measured no change at all
+  (&times;1.00 across random, sorted, blocked and sequential). So on this generation the penalty is
+  not paid at the row level where sorting would help.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>3 &middot; Bisection bandwidth</h3>
+  <h2>The one number that explained our whole scaling curve</h2>
+  <p>Cut the network in half. Count the links crossing the cut. That is the bisection, and in an
+  all-to-all every chip must send roughly half its data to the far side, so the cut is the
+  bottleneck no scheduling can route around.</p>
+
+  <div class="eq">
+    <div class="f">B<sub>bisect</sub> = 2 · min(X, Y) · b<sub>link</sub><br>
+      t<sub>all-to-all</sub> ≈ (N/2 · D) / B<sub>bisect</sub></div>
+    <div class="n">A 2D torus of X×Y chips, each link carrying b<sub>link</sub>. The factor 2 is the
+      wraparound: a torus cut severs the links in both directions. D is the payload each chip holds.</div>
+  </div>
+
+  <p>Now substitute Google's published v6e topologies, and the measurement falls out:</p>
+  <div class="scroll"><table>
+    <thead><tr><th>slice</th><th>topology</th><th class="num">chips N</th><th class="num">bisection links</th>
+      <th class="num">N / links</th><th class="num">measured, 16 MiB</th></tr></thead>
+    <tbody>
+      <tr><td>v6e-16</td><td>4 × 4</td><td class="num">16</td><td class="num">8</td><td class="num">2.0</td><td class="num">0.239 ms</td></tr>
+      <tr><td>v6e-32</td><td>4 × 8</td><td class="num">32</td><td class="num">8</td><td class="num"><b>4.0</b></td><td class="num"><b>0.423 ms</b></td></tr>
+      <tr><td>v6e-64</td><td>8 × 8</td><td class="num">64</td><td class="num">16</td><td class="num">4.0</td><td class="num">0.431 ms</td></tr>
+      <tr><td>v6e-256</td><td>16 × 16</td><td class="num">256</td><td class="num">32</td><td class="num">4.0</td><td class="num">0.438 ms</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="eq measured">
+    <div class="f">N / B<sub>bisect</sub> : 2.0 → 4.0 → 4.0 → 4.0<br>
+      measured&nbsp;&nbsp;: 0.239 → 0.423 → 0.431 → 0.438 ms</div>
+    <div class="n">The ratio doubles exactly once, from 4×4 to 4×8, because the torso grows along
+      one axis while the cut does not. The measurement doubles exactly once too, by 1.77&times;.
+      After that the ratio is constant and the measurement is flat to within 4% across an
+      <b>eightfold</b> increase in chips. This is the study's central result and it is arithmetic,
+      not a fit.</div>
+  </div>
+  <p class="fine">The prediction came before the data: the 4×8 anomaly was proposed as bisection
+  congestion, and the 256-chip burst then measured the flatness the model requires. This is also
+  precisely what TPU 8i attacks by dropping the torus for a high-radix optical fabric with a
+  diameter of 7 hops instead of 16.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>4 &middot; Latency hiding</h3>
+  <h2>Why a 0.027 ms operation took 0.55 ms</h2>
+  <p>Our first collective numbers were wrong by 20&times; because each measurement paid a host
+  dispatch cost. The fix was to chain operations inside one compiled call, and the arithmetic for
+  how many is Little's law.</p>
+
+  <div class="eq">
+    <div class="f">n ≥ L / t<sub>op</sub></div>
+    <div class="n">To hide a latency L behind work of duration t<sub>op</sub>, keep at least n
+      operations in flight. Measured: L ≈ 0.53 ms of dispatch, t<sub>op</sub> ≈ 0.027 ms, so
+      <b>n ≈ 20</b>. Below that the host is the bottleneck and the fabric is idle.</div>
+  </div>
+  <p>This is not a benchmarking curiosity. It is the reason CUDA Graphs exist on the GPU side, and
+  the reason <strong>TPU 8i deletes four SparseCores and spends the area on a Collectives
+  Acceleration Engine</strong> that cuts on-chip collective latency 5&times;. At small message sizes
+  the network was never the problem; the orchestration was. Our measured ratio, 20 to 1, is the size
+  of the prize.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>5 &middot; The KV cache crossover</h3>
+  <h2>The arithmetic that split the industry's silicon in two</h2>
+  <p>Weights are a fixed cost. The KV cache is not: it grows with context and batch, and there is a
+  context length past which the cache is larger than the model.</p>
+
+  <div class="eq">
+    <div class="f">M<sub>weights</sub> = P · s<br>
+      M<sub>kv</sub> = 2 · L<sub>attn</sub> · h<sub>kv</sub> · d<sub>head</sub> · s · C · b</div>
+    <div class="n">P parameters at s bytes each. Then 2 for K and V, over L<sub>attn</sub> attention
+      layers, h<sub>kv</sub> key-value heads of width d<sub>head</sub>, context C, batch b.
+      Grouped-query attention is the h<sub>kv</sub> term, and it is why a 671B model can be served
+      at all.</div>
+  </div>
+  <div class="eq measured">
+    <div class="f">C* = P / (2 · L<sub>attn</sub> · h<sub>kv</sub> · d<sub>head</sub> · b)</div>
+    <div class="n">Set the two equal and solve. For Qwen3-4B at batch 32, C* ≈ 13k tokens: past
+      that, KV exceeds weights. At C = 262k the model holds <b>8 GB of weights and 155 GB of KV</b>,
+      a ratio of 19 to 1. Computed by <span class="mono">capacity_calculator.py</span> in this repo.</div>
+  </div>
+  <p><strong>Read that ratio and the 2027 roadmaps stop being marketing.</strong> Prefill is
+  compute-bound and gets Rubin CPX with cheap GDDR7. Decode is bandwidth-bound and gets VR200 with
+  HBM4. Google splits the same seam: 8t keeps SparseCore and the torus for training, while 8i takes
+  288 GB of HBM and 384 MB of on-chip SRAM so long-context KV stops spilling. Two competitors, one
+  equation, the same conclusion in the same year.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h3>6 &middot; What the four equations bought</h3>
+  <h2>Every measurement in this study is one of them</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>measurement</th><th>governing arithmetic</th><th class="num">result</th></tr></thead>
+    <tbody>
+      <tr><td>dense matmul</td><td>roofline, compute side, I ≫ I*</td><td class="num">84.2% of peak</td></tr>
+      <tr><td>row gather</td><td>transaction granule, not roofline</td><td class="num">0.079% of HBM</td></tr>
+      <tr><td>index ordering</td><td>predicted locality gain, falsified</td><td class="num">×1.00</td></tr>
+      <tr><td>all_to_all scaling</td><td>N / B<sub>bisect</sub></td><td class="num">1.77× then flat</td></tr>
+      <tr><td>dispatch overhead</td><td>Little's law, n ≈ 20</td><td class="num">20× the op</td></tr>
+      <tr><td>MXU interference</td><td>shared bandwidth, both terms of the roofline at once</td><td class="num">1.37–1.62×</td></tr>
+      <tr><td>KV vs weights</td><td>C* crossover</td><td class="num">19:1 at 262k</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:20px">None of this arithmetic is new. Bisection bandwidth and Little's law
+  predate the hardware by decades, and the roofline is twenty years old. That is the argument for
+  learning them rather than learning a chip: <strong>v6e will be superseded in 2027 and these five
+  equations will not be.</strong></p>
+</div></section>
+
+<footer><div class="wrap">
+  Companion to the measurement log at
+  <a href="./">areporeporepo.github.io/tpu-irregular-memory-study</a>.
+  Peak figures from Google's published v6e specification: 918 TFLOP/s bf16, 1,638 GB/s HBM,
+  800 GB/s ICI per chip, 2D torus topologies 4×4, 4×8, 8×8 and 16×16. Everything labelled
+  "measured" was taken on a v6e in us-east1-d on 16 August 2026.
+</div></footer>
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('go'); io.unobserve(e.target); }
+  }), {threshold:.2});
+  document.querySelectorAll('section,header').forEach(el => io.observe(el));
+</script>

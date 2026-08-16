@@ -47,3 +47,13 @@
   us-east5-c         v6e-8   quota          49s
   us-south1-a        v6e-8   no_capacity    7s
   us-central1-a      v6e-8   no_capacity    30s
+  europe-west4-a     v6e-8   no_capacity    222s
+12:23:58Z serving test on anh-steady-16: installing vllm and the TPU backend on worker 0
+12:24:15Z attempting to serve Qwen/Qwen3-4B
+12:24:25Z attempting to serve Qwen/Qwen3.8-27B
+12:24:35Z serving test complete
+  asia-northeast1-b  v6e-8   available      220s
+2026-08-16T12:32:49Z another cycle is still running, skipping
+availability series now 16 observations
+2026-08-16T12:34:28Z cycle 20260816T120856Z: published
+2026-08-16T12:34:28Z cycle 20260816T120856Z: done
