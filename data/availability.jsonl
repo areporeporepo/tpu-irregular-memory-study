@@ -22,3 +22,8 @@
 {"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"us-central1-a","size":8,"verdict":"no_capacity","seconds":22}
 {"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"europe-west4-a","size":8,"verdict":"no_capacity","seconds":119}
 {"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"asia-northeast1-b","size":8,"verdict":"available","seconds":165}
+{"at":"2026-08-16T19:11:25Z","dow":7,"hour":19,"zone":"us-east1-d","size":8,"verdict":"available","seconds":215}
+{"at":"2026-08-16T19:11:25Z","dow":7,"hour":19,"zone":"us-east5-a","size":8,"verdict":"no_capacity","seconds":63}
+{"at":"2026-08-16T19:11:25Z","dow":7,"hour":19,"zone":"us-east5-b","size":8,"verdict":"no_capacity","seconds":83}
+{"at":"2026-08-16T19:11:25Z","dow":7,"hour":19,"zone":"us-east5-c","size":8,"verdict":"quota","seconds":45}
+{"at":"2026-08-16T19:11:25Z","dow":7,"hour":19,"zone":"us-south1-a","size":8,"verdict":"no_capacity","seconds":8}
