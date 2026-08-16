@@ -15,12 +15,12 @@ set -uo pipefail
 STUDY="$HOME/tpu-irregular-memory-study"
 DATA="$STUDY/data"
 LOG="$STUDY/campaign.log"
-SLICE="anh-v6e-32"
+SLICE="anh-dev1"          # low-burn: the steady fleet is ONE chip
 DEV="anh-dev1"
 # Only these two zones had multi-chip v6e capacity in the 2026-08-16 sweep. Ordered by
 # preference: us-east1-d is closer to everything else we own.
 ZONES="us-east1-d asia-northeast1-b"
-ACCEL="v6e-32"
+ACCEL="v6e-1"
 RUNTIME="v2-alpha-tpuv6e"
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 
@@ -88,7 +88,7 @@ if [ "$state" = "MISSING" ] || [ "$state" = "PREEMPTED" ] || [ "$state" = "TERMI
   fi
   got=""
   for z in $ZONES; do
-    for size in 32 16 8; do
+    for size in 1; do
       out=$(gcloud compute tpus tpu-vm create "$SLICE" --zone="$z" \
             --accelerator-type="v6e-$size" --version="$RUNTIME" --spot \
             --labels=owner=anh,study=irregular-memory 2>&1)
@@ -168,6 +168,13 @@ done
 # That series is what distinguishes "Google has no capacity" from "our classmates have it all",
 # and the first observation already showed we hold 33 of 41 chips project-wide.
 python3 "$STUDY/observe_contention.py" >> "$LOG" 2>&1
+
+# Availability probing, once an hour rather than every cycle. Everything we know about capacity
+# was measured at 04:00 on a Sunday; this is the instrument that tells us whether that generalises.
+if [ "$(date -u +%M)" -lt 20 ]; then
+  say "cycle $STAMP: probing availability across zones"
+  bash "$STUDY/probe_availability.sh" >> "$LOG" 2>&1
+fi
 
 # ---------------------------------------------------------------- publish
 # The logbook page is generated, never hand-edited, so it can be rebuilt and pushed every cycle.

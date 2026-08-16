@@ -1,0 +1,311 @@
+{
+  "meta": {
+    "jax": "0.10.2",
+    "device_kind": "TPU v6 lite",
+    "num_devices": 64,
+    "process_count": 16,
+    "host": "t1v-n-cf7e1e29-w-7",
+    "payload_mib": 16.0,
+    "inner": 32
+  },
+  "records": [
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "layout": "contiguous",
+      "parent_slice": 64,
+      "ms": 0.2367,
+      "device_ids": [
+        0,
+        1,
+        8,
+        9,
+        2,
+        3,
+        10,
+        11
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "layout": "contiguous",
+      "parent_slice": 64,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 8 [0:2] in replica group (0,1,2,3,4,5,6,7) :: "
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "layout": "strided",
+      "parent_slice": 64,
+      "ms": 0.2231,
+      "device_ids": [
+        0,
+        4,
+        16,
+        20,
+        32,
+        36,
+        48,
+        52
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "layout": "strided",
+      "parent_slice": 64,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:2] in replica group (0,1,2,3,4,5,6,7) ::"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "layout": "reversed",
+      "parent_slice": 64,
+      "ms": 0.0042,
+      "device_ids": [
+        63,
+        62,
+        55,
+        54,
+        61,
+        60,
+        53,
+        52
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "layout": "reversed",
+      "parent_slice": 64,
+      "ms": 0.0045,
+      "device_ids": [
+        63,
+        62,
+        55,
+        54,
+        61,
+        60,
+        53,
+        52
+      ]
+    },
+    {
+      "op": "all_to_all",
+      "chips": 8,
+      "layout": "shuffled",
+      "parent_slice": 64,
+      "ms": 0.0042,
+      "device_ids": [
+        16,
+        34,
+        29,
+        4,
+        38,
+        27,
+        51,
+        2
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 8,
+      "layout": "shuffled",
+      "parent_slice": 64,
+      "ms": 0.0043,
+      "device_ids": [
+        16,
+        34,
+        29,
+        4,
+        38,
+        27,
+        51,
+        2
+      ]
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "layout": "contiguous",
+      "parent_slice": 64,
+      "ms": 0.4217,
+      "device_ids": [
+        0,
+        1,
+        8,
+        9,
+        2,
+        3,
+        10,
+        11,
+        4,
+        5,
+        12,
+        13,
+        6,
+        7,
+        14,
+        15
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "layout": "contiguous",
+      "parent_slice": 64,
+      "ms": 0.2409,
+      "device_ids": [
+        0,
+        1,
+        8,
+        9,
+        2,
+        3,
+        10,
+        11,
+        4,
+        5,
+        12,
+        13,
+        6,
+        7,
+        14,
+        15
+      ]
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "layout": "strided",
+      "parent_slice": 64,
+      "ms": 0.226,
+      "device_ids": [
+        0,
+        2,
+        4,
+        6,
+        16,
+        18,
+        20,
+        22,
+        32,
+        34,
+        36,
+        38,
+        48,
+        50,
+        52,
+        54
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "layout": "strided",
+      "parent_slice": 64,
+      "error": "JaxRuntimeError: INTERNAL: RET_CHECK failure (platforms/xla/service/jellyfish/lowering/net_util.cc:2304) device_id < kMaxDeviceCount Unexpected device_id 16 [0:4] in replica group (0,1,2,3,4,5,6,7,8,9"
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "layout": "reversed",
+      "parent_slice": 64,
+      "ms": 0.0043,
+      "device_ids": [
+        63,
+        62,
+        55,
+        54,
+        61,
+        60,
+        53,
+        52,
+        59,
+        58,
+        51,
+        50,
+        57,
+        56,
+        49,
+        48
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "layout": "reversed",
+      "parent_slice": 64,
+      "ms": 0.0044,
+      "device_ids": [
+        63,
+        62,
+        55,
+        54,
+        61,
+        60,
+        53,
+        52,
+        59,
+        58,
+        51,
+        50,
+        57,
+        56,
+        49,
+        48
+      ]
+    },
+    {
+      "op": "all_to_all",
+      "chips": 16,
+      "layout": "shuffled",
+      "parent_slice": 64,
+      "ms": 0.3245,
+      "device_ids": [
+        16,
+        34,
+        29,
+        4,
+        38,
+        27,
+        51,
+        2,
+        60,
+        56,
+        12,
+        8,
+        44,
+        40,
+        25,
+        47
+      ]
+    },
+    {
+      "op": "all_reduce",
+      "chips": 16,
+      "layout": "shuffled",
+      "parent_slice": 64,
+      "ms": 0.7341,
+      "device_ids": [
+        16,
+        34,
+        29,
+        4,
+        38,
+        27,
+        51,
+        2,
+        60,
+        56,
+        12,
+        8,
+        44,
+        40,
+        25,
+        47
+      ]
+    }
+  ]
+}

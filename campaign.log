@@ -18,3 +18,14 @@
 2026-08-16T11:35:05Z status: slice=anh-v6e-32 zone=us-east1-d state=READY
 2026-08-16T11:35:05Z status: 12 result files,  92K on disk
 11:37:30Z claiming v6e-64 in us-east1-d
+11:41:03Z anh-burst-64 READY
+11:41:38Z jax ready on anh-burst-64
+11:41:42Z running experiment2_fabric_collectives on v6e-64
+11:42:23Z running experiment4_geometry on v6e-64
+11:42:51Z running experiment6_capture_artifacts on v6e-64
+2026-08-16T11:46:49Z cycle 20260816T114635Z: running fabric collectives on anh-v6e-32 in us-east1-d
+11:51:14Z collected fabric_results.json from worker 7
+11:58:35Z collected geometry_results.json from worker 7
+11:58:35Z burst on v6e-64 complete
+11:58:35Z deleting anh-burst-64 unconditionally
+11:59:54Z deleted anh-burst-64
