@@ -1,0 +1,34 @@
+capacity_calculator.py
+  s_67b1e088a6a194::t_27f20aad653ba9 29-31
+OUTREACH.md
+  s_67b1e088a6a194::t_f82388b28a6da2 104-144
+probe_availability.sh
+  s_67b1e088a6a194::t_5149c830fdb54c 26-39
+  s_67b1e088a6a194::t_d6c92107bd3d20 67-68
+supervisor.sh
+  s_67b1e088a6a194::t_45e928a9db1d06 296-307,311-313,315,317-330,332
+  s_67b1e088a6a194::t_d195d974edf6b2 18-29,31,129,150,152,155,158,160,208,230,261
+  s_67b1e088a6a194::t_e1d588c8754ef4 97-100,286,292
+logbook.jsonl
+  s_67b1e088a6a194::t_18aa277058c148 66-67
+campaign.log
+  s_67b1e088a6a194::t_61adfa2aef15d1 79-87
+data/availability.jsonl
+  s_67b1e088a6a194::t_66d8dec74f3a2b 18-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "86450d9a195f585b68ed31835b2c8bae3eb2bc04",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
