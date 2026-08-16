@@ -1,0 +1,21 @@
+experiment8_dense_vs_moe.py
+  s_67b1e088a6a194::t_2dba1c641f5200 1-170
+burst.sh
+  s_67b1e088a6a194::t_8e4723dd84d959 56,66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "885393346b5576f1bd4e7fef13a9edb8fb4f01ed",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
