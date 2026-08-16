@@ -1,0 +1,310 @@
+{
+  "chip": "v5e",
+  "per_chip_gb": 16,
+  "context": 8192,
+  "batch": 32,
+  "kv_bits": 16,
+  "reserve": 0.1,
+  "rows": [
+    {
+      "model": "Qwen3-4B",
+      "params": 4000000000.0,
+      "active_params": 4000000000.0,
+      "weights_bf16_gb": 8.0,
+      "weights_fp8_gb": 4.0,
+      "kv_gb": 38.7,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "bf16",
+          "hbm_percent": 18.2
+        },
+        "32": {
+          "verdict": "bf16",
+          "hbm_percent": 9.1
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 4.6
+        }
+      }
+    },
+    {
+      "model": "gpt-oss-20b",
+      "params": 21000000000.0,
+      "active_params": 3600000000.0,
+      "weights_bf16_gb": 42.0,
+      "weights_fp8_gb": 21.0,
+      "kv_gb": 12.9,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "bf16",
+          "hbm_percent": 21.4
+        },
+        "32": {
+          "verdict": "bf16",
+          "hbm_percent": 10.7
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 5.4
+        }
+      }
+    },
+    {
+      "model": "Qwen3.8-27B",
+      "params": 27000000000.0,
+      "active_params": 27000000000.0,
+      "weights_bf16_gb": 54.0,
+      "weights_fp8_gb": 27.0,
+      "kv_gb": 51.5,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "bf16",
+          "hbm_percent": 41.2
+        },
+        "32": {
+          "verdict": "bf16",
+          "hbm_percent": 20.6
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 10.3
+        }
+      }
+    },
+    {
+      "model": "Qwen3-30B-A3B",
+      "params": 30500000000.0,
+      "active_params": 3300000000.0,
+      "weights_bf16_gb": 61.0,
+      "weights_fp8_gb": 30.5,
+      "kv_gb": 25.8,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "bf16",
+          "hbm_percent": 33.9
+        },
+        "32": {
+          "verdict": "bf16",
+          "hbm_percent": 16.9
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 8.5
+        }
+      }
+    },
+    {
+      "model": "Llama-3.3-70B",
+      "params": 70000000000.0,
+      "active_params": 70000000000.0,
+      "weights_bf16_gb": 140.0,
+      "weights_fp8_gb": 70.0,
+      "kv_gb": 85.9,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "bf16",
+          "hbm_percent": 88.2
+        },
+        "32": {
+          "verdict": "bf16",
+          "hbm_percent": 44.1
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 22.1
+        }
+      }
+    },
+    {
+      "model": "gpt-oss-120b",
+      "params": 117000000000.0,
+      "active_params": 5100000000.0,
+      "weights_bf16_gb": 234.0,
+      "weights_fp8_gb": 117.0,
+      "kv_gb": 19.3,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "fp8",
+          "hbm_percent": 53.3
+        },
+        "32": {
+          "verdict": "bf16",
+          "hbm_percent": 49.5
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 24.7
+        }
+      }
+    },
+    {
+      "model": "Llama-4-Scout",
+      "params": 109000000000.0,
+      "active_params": 17000000000.0,
+      "weights_bf16_gb": 218.0,
+      "weights_fp8_gb": 109.0,
+      "kv_gb": 51.5,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "fp8",
+          "hbm_percent": 62.7
+        },
+        "32": {
+          "verdict": "bf16",
+          "hbm_percent": 52.6
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 26.3
+        }
+      }
+    },
+    {
+      "model": "Qwen3-235B-A22B",
+      "params": 235000000000.0,
+      "active_params": 22000000000.0,
+      "weights_bf16_gb": 470.0,
+      "weights_fp8_gb": 235.0,
+      "kv_gb": 50.5,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "no, 20ch",
+          "hbm_percent": 0.0
+        },
+        "32": {
+          "verdict": "fp8",
+          "hbm_percent": 55.8
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 50.8
+        }
+      }
+    },
+    {
+      "model": "Llama-4-Maverick",
+      "params": 400000000000.0,
+      "active_params": 17000000000.0,
+      "weights_bf16_gb": 800.0,
+      "weights_fp8_gb": 400.0,
+      "kv_gb": 51.5,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "no, 31ch",
+          "hbm_percent": 0.0
+        },
+        "32": {
+          "verdict": "fp8",
+          "hbm_percent": 88.2
+        },
+        "64": {
+          "verdict": "bf16",
+          "hbm_percent": 83.2
+        }
+      }
+    },
+    {
+      "model": "DeepSeek-V3.2",
+      "params": 671000000000.0,
+      "active_params": 37000000000.0,
+      "weights_bf16_gb": 1342.0,
+      "weights_fp8_gb": 671.0,
+      "kv_gb": 65.5,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "no, 51ch",
+          "hbm_percent": 0.0
+        },
+        "32": {
+          "verdict": "no, 51ch",
+          "hbm_percent": 0.0
+        },
+        "64": {
+          "verdict": "fp8",
+          "hbm_percent": 71.9
+        }
+      }
+    },
+    {
+      "model": "Kimi K2",
+      "params": 1000000000000.0,
+      "active_params": 32000000000.0,
+      "weights_bf16_gb": 2000.0,
+      "weights_fp8_gb": 1000.0,
+      "kv_gb": 65.5,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "no, 74ch",
+          "hbm_percent": 0.0
+        },
+        "32": {
+          "verdict": "no, 74ch",
+          "hbm_percent": 0.0
+        },
+        "64": {
+          "verdict": "no, 74ch",
+          "hbm_percent": 0.0
+        }
+      }
+    },
+    {
+      "model": "Kimi K3",
+      "params": 2800000000000.0,
+      "active_params": 32000000000.0,
+      "weights_bf16_gb": 5600.0,
+      "weights_fp8_gb": 2800.0,
+      "kv_gb": 85.9,
+      "chip": "v5e",
+      "context": 8192,
+      "batch": 32,
+      "fits": {
+        "16": {
+          "verdict": "no, 200ch",
+          "hbm_percent": 0.0
+        },
+        "32": {
+          "verdict": "no, 200ch",
+          "hbm_percent": 0.0
+        },
+        "64": {
+          "verdict": "no, 200ch",
+          "hbm_percent": 0.0
+        }
+      }
+    }
+  ]
+}

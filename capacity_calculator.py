@@ -33,12 +33,19 @@ CHIPS = {"v5e": 16, "v6e": 32, "v7x-ironwood": 192, "8i-zebrafish": 288}
 # blocks keep quadratic attention, which is the entire point of Qwen3.8's Gated DeltaNet design.
 #   (name, params, active_params, layers, full_attn_layers, kv_heads, head_dim)
 MODELS = [
+    # (name, params, active_params, layers, full_attn_layers, kv_heads, head_dim)
+    # Current open-weight models, August 2026. Active params matter for speed; total params
+    # decide whether it fits at all, because every expert must be resident.
     ("Qwen3-4B",              4.0e9,   4.0e9,  36, 36,  8, 128),
+    ("gpt-oss-20b",          21.0e9,   3.6e9,  24, 24,  8,  64),
     ("Qwen3.8-27B",          27.0e9,  27.0e9,  64, 16, 24, 128),
     ("Qwen3-30B-A3B",        30.5e9,   3.3e9,  48, 48,  4, 128),
     ("Llama-3.3-70B",        70.0e9,  70.0e9,  80, 80,  8, 128),
+    ("gpt-oss-120b",        117.0e9,   5.1e9,  36, 36,  8,  64),
+    ("Llama-4-Scout",       109.0e9,  17.0e9,  48, 48,  8, 128),
     ("Qwen3-235B-A22B",     235.0e9,  22.0e9,  94, 94,  4, 128),
-    ("DeepSeek-V3 class",   671.0e9,  37.0e9,  61, 61,  8, 128),
+    ("Llama-4-Maverick",    400.0e9,  17.0e9,  48, 48,  8, 128),
+    ("DeepSeek-V3.2",       671.0e9,  37.0e9,  61, 61,  8, 128),
     ("Kimi K2",               1.0e12,  32.0e9,  61, 61,  8, 128),
     ("Kimi K3",               2.8e12,  32.0e9,  80, 80,  8, 128),
 ]

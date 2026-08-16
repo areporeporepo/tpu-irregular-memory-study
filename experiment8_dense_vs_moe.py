@@ -87,7 +87,9 @@ def moe(mesh, chips: int):
     token to exactly one expert, so a token does the same multiply-accumulate count as the dense
     layer above.
     """
-    e_hidden = FF // EXPERTS
+    e_hidden = FF          # an expert is as WIDE as the dense FFN; top-1 routing
+                           # then makes per-token active FLOPs identical. Using
+                           # FF//EXPERTS was the bug: it did 1/E of the work.
     local_tokens = TOKENS // chips
     x = jnp.ones((chips, local_tokens, D), jnp.bfloat16)
     w1 = jnp.ones((chips, D, e_hidden), jnp.bfloat16) * 0.01
@@ -129,7 +131,10 @@ def main() -> None:
         print(json.dumps(meta, indent=2), flush=True)
 
     # Active FLOPs per layer are identical for the two designs by construction.
-    flops = 2 * 2 * TOKENS * D * FF   # two matmuls, 2 FLOPs per MAC
+    # Global FLOPs per layer. Dense TP: every chip sees all tokens, holds FF/chips
+    # hidden. MoE EP: every chip sees TOKENS/chips tokens, holds a full-width expert.
+    # With top-1 routing these are equal, which is the point of the comparison.
+    flops = 2 * 2 * TOKENS * D * FF
     records = []
     for chips in [c for c in (8, 16, 32) if c <= len(devices)]:
         mesh = Mesh(np.asarray(devices[:chips]), ("chips",))
@@ -140,7 +145,7 @@ def main() -> None:
                 dt = timed(fn, *args) / INNER
                 row[name] = {"ms": round(dt * 1e3, 4),
                              "tflops": round(flops / dt / 1e12, 1),
-                             "pct_peak": round(flops / dt / 1e12 / 918 * 100, 1)}
+                             "pct_peak": round(flops / dt / 1e12 / (918 * chips) * 100, 1)}
             except Exception as exc:
                 row[name] = {"error": f"{type(exc).__name__}: {exc}"[:220]}
         if "ms" in row.get("dense", {}) and "ms" in row.get("moe", {}):
