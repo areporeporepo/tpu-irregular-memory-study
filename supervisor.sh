@@ -15,12 +15,12 @@ set -uo pipefail
 STUDY="$HOME/tpu-irregular-memory-study"
 DATA="$STUDY/data"
 LOG="$STUDY/campaign.log"
-SLICE="anh-dev1"          # low-burn: the steady fleet is ONE chip
+SLICE="anh-steady-16"     # steady fleet: 16 chips at $22.45/hr fits a Sept 1 runway
 DEV="anh-dev1"
 # Only these two zones had multi-chip v6e capacity in the 2026-08-16 sweep. Ordered by
 # preference: us-east1-d is closer to everything else we own.
 ZONES="us-east1-d asia-northeast1-b"
-ACCEL="v6e-1"
+ACCEL="v6e-16"
 RUNTIME="v2-alpha-tpuv6e"
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 
@@ -88,7 +88,7 @@ if [ "$state" = "MISSING" ] || [ "$state" = "PREEMPTED" ] || [ "$state" = "TERMI
   fi
   got=""
   for z in $ZONES; do
-    for size in 1; do
+    for size in 16 8 4 1; do   # take the largest the zone will give
       out=$(gcloud compute tpus tpu-vm create "$SLICE" --zone="$z" \
             --accelerator-type="v6e-$size" --version="$RUNTIME" --spot \
             --labels=owner=anh,study=irregular-memory 2>&1)

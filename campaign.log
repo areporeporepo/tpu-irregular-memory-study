@@ -29,3 +29,6 @@
 11:58:35Z burst on v6e-64 complete
 11:58:35Z deleting anh-burst-64 unconditionally
 11:59:54Z deleted anh-burst-64
+2026-08-16T12:09:19Z installing jax on all workers
+2026-08-16T12:09:39Z cycle 20260816T120856Z: running fabric collectives on anh-steady-16 in us-east1-d
+12:09:55Z serving test on anh-steady-16: installing vllm and the TPU backend on worker 0
