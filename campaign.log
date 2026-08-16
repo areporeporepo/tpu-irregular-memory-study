@@ -177,3 +177,9 @@ FileNotFoundError: [Errno 2] No such file or directory: 'kubectl'
 2026-08-16T18:48:01Z cycle 20260816T184255Z: published (live pages)
 2026-08-16T18:48:01Z cycle 20260816T184255Z: done
 2026-08-16T19:05:27Z cycle 20260816T190511Z: running fabric collectives on anh-v5p-32 in us-east5-a
+2026-08-16T19:08:33Z cycle 20260816T190511Z: collected 16 fabric records from w2
+2026-08-16T19:08:35Z cycle 20260816T190511Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T19:09:38Z cycle 20260816T190511Z: collected local gather results
+2026-08-16T19:09:39Z cycle 20260816T190511Z: allocation ladder on anh-dev1, the v6e side of the comparison
+2026-08-16T19:11:07+00:00: 21 chips project-wide, 0 held by 0 peers, zones=['us-east1-d', 'us-east5-a']
+2026-08-16T19:11:25Z cycle 20260816T190511Z: probing availability across zones
