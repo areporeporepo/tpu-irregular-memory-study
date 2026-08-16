@@ -101,6 +101,47 @@ credential that matters when asking an engineering team for anything.
 
 ---
 
+## 3b. Question for the XLA team: is the gather promotion budget documented, and is it tunable?
+
+**To:** `openxla/xla`, as a question rather than a bug, because the behaviour may well be intended.
+
+A gather's source table is promoted to memory space `S(1)` when it fits inside a fixed budget, and
+left in HBM when it does not. The performance difference is large and the transition is sharp:
+
+| chip | last size promoted | reads as | promoted | in HBM | step |
+|---|---|---|---|---|---|
+| v5p | 50,266,112 B | 48 MiB &minus; 64 KiB | 256 GB/s | 77 GB/s | 3.33x |
+| v6e | 100,597,760 B | 96 MiB &minus; 64 KiB | 154 GB/s | 42 GB/s | 3.64x |
+
+Measured with 16384 indices into a table of 128-wide float32 rows, 32 gathers chained inside one
+jit so host dispatch is amortised. The threshold is identical at 128-, 256- and 512-wide rows, so it
+is a byte budget; at 64-wide rows it halves, consistent with the budget counting bytes allocated
+after padding to `T(8,128)`. It does not move when the index count changes by 64x, so the index
+vector is not drawn from the same allowance.
+
+Three questions:
+
+1. **Is the budget documented anywhere?** We could not find it, and a 3.3x cliff at a size no user
+   chose is the kind of thing worth a paragraph in the performance guide.
+2. **Where does the 64 KiB come from?** Both numbers are exactly 64 KiB below a round power of two.
+   We assumed it was the index vector, tested that, and it was not.
+3. **Is it tunable?** If `xla_tpu_scoped_vmem_limit_kib` or a neighbour moves this threshold, then
+   any model whose embedding table sits just above it has a one-flag 3x win available, and that
+   should be written down. If it is not tunable, knowing that is equally useful, because then the
+   only remedy is a SparseCore kernel.
+
+**Why this is worth someone's time.** Every embedding table and every KV cache of a realistic size
+is far above the budget, so production gathers are always on the slow path, and the usual advice for
+irregular access does not help: we measured that sorting the indices and grouping them into
+consecutive blocks change the rate by less than 0.2%. Meanwhile an A100 running the same gather is
+flat in table size to within 1.06x. The TPU's disadvantage here is a placement decision, not a
+memory system, which is why it seems worth asking about rather than working around.
+
+Full method, data and reproduction: github.com/areporeporepo/tpu-irregular-memory-study, and
+`hlo_gather_lowering.py --bisect` reproduces the threshold in under a minute using only compiles.
+
+---
+
 ## 4. Access request: container.admin and billing.viewer
 
 **To:** `smjones@stanford.edu` (project owner, technical contact, and the requester of record)

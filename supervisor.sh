@@ -15,13 +15,20 @@ set -uo pipefail
 STUDY="$HOME/tpu-irregular-memory-study"
 DATA="$STUDY/data"
 LOG="$STUDY/campaign.log"
-SLICE="anh-steady-16"     # steady fleet: 16 chips at $22.45/hr fits a Sept 1 runway
+# The steady slice is v5p, not v6e, for three reasons measured this week: v5p is the only
+# generation where the SparseCore gather kernel compiles, its 3D torus tests the bisection model on
+# a second topology, and on spot it is cheaper per chip ($1.26 against $1.4033). 16 chips of it
+# costs less than the 16 v6e chips it replaces, so the Sept 1 runway improved rather than shrank.
+SLICE="anh-v5p-32"        # v5p-32 counts TensorCores: 16 chips at $20.16/hr
+FAMILY="v5p"
+SIZES="32 16 8"           # TensorCores, so 16, 8 and 4 chips. Take the largest a zone will give.
+ZONES="us-east5-a"        # the only zone with v5p capacity in the 2026-08-16 sweep
+ACCEL="v5p-32"
+RUNTIME="v2-alpha-tpuv5"
+# The single v6e chip stays, because the gather-cliff comparison needs a second generation and that
+# measurement is single-chip anyway. It lives in another region, so it needs its own zone list.
 DEV="anh-dev1"
-# Only these two zones had multi-chip v6e capacity in the 2026-08-16 sweep. Ordered by
-# preference: us-east1-d is closer to everything else we own.
-ZONES="us-east1-d asia-northeast1-b"
-ACCEL="v6e-16"
-RUNTIME="v2-alpha-tpuv6e"
+DEV_ZONES="us-east1-d"
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 
 mkdir -p "$DATA"
@@ -87,8 +94,10 @@ fi
 if [ "${1:-}" != "--status" ]; then
   mkdir "$LOCK" 2>/dev/null || { say "could not take lock"; exit 0; }
   # Last line of defence: even with a deadline on every call, the whole cycle gets one too. Shorter
-  # than two schedule intervals, so a killed cycle is replaced rather than accumulating.
-  ( sleep 1500; pkill -P $$ 2>/dev/null; kill -TERM $$ 2>/dev/null ) &
+  # than the sum of the per-stage deadlines below it, so a stage never dies for lack of
+  # cycle budget, and short enough that a wedge stalls the schedule for tens of minutes
+  # rather than forever.
+  ( sleep 2400; pkill -P $$ 2>/dev/null; kill -TERM $$ 2>/dev/null ) &
   WATCHDOG=$!
   trap 'rm -rf "$LOCK"; kill "$WATCHDOG" 2>/dev/null' EXIT
 fi
@@ -117,7 +126,7 @@ VERDICT=$(python3 "$STUDY/budget_guard.py" 2>/dev/null | tail -1)
 case "$VERDICT" in
   STOP)
     say "budget guard says STOP: deleting the fleet and standing down"
-    for z in $ZONES; do
+    for z in $ZONES $DEV_ZONES; do
       for n in $(t 120 gcloud compute tpus tpu-vm list --zone="$z" --format="value(name)" 2>/dev/null); do
         t 300 gcloud compute tpus tpu-vm delete "$n" --zone="$z" --quiet >/dev/null 2>&1
         say "  deleted $n in $z"
@@ -138,17 +147,17 @@ if [ "$state" = "MISSING" ] || [ "$state" = "PREEMPTED" ] || [ "$state" = "TERMI
   fi
   got=""
   for z in $ZONES; do
-    for size in 16 8 4 1; do   # take the largest the zone will give
+    for size in $SIZES; do
       out=$(t 420 gcloud compute tpus tpu-vm create "$SLICE" --zone="$z" \
-            --accelerator-type="v6e-$size" --version="$RUNTIME" --spot \
+            --accelerator-type="$FAMILY-$size" --version="$RUNTIME" --spot \
             --labels=owner=anh,study=irregular-memory 2>&1)
       if echo "$out" | grep -qi "no more capacity\|Insufficient\|RESOURCE_EXHAUSTED"; then
-        say "  $z v6e-$size: no capacity"; continue
+        say "  $z $FAMILY-$size: no capacity"; continue
       fi
       if echo "$out" | grep -qi "error"; then
-        say "  $z v6e-$size: error"; continue
+        say "  $z $FAMILY-$size: error"; continue
       fi
-      say "  claimed v6e-$size in $z"; got="$z"; zone="$z"; break
+      say "  claimed $FAMILY-$size in $z"; got="$z"; zone="$z"; break
     done
     [ -n "$got" ] && break
   done
@@ -196,7 +205,7 @@ else
 fi
 
 # ---------------------------------------------------------------- single chip, if one exists
-for z in $ZONES; do
+for z in $DEV_ZONES; do
   dstate=$(t 120 gcloud compute tpus tpu-vm describe "$DEV" --zone="$z" --format="value(state)" 2>/dev/null | head -1)
   [ "$dstate" = "READY" ] || continue
   say "cycle $STAMP: running local gather on $DEV in $z"
@@ -218,7 +227,7 @@ done
 # the only place the allocation cliff can be measured against a working SparseCore baseline. Two of
 # the three artefacts here cost no kernel time at all: the HLO bisection only compiles. Run every
 # second hour rather than every cycle, so one chip does not eat the cycle.
-V5P="anh-v5p-8"
+V5P="anh-v5p-8"        # the uncontended 4-chip machine, separate from the steady slice
 V5P_ZONE="us-east5-a"
 if [ "$(( $(date -u +%H) % 2 ))" -eq 0 ] && [ "$(date -u +%M)" -lt 20 ]; then
   vstate=$(t 120 gcloud compute tpus tpu-vm describe "$V5P" --zone="$V5P_ZONE" \
@@ -249,7 +258,7 @@ fi
 # for every claim: the identical script on a second architecture is what killed the first two
 # explanations we had for the cliff.
 if [ "$(( $(date -u +%H) % 2 ))" -eq 1 ] && [ "$(date -u +%M)" -lt 20 ]; then
-  for z in $ZONES; do
+  for z in $DEV_ZONES; do
     dstate=$(t 120 gcloud compute tpus tpu-vm describe "$DEV" --zone="$z" \
                --format="value(state)" 2>/dev/null | head -1)
     [ "$dstate" = "READY" ] || continue
@@ -274,41 +283,52 @@ fi
 # soe-hpccenter is a class project, so every cycle also records what everyone else is holding.
 # That series is what distinguishes "Google has no capacity" from "our classmates have it all",
 # and the first observation already showed we hold 33 of 41 chips project-wide.
-python3 "$STUDY/observe_contention.py" >> "$LOG" 2>&1
+t 180 python3 "$STUDY/observe_contention.py" >> "$LOG" 2>&1
 
 # Availability probing, once an hour rather than every cycle. Everything we know about capacity
 # was measured at 04:00 on a Sunday; this is the instrument that tells us whether that generalises.
 if [ "$(date -u +%M)" -lt 20 ]; then
   say "cycle $STAMP: probing availability across zones"
-  bash "$STUDY/probe_availability.sh" >> "$LOG" 2>&1
+  t 420 bash "$STUDY/probe_availability.sh" >> "$LOG" 2>&1
 fi
 
 # ---------------------------------------------------------------- publish
-# The logbook page is generated, never hand-edited, so it can be rebuilt and pushed every cycle.
-python3 "$STUDY/logbook.py" build >/dev/null 2>&1
-# Who is holding the class hardware, refreshed on the same cycle as the measurements.
-python3 "$STUDY/build_cluster_dashboard.py" >> "$LOG" 2>&1
-# The result pages are generated from the JSON in data/, so they cannot drift from the numbers.
-# Cheap and local: no TPU, no network. Failures must not take the cycle down with them.
-python3 "$STUDY/build_gather_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: gather page build failed"
-python3 "$STUDY/build_roadmap_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: roadmap page build failed"
-# The model page scrapes a live catalogue, so it goes stale fastest and is also the most likely to
-# fail. Hourly, and never fatal.
-if [ "$(date -u +%M)" -lt 20 ]; then
-  python3 "$STUDY/build_model_page.py" >> "$LOG" 2>&1 || \
-    say "cycle $STAMP: model page build failed, keeping the last good copy"
-fi
-ahead=$(git -C "$STUDY" rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
-if [ -n "$(git -C "$STUDY" status --porcelain data index.html logbook.jsonl budget_ledger.json gather-cliff.html roadmap.html models.html 2>/dev/null)" ] || [ "${ahead:-0}" -gt 0 ]; then
+# Publishing happens in two passes, and the order is the point. The cheap local page builds and the
+# push come first; the slow live scrape comes after. On 2026-08-16 the availability probe ate almost
+# the entire cycle budget and the watchdog killed the cycle before it published anything, so two
+# finished result pages sat unpublished for hours. Anything that can be generated without the
+# network now ships before anything that needs it.
+publish() {
+  local why="$1"
+  local ahead
+  ahead=$(git -C "$STUDY" rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
+  if [ -z "$(git -C "$STUDY" status --porcelain 2>/dev/null)" ] && [ "${ahead:-0}" -eq 0 ]; then
+    return 0
+  fi
   git -C "$STUDY" add data index.html cluster.html gather-cliff.html roadmap.html models.html \
     logbook.jsonl budget_ledger.json >/dev/null 2>&1
   git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \
-    commit -q -m "campaign cycle $STAMP" >/dev/null 2>&1
-  if git -C "$STUDY" push -q origin main >/dev/null 2>&1; then
-    say "cycle $STAMP: published"
+    commit -q -m "campaign cycle $STAMP ($why)" >/dev/null 2>&1
+  if t 180 git -C "$STUDY" push -q origin main >/dev/null 2>&1; then
+    say "cycle $STAMP: published ($why)"
   else
-    say "cycle $STAMP: push failed, will retry next cycle"
+    say "cycle $STAMP: push failed ($why), will retry next cycle"
   fi
+}
+
+# Pass one: everything that is generated from local JSON. No TPU, no network, seconds not minutes.
+t 120 python3 "$STUDY/logbook.py" build >/dev/null 2>&1
+t 120 python3 "$STUDY/build_gather_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: gather page failed"
+t 120 python3 "$STUDY/build_roadmap_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: roadmap page failed"
+publish "local pages"
+
+# Pass two: the pages that need the network, and a second push for whatever they changed. If either
+# of these is killed, pass one has already shipped.
+t 300 python3 "$STUDY/build_cluster_dashboard.py" >> "$LOG" 2>&1 || say "cycle $STAMP: cluster page failed"
+if [ "$(date -u +%M)" -lt 20 ]; then
+  t 360 python3 "$STUDY/build_model_page.py" >> "$LOG" 2>&1 || \
+    say "cycle $STAMP: model page failed, keeping the last good copy"
 fi
+publish "live pages"
 
 say "cycle $STAMP: done"

@@ -76,3 +76,12 @@ availability series now 16 observations
 2026-08-16T17:05:33+00:00: 33 chips project-wide, 32 held by 3 peers, zones=['us-east1-d', 'us-east5-a', 'us-west4-a']
 2026-08-16T17:05:43Z cycle 20260816T170117Z: probing availability across zones
   us-east1-d         v6e-8   available      212s
+  us-east5-a         v6e-8   no_capacity    23s
+  us-east5-b         v6e-8   no_capacity    79s
+  us-east5-c         v6e-8   quota          42s
+  us-south1-a        v6e-8   no_capacity    8s
+  us-central1-a      v6e-8   no_capacity    22s
+  europe-west4-a     v6e-8   no_capacity    119s
+  asia-northeast1-b  v6e-8   available      165s
+2026-08-16T17:17:42Z another cycle is still running, skipping
+availability series now 24 observations

@@ -15,3 +15,10 @@
 {"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"europe-west4-a","size":8,"verdict":"no_capacity","seconds":222}
 {"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"asia-northeast1-b","size":8,"verdict":"available","seconds":220}
 {"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"us-east1-d","size":8,"verdict":"available","seconds":212}
+{"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"us-east5-a","size":8,"verdict":"no_capacity","seconds":23}
+{"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"us-east5-b","size":8,"verdict":"no_capacity","seconds":79}
+{"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"us-east5-c","size":8,"verdict":"quota","seconds":42}
+{"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"us-south1-a","size":8,"verdict":"no_capacity","seconds":8}
+{"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"us-central1-a","size":8,"verdict":"no_capacity","seconds":22}
+{"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"europe-west4-a","size":8,"verdict":"no_capacity","seconds":119}
+{"at":"2026-08-16T17:05:43Z","dow":7,"hour":17,"zone":"asia-northeast1-b","size":8,"verdict":"available","seconds":165}

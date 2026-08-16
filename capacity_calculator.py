@@ -26,7 +26,9 @@ from pathlib import Path
 GB = 1e9
 
 # HBM per chip, in GB. v6e measured on the chip; the rest from vendor specifications.
-CHIPS = {"v5e": 16, "v6e": 32, "v7x-ironwood": 192, "8i-zebrafish": 288}
+# HBM per chip, GB. v5p is here because it is the largest-memory chip a student can actually get:
+# there is no v6p, the sixth generation shipped only v6e, so v5p's 95 GB stands until Ironwood.
+CHIPS = {"v5e": 16, "v6e": 32, "v5p": 95, "v7x-ironwood": 192, "8i-zebrafish": 288}
 
 # Model geometry. kv_heads matters far more than total heads: grouped-query attention is the
 # reason a 671B model can be served at all. full_attn_layers is for hybrid models where only some

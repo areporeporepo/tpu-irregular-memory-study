@@ -23,6 +23,20 @@ HOUR=$(date -u +%H)
 
 mkdir -p "$STUDY/data"
 
+# Reap anything a previous run left behind, before claiming anything new. This replaces the `wait`
+# that used to sit at the end of this script: a probe slice in asia-northeast1-b took over twelve
+# minutes to delete on 2026-08-16, the wait blocked on it, and the cycle hit its watchdog and was
+# killed before it could publish. Deletes are still issued immediately below; they simply are not
+# waited for. Anything that slips through is caught here on the next run, which is a better
+# guarantee than blocking, because it also catches slices left by a cycle that was killed.
+for z in $ZONES; do
+  for stale in $(gcloud compute tpus tpu-vm list --zone="$z" \
+                   --format="value(name)" 2>/dev/null | grep '^probe-' || true); do
+    gcloud compute tpus tpu-vm delete "$stale" --zone="$z" --quiet >/dev/null 2>&1 &
+    echo "  reaping leftover $stale in $z"
+  done
+done
+
 for z in $ZONES; do
   name="probe-${SIZE}-${z##*-}-$(date -u +%H%M%S)"
   start=$(date +%s)
@@ -50,6 +64,7 @@ for z in $ZONES; do
   printf '  %-18s v6e-%-3s %-14s %ss\n' "$z" "$SIZE" "$verdict" "$elapsed"
 done
 
-wait
+# Deliberately no `wait` here. See the reaper at the top of this file for why, and for what
+# guarantees the probe slices actually go away.
 n=$(wc -l < "$SERIES" | tr -d ' ')
 echo "availability series now $n observations"
