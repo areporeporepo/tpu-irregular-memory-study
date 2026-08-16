@@ -283,6 +283,9 @@ def render() -> str:
   <p class="nav">
    <a href="./gather-cliff.html">The gather cliff</a> &middot; the study's main result: a 3x step in
    gather bandwidth caused by one compile-time placement decision, measured on v5p, v6e and an A100.
+   <br><a href="./glossary.html">The same idea in three dialects</a> &middot; NVLink vs ICI, TP8 and
+   FSDP decoded, the whole stack layer-by-layer in four vendors' words, and the terminology that has
+   cost us money.
    <br><a href="./torus-shape.html">The wrong variable</a> &middot; a 3D torus measurement that
    falsified this study's own bisection-bandwidth explanation, with the honest replacement.
    <br><a href="./roadmap.html">Chips we can get, chips being bought</a> &middot; v5e through Rubin

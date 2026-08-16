@@ -37,7 +37,7 @@
 </style>
 <header><div class="wrap">
  <h1>The same idea in three dialects, and what each one costs</h1>
- <p class="sub">2026-08-16 19:33 UTC &middot; measurements from this study, not from a datasheet</p>
+ <p class="sub">2026-08-16 19:39 UTC &middot; measurements from this study, not from a datasheet</p>
  <p class="lede" style="margin-top:18px">Most of the difficulty in reading accelerator
  documentation is not conceptual. It is that NVIDIA and Google invented different words for the same
  wire, that <span class="sub">Tensor Core</span> and <span class="sub">TensorCore</span> are
@@ -92,7 +92,26 @@ of thumb. Second, and more practically: a mesh spanning four hosts ran 1.44&time
 same number of chips inside two hosts, independent of chip count. Where your groups land on host
 boundaries is worth as much as which strategy you chose.</p>
 
-<h2>4. Terminology that has actually cost us something</h2>
+<h2>4. The same stack, layer by layer, in four vendors' words</h2>
+<p>This is the table we wish had existed when this study started. Each row is one layer you have to
+touch to get a measurement out of a chip, and each column is what you actually type. The last column
+is honest about which of these we have run on real hardware rather than read about.</p>
+<div class="scroll"><table>
+ <thead><tr><th>the layer</th><th>Google TPU</th><th>NVIDIA</th><th>AMD</th><th>Intel Gaudi</th>
+  <th>touched here?</th></tr></thead>
+ <tbody><tr><td class='k'>the framework</td><td>JAX, or PyTorch/XLA</td><td>PyTorch, or JAX on CUDA</td><td>PyTorch, ROCm build</td><td>PyTorch + habana_frameworks</td><td class='w'>both</td></tr><tr><td class='k'>the compiler</td><td>XLA, not optional</td><td>Inductor, TensorRT, nvcc</td><td>Inductor on ROCm, hipcc</td><td>SynapseAI graph compiler</td><td class='w'>both</td></tr><tr><td class='k'>the IR you read when confused</td><td>StableHLO, then LLO</td><td>PTX, then SASS</td><td>LLVM IR, then GCN ISA</td><td>not public</td><td class='w'>TPU only</td></tr><tr><td class='k'>writing your own kernel</td><td>Pallas, lowering via Mosaic</td><td>CUDA C++, Triton, CUTLASS</td><td>HIP, Triton, composable_kernel</td><td>TPC-C</td><td class='w'>both</td></tr><tr><td class='k'>collectives</td><td>XLA collectives in libtpu</td><td>NCCL</td><td>RCCL</td><td>HCCL</td><td class='w'>both</td></tr><tr><td class='k'>the runtime</td><td>libtpu</td><td>CUDA driver</td><td>ROCm and HSA</td><td>SynapseAI runtime</td><td class='w'>both</td></tr><tr><td class='k'>what is on this box?</td><td>jax.devices(), gcloud tpus list</td><td>nvidia-smi</td><td>rocm-smi</td><td>hl-smi</td><td class='w'>both</td></tr><tr><td class='k'>the profiler</td><td>jax.profiler, xprof</td><td>Nsight Systems and Compute</td><td>rocprof, Omnitrace</td><td>Habana profiler</td><td class='w'>neither yet</td></tr><tr><td class='k'>getting one at all</td><td>gcloud compute tpus tpu-vm create</td><td>GKE device plugin, nvidia-docker</td><td>k8s AMD device plugin</td><td>k8s Habana plugin</td><td class='w'>both</td></tr><tr><td class='k'>the async copy engine</td><td>SparseCore, and DMA via sync_copy</td><td>TMA on Hopper, cp.async before it</td><td>no direct equivalent</td><td>DMA engines</td><td class='w'>TPU only</td></tr></tbody></table></div>
+<p>Reading down the "touched here" column is the useful part. We have been through the whole Google
+stack and most of NVIDIA's, and have touched neither AMD's nor Intel's at all. That is the actual gap
+in this study, and it is a bigger gap than the difference between an A100 and an H100, which share
+every row of this table. If the goal is to know the frontier rather than to collect numbers, one
+MI300X run through ROCm teaches more than a second NVIDIA generation would.</p>
+<p>The last row is the one that ties back to our own result. A SparseCore and Hopper's TMA are both
+answers to "should moving data have its own engine, separate from the units doing arithmetic". Google
+built a whole coprocessor; NVIDIA built a descriptor-driven copy engine inside the SM. Our gather
+measurement is a way of asking which of those bets pays, and on the third architecture, AMD's, the
+answer is currently "neither".</p>
+
+<h2>5. Terminology that has actually cost us something</h2>
 <ul><li><b>v5p-8 is four chips, not eight.</b> For v5p and v4 the suffix counts TensorCores, two per chip. Our budget guard billed a v5p-8 as eight v6e chips, $11.23/hr against a real $5.04, which is about $2,400 of imaginary spend across three weeks and enough to trigger a false shutdown.</li><li><b>There is no v6p.</b> The line is v5p, then v6e, then v7 Ironwood. Generation six shipped only the efficiency part, so v5p's 95 GB per chip is still the most memory a student can get.</li><li><b>JAX process 0 is not gcloud worker 0.</b> On a multi-host slice the process that writes your results file is whichever host JAX called rank 0, and it moves. Our results landed on worker 2 and then worker 3 on consecutive runs.</li><li><b>Quota, capacity, permission and service account are four separate gates.</b> We had 32 A100s of quota, no ability to call compute.instances.create, and got an A100 anyway by asking GKE Autopilot for one, because the node is created by Google's service agent rather than by us. Each gate has to be tested separately; none implies the others.</li><li><b>A collective that works on a whole slice can fail on a subset of it.</b> jax.lax.psum under shard_map returned INTERNAL: RET_CHECK failure for 8- and 16-chip sub-meshes of a v6e-256, on 8 of 48 configurations, while all_to_all succeeded on exactly the same meshes.</li><li><b>The timing process must own a chip in the mesh.</b> Selecting a sub-mesh the calling process owns nothing in measures a no-op. That produced an impossible 3.5 TB/s reading here before we caught it.</li></ul>
 <p>Every one of these is in here because it wasted our time or our money first, which is the only
 reason a list like this is worth writing down.</p>

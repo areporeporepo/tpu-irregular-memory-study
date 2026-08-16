@@ -100,6 +100,29 @@ PARALLELISM = [
      "links, which means TP inside a host or a small hop count, DP outermost."),
 ]
 
+
+# layer, Google TPU, NVIDIA, AMD, Intel Gaudi, whether this study has actually touched it
+STACKS = [
+    ("the framework", "JAX, or PyTorch/XLA", "PyTorch, or JAX on CUDA",
+     "PyTorch, ROCm build", "PyTorch + habana_frameworks", "both"),
+    ("the compiler", "XLA, not optional", "Inductor, TensorRT, nvcc",
+     "Inductor on ROCm, hipcc", "SynapseAI graph compiler", "both"),
+    ("the IR you read when confused", "StableHLO, then LLO", "PTX, then SASS",
+     "LLVM IR, then GCN ISA", "not public", "TPU only"),
+    ("writing your own kernel", "Pallas, lowering via Mosaic", "CUDA C++, Triton, CUTLASS",
+     "HIP, Triton, composable_kernel", "TPC-C", "both"),
+    ("collectives", "XLA collectives in libtpu", "NCCL", "RCCL", "HCCL", "both"),
+    ("the runtime", "libtpu", "CUDA driver", "ROCm and HSA", "SynapseAI runtime", "both"),
+    ("what is on this box?", "jax.devices(), gcloud tpus list", "nvidia-smi", "rocm-smi", "hl-smi",
+     "both"),
+    ("the profiler", "jax.profiler, xprof", "Nsight Systems and Compute",
+     "rocprof, Omnitrace", "Habana profiler", "neither yet"),
+    ("getting one at all", "gcloud compute tpus tpu-vm create", "GKE device plugin, nvidia-docker",
+     "k8s AMD device plugin", "k8s Habana plugin", "both"),
+    ("the async copy engine", "SparseCore, and DMA via sync_copy",
+     "TMA on Hopper, cp.async before it", "no direct equivalent", "DMA engines", "TPU only"),
+]
+
 GOTCHAS = [
     ("v5p-8 is four chips, not eight",
      "For v5p and v4 the suffix counts TensorCores, two per chip. Our budget guard billed a v5p-8 as "
@@ -179,6 +202,9 @@ def main() -> None:
         f"<td>{cost}</td><td class='w'>{note}</td></tr>"
         for n, notation, shards, cost, note in PARALLELISM)
     got = "".join(f"<li><b>{t}.</b> {d}</li>" for t, d in GOTCHAS)
+    stacks = "".join(
+        f"<tr><td class='k'>{l}</td><td>{g}</td><td>{n}</td><td>{a}</td><td>{i}</td>"
+        f"<td class='w'>{t}</td></tr>" for l, g, n, a, i, t in STACKS)
     cost_rows = "".join(f"<tr><td>{what}</td><td class='n'>{ms}</td><td class='n'>{gbs}</td></tr>"
                         for what, ms, gbs in costs) or \
         "<tr><td colspan='3'>no fabric sweep collected yet</td></tr>"
@@ -277,7 +303,26 @@ of thumb. Second, and more practically: a mesh spanning four hosts ran 1.44&time
 same number of chips inside two hosts, independent of chip count. Where your groups land on host
 boundaries is worth as much as which strategy you chose.</p>
 
-<h2>4. Terminology that has actually cost us something</h2>
+<h2>4. The same stack, layer by layer, in four vendors' words</h2>
+<p>This is the table we wish had existed when this study started. Each row is one layer you have to
+touch to get a measurement out of a chip, and each column is what you actually type. The last column
+is honest about which of these we have run on real hardware rather than read about.</p>
+<div class="scroll"><table>
+ <thead><tr><th>the layer</th><th>Google TPU</th><th>NVIDIA</th><th>AMD</th><th>Intel Gaudi</th>
+  <th>touched here?</th></tr></thead>
+ <tbody>{stacks}</tbody></table></div>
+<p>Reading down the "touched here" column is the useful part. We have been through the whole Google
+stack and most of NVIDIA's, and have touched neither AMD's nor Intel's at all. That is the actual gap
+in this study, and it is a bigger gap than the difference between an A100 and an H100, which share
+every row of this table. If the goal is to know the frontier rather than to collect numbers, one
+MI300X run through ROCm teaches more than a second NVIDIA generation would.</p>
+<p>The last row is the one that ties back to our own result. A SparseCore and Hopper's TMA are both
+answers to "should moving data have its own engine, separate from the units doing arithmetic". Google
+built a whole coprocessor; NVIDIA built a descriptor-driven copy engine inside the SM. Our gather
+measurement is a way of asking which of those bets pays, and on the third architecture, AMD's, the
+answer is currently "neither".</p>
+
+<h2>5. Terminology that has actually cost us something</h2>
 <ul>{got}</ul>
 <p>Every one of these is in here because it wasted our time or our money first, which is the only
 reason a list like this is worth writing down.</p>
