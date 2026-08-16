@@ -1,0 +1,26 @@
+budget_ledger.json
+  h_ed8409725be97e 4,89-94,97
+data/fabric_20260816T192359Z.json
+  h_ed8409725be97e 1-181
+data/gather_20260816T192359Z.json
+  h_ed8409725be97e 1-177
+gather-cliff.html
+  h_ed8409725be97e 66
+index.html
+  h_ed8409725be97e 62,66,68
+roadmap.html
+  h_ed8409725be97e 54
+torus-shape.html
+  h_ed8409725be97e 46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4dbd6fef16405e75c2b1742808eeb131d0282a32",
+  "prompts": {},
+  "humans": {
+    "h_ed8409725be97e": {
+      "author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
