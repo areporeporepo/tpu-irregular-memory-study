@@ -117,8 +117,19 @@ def publish_health() -> dict:
             return ""
 
     unpushed = git("rev-list", "--count", "origin/main..HEAD")
+    last = git("log", "-1", "--format=%cI", "origin/main")
+    # The page is generated *before* the cycle pushes it, so "unpushed > 0" is the normal state and
+    # warning on it would cry wolf on every single build. What matters is whether publishing has
+    # stopped, so warn on the age of the last successful push instead.
+    stale_minutes = None
+    if last:
+        try:
+            stale_minutes = (datetime.now(timezone.utc)
+                             - datetime.fromisoformat(last)).total_seconds() / 60
+        except ValueError:
+            stale_minutes = None
     return {"unpushed": int(unpushed) if unpushed.isdigit() else 0,
-            "last_published": git("log", "-1", "--format=%cI", "origin/main"),
+            "last_published": last, "stale_minutes": stale_minutes,
             "head": git("log", "-1", "--format=%h", "HEAD")}
 
 
@@ -186,7 +197,9 @@ def render() -> str:
         for f in fleet) or "<tr><td colspan='4' class='na'>no live TPUs</td></tr>"
 
     stale = ""
-    if health["unpushed"]:
+    # 90 minutes is four missed cycles: long enough that a slow or skipped cycle does not trigger it,
+    # short enough that a reader is told before the numbers are badly out of date.
+    if health["unpushed"] and (health["stale_minutes"] or 0) > 90:
         when = health["last_published"][:16].replace("T", " ") or "unknown"
         stale = (f'<p class="stale">This page is behind. {health["unpushed"]} '
                  f'{"commit" if health["unpushed"] == 1 else "commits"} of measurements exist '
