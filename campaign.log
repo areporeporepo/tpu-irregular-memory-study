@@ -9,3 +9,4 @@
 11:06:37Z collected the 256-chip curve from worker 1
 11:06:37Z burst complete
 11:06:37Z deleting anh-big-256 (this is the expensive part, so it happens unconditionally)
+11:11:32Z deleted anh-big-256
