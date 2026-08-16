@@ -6,3 +6,9 @@
 {"at":"2026-08-16T11:51:53Z","dow":7,"hour":11,"zone":"us-central1-a","size":8,"verdict":"no_capacity","seconds":42}
 {"at":"2026-08-16T11:51:53Z","dow":7,"hour":11,"zone":"europe-west4-a","size":8,"verdict":"no_capacity","seconds":161}
 {"at":"2026-08-16T11:51:53Z","dow":7,"hour":11,"zone":"asia-northeast1-b","size":8,"verdict":"available","seconds":218}
+{"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"us-east1-d","size":8,"verdict":"available","seconds":296}
+{"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"us-east5-a","size":8,"verdict":"no_capacity","seconds":23}
+{"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"us-east5-b","size":8,"verdict":"no_capacity","seconds":60}
+{"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"us-east5-c","size":8,"verdict":"quota","seconds":49}
+{"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"us-south1-a","size":8,"verdict":"no_capacity","seconds":7}
+{"at":"2026-08-16T12:12:23Z","dow":7,"hour":12,"zone":"us-central1-a","size":8,"verdict":"no_capacity","seconds":30}
