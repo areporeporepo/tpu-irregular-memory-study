@@ -1,0 +1,27 @@
+teaching-accelerators.html
+  s_67b1e088a6a194::t_5762caeef73149 92-134
+  s_67b1e088a6a194::t_d2cab084aa34b3 1-91,135-332
+  s_67b1e088a6a194::t_f90137b8ff8afb 333-338
+logbook.jsonl
+  s_67b1e088a6a194::t_4699f74543ca1e 51-53
+budget_ledger.json
+  s_67b1e088a6a194::t_0025a177dc4133 4,17-22,25
+campaign.log
+  s_67b1e088a6a194::t_7cc8ee5d53a25d 61-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "93000b57925761acaf103752f3ee43134d719e46",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
