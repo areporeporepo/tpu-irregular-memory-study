@@ -1,0 +1,21 @@
+MARKET_MECHANISMS.md
+  s_67b1e088a6a194::t_9c5dceabf502e4 1-84
+logbook.jsonl
+  s_67b1e088a6a194::t_5c7056df9b5354 24-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "31b71c1b21f9f9c82e2f4de87e91ce1f1e1ffcb4",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
