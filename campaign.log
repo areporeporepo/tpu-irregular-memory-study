@@ -85,3 +85,54 @@ availability series now 16 observations
   asia-northeast1-b  v6e-8   available      165s
 2026-08-16T17:17:42Z another cycle is still running, skipping
 availability series now 24 observations
+2026-08-16T17:32:43Z cycle 20260816T173234Z: running fabric collectives on anh-v5p-32 in us-east5-a
+2026-08-16T17:35:31Z cycle 20260816T173234Z: collected 16 fabric records from w2
+2026-08-16T17:35:32Z cycle 20260816T173234Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T17:36:30Z cycle 20260816T173234Z: collected local gather results
+2026-08-16T17:36:30+00:00: 45 chips project-wide, 8 held by 1 peers, zones=['us-east1-d', 'us-east5-a', 'us-west4-a']
+wrote /Users/an/tpu-irregular-memory-study/gather-cliff.html with 4 series
+wrote /Users/an/tpu-irregular-memory-study/roadmap.html: 10 chips, 11 sourced figures, budgets 47.94/95.94 MiB
+2026-08-16T17:36:49Z cycle 20260816T173234Z: push failed (local pages), will retry next cycle
+wrote /Users/an/tpu-irregular-memory-study/cluster.html: ours=37 chips, peers=8 chips across 1 holders, 4 GKE workloads, 22 nodes
+2026-08-16T17:37:13Z cycle 20260816T173234Z: push failed (live pages), will retry next cycle
+2026-08-16T17:37:13Z cycle 20260816T173234Z: done
+2026-08-16T17:37:48Z cycle 20260816T173732Z: running fabric collectives on anh-v5p-32 in us-east5-a
+2026-08-16T17:40:47Z cycle 20260816T173732Z: collected 16 fabric records from w2
+2026-08-16T17:40:49Z cycle 20260816T173732Z: running local gather on anh-dev1 in us-east1-d
+2026-08-16T17:41:51Z cycle 20260816T173732Z: collected local gather results
+2026-08-16T17:41:51+00:00: 29 chips project-wide, 8 held by 1 peers, zones=['us-east1-d', 'us-east5-a', 'us-west4-a']
+wrote /Users/an/tpu-irregular-memory-study/gather-cliff.html with 4 series
+wrote /Users/an/tpu-irregular-memory-study/roadmap.html: 10 chips, 11 sourced figures, budgets 47.94/95.94 MiB
+2026-08-16T17:42:24Z cycle 20260816T173732Z: push failed (local pages), will retry next cycle
+Traceback (most recent call last):
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 208, in <module>
+    main()
+    ~~~~^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 104, in main
+    clusters, tpus = survey_clusters(), survey_tpus()
+                     ~~~~~~~~~~~~~~~^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 68, in survey_clusters
+    nodes = [l for l in sh(["kubectl", "get", "nodes", "--no-headers"]).splitlines() if l.strip()]
+                        ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/an/tpu-irregular-memory-study/build_cluster_dashboard.py", line 41, in sh
+    return subprocess.run(args, capture_output=True, text=True, timeout=timeout).stdout
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 555, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'kubectl'
+2026-08-16T17:42:27Z cycle 20260816T173732Z: cluster page failed
+2026-08-16T17:42:33Z cycle 20260816T173732Z: push failed (live pages), will retry next cycle
+2026-08-16T17:42:33Z cycle 20260816T173732Z: done

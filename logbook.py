@@ -86,6 +86,42 @@ def fleet_state() -> tuple[list[dict], float]:
     return rows, burn
 
 
+def chips_for(accel: str) -> int:
+    """Chips in an accelerator type, which is not always the number in its name.
+
+    v5e and v6e count chips in the suffix. v5p and v4 count TensorCores and put two on a chip, so
+    `v5p-32` is sixteen chips, which JAX confirms. The same helper lives in budget_guard.py,
+    observe_contention.py and build_cluster_dashboard.py; all four read this wrong at first and
+    doubled every v5p slice.
+    """
+    tail = accel.rsplit("-", 1)[-1]
+    if not tail.isdigit():
+        return 1
+    n = int(tail)
+    return n // 2 if accel.startswith(("v5p-", "v4-")) else n
+
+
+def publish_health() -> dict:
+    """Is what you are reading actually current?
+
+    A page that regenerates every twenty minutes but cannot push is worse than a page with a date on
+    it, because it looks live and is not. On 2026-08-16 the stored GitHub credential disappeared and
+    every cycle logged "push failed" while the published site stayed frozen for hours. This puts that
+    state on the page itself rather than leaving it in a log nobody reads.
+    """
+    def git(*args: str) -> str:
+        try:
+            return subprocess.run(["git", "-C", str(HERE), *args], capture_output=True,
+                                  text=True, timeout=30).stdout.strip()
+        except Exception:
+            return ""
+
+    unpushed = git("rev-list", "--count", "origin/main..HEAD")
+    return {"unpushed": int(unpushed) if unpushed.isdigit() else 0,
+            "last_published": git("log", "-1", "--format=%cI", "origin/main"),
+            "head": git("log", "-1", "--format=%h", "HEAD")}
+
+
 def latest_fabric() -> tuple[dict, str]:
     """The most recent complete fabric sweep, keyed by (op, chips, payload)."""
     files = sorted(DATA.glob("fabric*.json"))
@@ -111,8 +147,8 @@ def render() -> str:
     spent = ledger.get("spent", 0.0)
     spendable = ledger.get("total", 20000) - ledger.get("reserve", 3000)
     table, source = latest_fabric()
-    chips = sum(int(f["accel"].split("-")[-1]) if f["accel"].split("-")[-1].isdigit() else 1
-                for f in fleet)
+    health = publish_health()
+    chips = sum(chips_for(f["accel"]) for f in fleet)
     runway = (spendable - spent) / burn if burn else 0.0
     cycles = len(list(DATA.glob("fabric*.json")))
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -148,6 +184,15 @@ def render() -> str:
         f"<tr><td class='op'>{html.escape(f['name'])}</td><td>{html.escape(f['accel'])}</td>"
         f"<td>{html.escape(f['zone'])}</td><td>{html.escape(f['state'])}</td></tr>"
         for f in fleet) or "<tr><td colspan='4' class='na'>no live TPUs</td></tr>"
+
+    stale = ""
+    if health["unpushed"]:
+        when = health["last_published"][:16].replace("T", " ") or "unknown"
+        stale = (f'<p class="stale">This page is behind. {health["unpushed"]} '
+                 f'{"commit" if health["unpushed"] == 1 else "commits"} of measurements exist '
+                 f'locally that have not reached GitHub, so what you are reading was published at '
+                 f'{when} and the numbers above are newer than the ones on the site. The campaign '
+                 f'is still collecting; only publishing is stuck.</p>')
 
     return f"""<title>TPU Irregular Memory Study &middot; Logbook</title>
 <style>
@@ -201,7 +246,7 @@ def render() -> str:
   .detail{{margin-top:7px;font:13px/1.55 var(--mono);color:var(--ink-2);
            background:var(--surface-2);padding:9px 11px;border-radius:7px;white-space:pre-wrap}}
   footer{{padding:36px 0 60px;color:var(--ink-3);font-size:13px}}
-  .nav{{line-height:2.1;max-width:82ch}}
+  .nav{{line-height:2.1;max-width:82ch}}\n  .stale{{margin:18px 0 0;padding:11px 14px;border:1px solid var(--accent);\n    border-radius:10px;background:var(--accent-soft);color:var(--ink);\n    font:13.5px/1.55 var(--sans);max-width:82ch}}
   .nav a{{font-weight:620}}
   a{{color:var(--ink)}}
 </style>
@@ -216,6 +261,7 @@ def render() -> str:
     <div class="kpi"><span class="v">{cycles}</span><span class="k">sweeps collected</span></div>
     <div class="kpi"><span class="v">{len(entries)}</span><span class="k">log entries</span></div>
   </div>
+  {stale}
 </div></header>
 <div class="wrap">
   <h2>Pages</h2>

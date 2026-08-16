@@ -73,9 +73,23 @@ t() {
 
 # A gcloud left over from a previous cycle that outlived its deadline holds nothing useful and may
 # hold the TPU. Half an hour is well beyond any healthy call and well short of a wedge.
+#
+# macOS ps has no `etimes`, only `etime` as [[DD-]HH:]MM:SS. The first version of this used etimes,
+# which made ps print its keyword list to stderr and return nothing, so the reaper silently never
+# reaped anything and filled launchd.err.log with "integer expression expected". Parse etime.
+age_seconds() {
+  ps -o etime= -p "$1" 2>/dev/null | tr -d ' ' | awk -F'[-:]' '
+    NF==4 { print $1*86400 + $2*3600 + $3*60 + $4; next }
+    NF==3 { print $1*3600 + $2*60 + $3; next }
+    NF==2 { print $1*60 + $2; next }
+    { print 0 }'
+}
 for p in $(pgrep -f "gcloud.py compute tpus" 2>/dev/null); do
-  age=$(ps -o etimes= -p "$p" 2>/dev/null | tr -d ' ')
-  if [ -n "$age" ] && [ "$age" -gt 1800 ]; then
+  age=$(age_seconds "$p")
+  case "${age:-x}" in
+    ''|*[!0-9]*) continue ;;
+  esac
+  if [ "$age" -gt 1800 ]; then
     kill -9 "$p" 2>/dev/null && say "reaped orphaned gcloud pid $p, ${age}s old"
   fi
 done
