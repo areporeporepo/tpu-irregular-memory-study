@@ -1,0 +1,25 @@
+data/contention.jsonl
+  s_67b1e088a6a194::t_ff576958bd81cc 7
+budget_ledger.json
+  s_67b1e088a6a194::t_32528d121e95aa 65-72,75
+  s_67b1e088a6a194::t_23f2319aeef334 73-74
+  s_67b1e088a6a194::t_0da5ea78adf9a1 76
+data/gather_20260816T184255Z.json
+  s_67b1e088a6a194::t_8bfba7d2c81cd6 1-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e75d12a834e62ee1f0ba627b849e348648d113c7",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
