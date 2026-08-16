@@ -1,0 +1,27 @@
+experiment5_index_order.py
+  s_67b1e088a6a194::t_43e9ee9ee82453 1-89
+verify.py
+  s_67b1e088a6a194::t_7f87ef7404a3e5 1-163
+experiment4_geometry.py
+  s_67b1e088a6a194::t_23c012da6c271d 1-140
+logbook.jsonl
+  s_67b1e088a6a194::t_42432e3b058fa1 20-23
+campaign.log
+  s_67b1e088a6a194::t_861eb93d8c4238 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c422502d968941f6ab6e060667b64fc3326c2e25",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
