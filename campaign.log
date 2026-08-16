@@ -10,3 +10,4 @@
 11:06:37Z burst complete
 11:06:37Z deleting anh-big-256 (this is the expensive part, so it happens unconditionally)
 11:11:32Z deleted anh-big-256
+2026-08-16T11:21:21Z cycle 20260816T112105Z: running fabric collectives on anh-v6e-32 in us-east1-d
