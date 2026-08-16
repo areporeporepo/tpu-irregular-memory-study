@@ -1,0 +1,25 @@
+data/availability.jsonl
+  s_67b1e088a6a194::t_0a943b4d852a3d 12-14
+  s_67b1e088a6a194::t_f6524bd09810ee 9-11
+campaign.log
+  s_67b1e088a6a194::t_0a943b4d852a3d 47-49
+  s_67b1e088a6a194::t_711749dd0dc596 44-46
+logbook.jsonl
+  s_67b1e088a6a194::t_0dbed5b6c083ea 44-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3f8c207f8a8d474df8074f11d199b2294eb53b75",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
