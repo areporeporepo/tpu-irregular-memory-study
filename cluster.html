@@ -1,0 +1,71 @@
+<title>Class Hardware Right Now</title>
+<style>
+ :root{--bg:#fcfcfb;--surface:#fff;--ink:#1c1c20;--ink-2:#4a4a52;--ink-3:#75757f;--line:#d8d5d0;
+   --accent:#b4531f;--mono:ui-monospace,"SF Mono",Menlo,monospace;
+   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111113;--surface:#1a1a19;
+   --ink:#f0efec;--ink-2:#b6b5b0;--ink-3:#85848c;--line:#2e2e33;--accent:#e08a4c}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans)}
+ .wrap{max-width:940px;margin:0 auto;padding:0 22px}
+ header{padding:50px 0 24px;border-bottom:1px solid var(--line)}
+ h1{font-size:clamp(28px,4.6vw,42px);letter-spacing:-.03em;margin:0 0 10px;font-weight:680}
+ h2{font-size:15px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+   margin:38px 0 10px;font-weight:620}
+ .sub{color:var(--ink-3);font:500 13px var(--mono)}
+ p{margin:0 0 13px;max-width:74ch;color:var(--ink-2)}
+ .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:22px}
+ .tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+ .tile .v{font:660 27px/1.1 var(--mono);letter-spacing:-.02em;display:block}
+ .tile .k{font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;
+   color:var(--ink-3);margin-top:6px;display:block}
+ table{width:100%;border-collapse:collapse;font:13px var(--mono);background:var(--surface);
+   border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:8px}
+ th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+ th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+ .n{text-align:right} .scroll{overflow-x:auto}
+ footer{padding:32px 0 60px;color:var(--ink-3);font-size:13px} a{color:var(--ink)}
+</style>
+<header><div class="wrap">
+ <h1>Class Hardware Right Now</h1>
+ <p class="sub">2026-08-16 15:51 UTC &middot; project soe-hpccenter &middot;
+ regenerated every campaign cycle</p>
+ <div class="tiles">
+  <div class="tile"><span class="v">25</span><span class="k">chips, ours</span></div>
+  <div class="tile"><span class="v">8</span><span class="k">chips, peers</span></div>
+  <div class="tile"><span class="v">1</span><span class="k">other holders</span></div>
+  <div class="tile"><span class="v">4</span><span class="k">GKE workloads</span></div>
+  <div class="tile"><span class="v">22</span><span class="k">cluster nodes</span></div>
+ </div>
+</div></header>
+<div class="wrap">
+ <p>Two ways to get hardware here, and they behave differently. Direct <span class="mono">tpu-vm
+ create</span> is what everyone uses and what shows up in the second table. The four GKE Autopilot
+ clusters are the multi-tenant path, and a student workload there would appear in the third table.
+ Both are visible to every project member, which is what makes this page possible.</p>
+
+ <h2>GKE clusters</h2>
+ <div class="scroll"><table>
+  <thead><tr><th>cluster</th><th>region</th><th class="n">nodes</th><th class="n">TPU nodes</th>
+   <th class="n">user pods</th><th class="n">system pods</th></tr></thead>
+  <tbody><tr><td>east5</td><td>us-east5</td><td class='n'>10</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>171</td></tr><tr><td>south1</td><td>us-south1</td><td class='n'>10</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>172</td></tr><tr><td>west4</td><td>us-west4</td><td class='n'>1</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>27</td></tr><tr><td>central1</td><td>us-central1</td><td class='n'>1</td><td class='n'>&mdash;</td><td class='n'>1</td><td class='n'>27</td></tr></tbody></table></div>
+ <p class="sub" style="margin-top:8px">System pods are GKE's own: metrics collectors, CNI, logging.
+ A cluster with many nodes and no user pods is idle, not busy.</p>
+
+ <h2>TPU VMs across every zone</h2>
+ <div class="scroll"><table>
+  <thead><tr><th>holder</th><th>type</th><th>zone</th><th>state</th><th class="n">chips</th></tr></thead>
+  <tbody><tr><td>us</td><td>v6e-1</td><td>us-east1-d</td><td>READY</td><td class='n'>1</td></tr><tr><td>us</td><td>v6e-16</td><td>us-east1-d</td><td>READY</td><td class='n'>16</td></tr><tr><td>us</td><td>v5p-8</td><td>us-east5-a</td><td>DELETING</td><td class='n'>8</td></tr><tr><td>peer-e54565</td><td>v5litepod-8</td><td>us-west4-a</td><td>READY</td><td class='n'>8</td></tr></tbody></table></div>
+
+ <h2>GKE workloads in non-system namespaces</h2>
+ <div class="scroll"><table>
+  <thead><tr><th>namespace</th><th>pod</th><th>status</th></tr></thead>
+  <tbody><tr><td>kueue-system</td><td>kueue-controller-manager-86b69d4f98-x2cwq</td><td>Running</td></tr><tr><td>kueue-system</td><td>kueue-controller-manager-86b69d4f98-rm8zg</td><td>Running</td></tr><tr><td>kueue-system</td><td>kueue-controller-manager-6b9cc58d5c-8gb6t</td><td>Running</td></tr><tr><td>kueue-system</td><td>kueue-controller-manager-86b69d4f98-nlb98</td><td>Running</td></tr></tbody></table></div>
+</div>
+<footer><div class="wrap">
+ Written by <span class="mono">build_cluster_dashboard.py</span> from the same cycle that collects
+ measurements, so this page is never older than twenty minutes. Peer names are hashed; the history
+ accumulates in <span class="mono">data/cluster_state.jsonl</span>. Companion pages:
+ <a href="./">the measurement log</a>, <a href="./models.html">what we can run</a>,
+ <a href="./teaching-accelerators.html">where does the data live</a>.
+</div></footer>

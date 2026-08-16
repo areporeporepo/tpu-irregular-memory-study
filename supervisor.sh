@@ -179,8 +179,10 @@ fi
 # ---------------------------------------------------------------- publish
 # The logbook page is generated, never hand-edited, so it can be rebuilt and pushed every cycle.
 python3 "$STUDY/logbook.py" build >/dev/null 2>&1
+# Who is holding the class hardware, refreshed on the same cycle as the measurements.
+python3 "$STUDY/build_cluster_dashboard.py" >> "$LOG" 2>&1
 if [ -n "$(git -C "$STUDY" status --porcelain data index.html logbook.jsonl budget_ledger.json 2>/dev/null)" ]; then
-  git -C "$STUDY" add data index.html logbook.jsonl budget_ledger.json >/dev/null 2>&1
+  git -C "$STUDY" add data index.html cluster.html logbook.jsonl budget_ledger.json >/dev/null 2>&1
   git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \
     commit -q -m "campaign cycle $STAMP" >/dev/null 2>&1
   if git -C "$STUDY" push -q origin main >/dev/null 2>&1; then

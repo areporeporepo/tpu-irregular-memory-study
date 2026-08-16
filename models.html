@@ -45,13 +45,70 @@
 </style>
 <header><div class="wrap">
  <h1>What We Can Actually Run</h1>
- <p class="sub">generated 2026-08-16 15:29 UTC &middot; live OpenRouter prices &middot; v6e spot $1.4033/chip-hour</p>
+ <p class="sub">generated 2026-08-16 15:35 UTC &middot; live OpenRouter prices &middot; v6e spot $1.4033/chip-hour</p>
 </div></header>
 <div class="wrap">
  <p>Two filters, in order. A model must be <strong>listed on OpenRouter</strong>, so it has a
  published price to measure our cost against instead of a vendor claim, and it must
  <strong>fit on chips we can obtain</strong>. Trending on HuggingFace is not a criterion: the
  current trending flagship is a 2.4-trillion-parameter mixture needing about ninety v6e chips.</p>
+
+ <h2>The intelligence frontier is closed</h2>
+ <div class="legend">
+   <span><span class="key k1"></span>open weights</span>
+   <span><span class="key k2"></span>closed, API only</span>
+ </div>
+ <figure><svg viewBox="0 0 900 446" width="100%" role="img" aria-label="Artificial Analysis Intelligence Index for the top ten models, marked by whether weights are published">
+<line class="thresh" style="stroke:var(--grid);stroke-dasharray:none" x1="210.0" y1="26" x2="210.0" y2="406"/>
+<text class="thresh-v" x="210.0" y="424" text-anchor="middle">54</text>
+<line class="thresh" style="stroke:var(--grid);stroke-dasharray:none" x1="318.0" y1="26" x2="318.0" y2="406"/>
+<text class="thresh-v" x="318.0" y="424" text-anchor="middle">56</text>
+<line class="thresh" style="stroke:var(--grid);stroke-dasharray:none" x1="426.0" y1="26" x2="426.0" y2="406"/>
+<text class="thresh-v" x="426.0" y="424" text-anchor="middle">58</text>
+<line class="thresh" style="stroke:var(--grid);stroke-dasharray:none" x1="534.0" y1="26" x2="534.0" y2="406"/>
+<text class="thresh-v" x="534.0" y="424" text-anchor="middle">60</text>
+<line class="thresh" style="stroke:var(--grid);stroke-dasharray:none" x1="642.0" y1="26" x2="642.0" y2="406"/>
+<text class="thresh-v" x="642.0" y="424" text-anchor="middle">62</text>
+<line class="thresh" style="stroke:var(--grid);stroke-dasharray:none" x1="750.0" y1="26" x2="750.0" y2="406"/>
+<text class="thresh-v" x="750.0" y="424" text-anchor="middle">64</text>
+<text class="cat" x="198" y="52" text-anchor="end">Claude Opus 5</text>
+<rect class="kv" x="210.0" y="32" width="491.4" height="30" rx="4"><title>Claude Opus 5 by anthropic: index 63.1, closed weights, API only</title></rect>
+<text class="val" x="709.4" y="52">63.1</text>
+<text class="cat" x="198" y="90" text-anchor="end">Claude Fable 5</text>
+<rect class="kv" x="210.0" y="70" width="437.4" height="30" rx="4"><title>Claude Fable 5 by anthropic: index 62.1, closed weights, API only</title></rect>
+<text class="val" x="655.4" y="90">62.1</text>
+<text class="cat" x="198" y="128" text-anchor="end">GPT-5.6 Sol</text>
+<rect class="kv" x="210.0" y="108" width="372.6" height="30" rx="4"><title>GPT-5.6 Sol by openai: index 60.9, closed weights, API only</title></rect>
+<text class="val" x="590.6" y="128">60.9</text>
+<text class="cat" x="198" y="166" text-anchor="end">Grok 4.6</text>
+<rect class="kv" x="210.0" y="146" width="372.6" height="30" rx="4"><title>Grok 4.6 by x-ai: index 60.9, closed weights, API only</title></rect>
+<text class="val" x="590.6" y="166">60.9</text>
+<text class="cat" x="198" y="204" text-anchor="end">Kimi K3</text>
+<rect class="w" x="210.0" y="184" width="307.8" height="30" rx="4"><title>Kimi K3 by moonshotai: index 59.7, open weights</title></rect>
+<text class="val" x="525.8" y="204">59.7  open, 2800B — needs ~193+ chips</text>
+<text class="cat" x="198" y="242" text-anchor="end">Qwen3.8 Max</text>
+<rect class="w" x="210.0" y="222" width="221.4" height="30" rx="4"><title>Qwen3.8 Max by qwen: index 58.1, open weights</title></rect>
+<text class="val" x="439.4" y="242">58.1  open, size unpublished</text>
+<text class="cat" x="198" y="280" text-anchor="end">Claude Opus 4.8</text>
+<rect class="kv" x="210.0" y="260" width="178.2" height="30" rx="4"><title>Claude Opus 4.8 by anthropic: index 57.3, closed weights, API only</title></rect>
+<text class="val" x="396.2" y="280">57.3</text>
+<text class="cat" x="198" y="318" text-anchor="end">GPT-5.6 Terra</text>
+<rect class="kv" x="210.0" y="298" width="140.4" height="30" rx="4"><title>GPT-5.6 Terra by openai: index 56.6, closed weights, API only</title></rect>
+<text class="val" x="358.4" y="318">56.6</text>
+<text class="cat" x="198" y="356" text-anchor="end">GPT-5.5</text>
+<rect class="kv" x="210.0" y="336" width="124.2" height="30" rx="4"><title>GPT-5.5 by openai: index 56.3, closed weights, API only</title></rect>
+<text class="val" x="342.2" y="356">56.3</text>
+<text class="cat" x="198" y="394" text-anchor="end">Gemini 3.7 Flash</text>
+<rect class="kv" x="210.0" y="374" width="108.0" height="30" rx="4"><title>Gemini 3.7 Flash by google: index 56.0, closed weights, API only</title></rect>
+<text class="val" x="326.0" y="394">56.0</text>
+</svg>
+  <figcaption>Artificial Analysis Intelligence Index, as published in the chart OpenRouter embeds
+  on its rankings page. Bars start at 54 to show the spread; the axis is the index score.</figcaption>
+ </figure>
+ <p><strong>Eight of the top ten are closed-weight.</strong> The only two open models at the
+ frontier are Kimi K3 at 59.7 and Qwen3.8 Max at 58.1, and both are trillion-scale: K3 needs
+ roughly 190 chips in bf16, and Qwen3.8 Max does not publish its size. So the open frontier is
+ visible and unreachable at the same time, which is the honest summary of what a student can hold.</p>
 
  <h2>What the market is actually using, this week</h2>
  <div class="legend">
@@ -104,39 +161,83 @@
    <span><span class="key k1"></span>weights, bf16</span>
    <span><span class="key k2"></span>KV cache at 8,192 context, batch 32</span>
  </div>
- <figure><svg viewBox="0 0 900 312" width="100%" role="img" aria-label="Memory footprint of each model against chip capacity">
-<line class="thresh" x1="440.3" y1="34" x2="440.3" y2="266"/>
+ <figure><svg viewBox="0 0 900 796" width="100%" role="img" aria-label="Memory footprint of each model against chip capacity">
+<line class="thresh" x1="440.3" y1="34" x2="440.3" y2="750"/>
 <text class="thresh-l" x="440.3" y="26" text-anchor="middle">4 chips</text>
-<text class="thresh-v" x="440.3" y="282" text-anchor="middle">128 GB</text>
-<line class="thresh" x1="588.4" y1="34" x2="588.4" y2="266"/>
+<text class="thresh-v" x="440.3" y="766" text-anchor="middle">128 GB</text>
+<line class="thresh" x1="588.4" y1="34" x2="588.4" y2="750"/>
 <text class="thresh-l" x="588.4" y="26" text-anchor="middle">16 chips</text>
-<text class="thresh-v" x="588.4" y="282" text-anchor="middle">512 GB</text>
-<line class="thresh" x1="662.5" y1="34" x2="662.5" y2="266"/>
+<text class="thresh-v" x="588.4" y="766" text-anchor="middle">512 GB</text>
+<line class="thresh" x1="662.5" y1="34" x2="662.5" y2="750"/>
 <text class="thresh-l" x="662.5" y="26" text-anchor="middle">32 chips</text>
-<text class="thresh-v" x="662.5" y="282" text-anchor="middle">1.0 TB</text>
-<line class="thresh" x1="736.5" y1="34" x2="736.5" y2="266"/>
+<text class="thresh-v" x="662.5" y="766" text-anchor="middle">1.0 TB</text>
+<line class="thresh" x1="736.5" y1="34" x2="736.5" y2="750"/>
 <text class="thresh-l" x="736.5" y="26" text-anchor="middle">64 chips</text>
-<text class="thresh-v" x="736.5" y="282" text-anchor="middle">2.0 TB</text>
+<text class="thresh-v" x="736.5" y="766" text-anchor="middle">2.0 TB</text>
 <text class="cat" x="156" y="67" text-anchor="end">gpt-oss-20b</text>
 <rect class="w" x="168.0" y="44" width="153.3" height="34" rx="4"><title>gpt-oss-20b: weights 42 GB in bf16</title></rect>
 <rect class="kv" x="323.3" y="44" width="26.6" height="34" rx="4"><title>gpt-oss-20b: KV cache 13 GB at 8,192 context, batch 32</title></rect>
 <text class="val" x="357.9" y="67">55 GB</text>
-<text class="cat" x="156" y="111" text-anchor="end">Llama-4-Scout</text>
-<rect class="w" x="168.0" y="88" width="329.2" height="34" rx="4"><title>Llama-4-Scout: weights 218 GB in bf16</title></rect>
-<rect class="kv" x="499.2" y="88" width="20.7" height="34" rx="4"><title>Llama-4-Scout: KV cache 52 GB at 8,192 context, batch 32</title></rect>
-<text class="val" x="527.9" y="111">270 GB</text>
-<text class="cat" x="156" y="155" text-anchor="end">gpt-oss-120b</text>
-<rect class="w" x="168.0" y="132" width="336.8" height="34" rx="4"><title>gpt-oss-120b: weights 234 GB in bf16</title></rect>
-<rect class="kv" x="506.8" y="132" width="6.5" height="34" rx="4"><title>gpt-oss-120b: KV cache 19 GB at 8,192 context, batch 32</title></rect>
-<text class="val" x="521.2" y="155">253 GB</text>
-<text class="cat" x="156" y="199" text-anchor="end">Llama-4-Maverick</text>
-<rect class="w" x="168.0" y="176" width="468.1" height="34" rx="4"><title>Llama-4-Maverick: weights 800 GB in bf16</title></rect>
-<rect class="kv" x="638.1" y="176" width="4.7" height="34" rx="4"><title>Llama-4-Maverick: KV cache 52 GB at 8,192 context, batch 32</title></rect>
-<text class="val" x="650.8" y="199">852 GB</text>
-<text class="cat" x="156" y="243" text-anchor="end">DeepSeek-V3.2</text>
-<rect class="w" x="168.0" y="220" width="523.3" height="34" rx="4"><title>DeepSeek-V3.2: weights 1.3 TB in bf16</title></rect>
-<rect class="kv" x="693.3" y="220" width="3.1" height="34" rx="4"><title>DeepSeek-V3.2: KV cache 65 GB at 8,192 context, batch 32</title></rect>
-<text class="val" x="704.4" y="243">1.4 TB</text>
+<text class="cat" x="156" y="111" text-anchor="end">Nemotron-3-Nano-30B</text>
+<rect class="w" x="168.0" y="88" width="191.4" height="34" rx="4"><title>Nemotron-3-Nano-30B: weights 60 GB in bf16</title></rect>
+<rect class="kv" x="361.4" y="88" width="64.2" height="34" rx="4"><title>Nemotron-3-Nano-30B: KV cache 52 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="433.6" y="111">112 GB</text>
+<text class="cat" x="156" y="155" text-anchor="end">Nemotron-3.5-Light-30B</text>
+<rect class="w" x="168.0" y="132" width="191.4" height="34" rx="4"><title>Nemotron-3.5-Light-30B: weights 60 GB in bf16</title></rect>
+<rect class="kv" x="361.4" y="132" width="64.2" height="34" rx="4"><title>Nemotron-3.5-Light-30B: KV cache 52 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="433.6" y="155">112 GB</text>
+<text class="cat" x="156" y="199" text-anchor="end">Qwen3-30B-A3B</text>
+<rect class="w" x="168.0" y="176" width="193.2" height="34" rx="4"><title>Qwen3-30B-A3B: weights 61 GB in bf16</title></rect>
+<rect class="kv" x="363.2" y="176" width="35.6" height="34" rx="4"><title>Qwen3-30B-A3B: KV cache 26 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="406.8" y="199">87 GB</text>
+<text class="cat" x="156" y="243" text-anchor="end">Qwen3-32B</text>
+<rect class="w" x="168.0" y="220" width="198.3" height="34" rx="4"><title>Qwen3-32B: weights 64 GB in bf16</title></rect>
+<rect class="kv" x="368.3" y="220" width="75.9" height="34" rx="4"><title>Qwen3-32B: KV cache 69 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="452.2" y="243">133 GB</text>
+<text class="cat" x="156" y="287" text-anchor="end">Llama-3.3-70B</text>
+<rect class="w" x="168.0" y="264" width="281.9" height="34" rx="4"><title>Llama-3.3-70B: weights 140 GB in bf16</title></rect>
+<rect class="kv" x="451.9" y="264" width="49.1" height="34" rx="4"><title>Llama-3.3-70B: KV cache 86 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="509.0" y="287">226 GB</text>
+<text class="cat" x="156" y="331" text-anchor="end">Llama-4-Scout</text>
+<rect class="w" x="168.0" y="308" width="329.2" height="34" rx="4"><title>Llama-4-Scout: weights 218 GB in bf16</title></rect>
+<rect class="kv" x="499.2" y="308" width="20.7" height="34" rx="4"><title>Llama-4-Scout: KV cache 52 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="527.9" y="331">270 GB</text>
+<text class="cat" x="156" y="375" text-anchor="end">gpt-oss-120b</text>
+<rect class="w" x="168.0" y="352" width="336.8" height="34" rx="4"><title>gpt-oss-120b: weights 234 GB in bf16</title></rect>
+<rect class="kv" x="506.8" y="352" width="6.5" height="34" rx="4"><title>gpt-oss-120b: KV cache 19 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="521.2" y="375">253 GB</text>
+<text class="cat" x="156" y="419" text-anchor="end">Nemotron-3-Super-120B</text>
+<rect class="w" x="168.0" y="396" width="339.5" height="34" rx="4"><title>Nemotron-3-Super-120B: weights 240 GB in bf16</title></rect>
+<rect class="kv" x="509.5" y="396" width="18.8" height="34" rx="4"><title>Nemotron-3-Super-120B: KV cache 52 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="536.3" y="419">292 GB</text>
+<text class="cat" x="156" y="463" text-anchor="end">Qwen3-235B-A22B</text>
+<rect class="w" x="168.0" y="440" width="411.3" height="34" rx="4"><title>Qwen3-235B-A22B: weights 470 GB in bf16</title></rect>
+<rect class="kv" x="581.3" y="440" width="8.9" height="34" rx="4"><title>Qwen3-235B-A22B: KV cache 50 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="598.2" y="463">520 GB</text>
+<text class="cat" x="156" y="507" text-anchor="end">Llama-4-Maverick</text>
+<rect class="w" x="168.0" y="484" width="468.1" height="34" rx="4"><title>Llama-4-Maverick: weights 800 GB in bf16</title></rect>
+<rect class="kv" x="638.1" y="484" width="4.7" height="34" rx="4"><title>Llama-4-Maverick: KV cache 52 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="650.8" y="507">852 GB</text>
+<text class="cat" x="156" y="551" text-anchor="end">Nemotron-3-Ultra-550B</text>
+<rect class="w" x="168.0" y="528" width="502.1" height="34" rx="4"><title>Nemotron-3-Ultra-550B: weights 1.1 TB in bf16</title></rect>
+<rect class="kv" x="672.1" y="528" width="6.0" height="34" rx="4"><title>Nemotron-3-Ultra-550B: KV cache 86 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="686.1" y="551">1.2 TB</text>
+<text class="cat" x="156" y="595" text-anchor="end">DeepSeek-V3.2</text>
+<rect class="w" x="168.0" y="572" width="523.3" height="34" rx="4"><title>DeepSeek-V3.2: weights 1.3 TB in bf16</title></rect>
+<rect class="kv" x="693.3" y="572" width="3.1" height="34" rx="4"><title>DeepSeek-V3.2: KV cache 65 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="704.4" y="595">1.4 TB</text>
+<text class="cat" x="156" y="639" text-anchor="end">Kimi-K2.6</text>
+<rect class="w" x="168.0" y="616" width="566.0" height="34" rx="4"><title>Kimi-K2.6: weights 2.0 TB in bf16</title></rect>
+<rect class="kv" x="736.0" y="616" width="2.0" height="34" rx="4"><title>Kimi-K2.6: KV cache 65 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="745.4" y="639">2.1 TB</text>
+<text class="cat" x="156" y="683" text-anchor="end">Qwen3.8-2.4T-A95B</text>
+<rect class="w" x="168.0" y="660" width="659.5" height="34" rx="4"><title>Qwen3.8-2.4T-A95B: weights 4.8 TB in bf16</title></rect>
+<rect class="kv" x="829.5" y="660" width="2.0" height="34" rx="4"><title>Qwen3.8-2.4T-A95B: KV cache 86 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="837.4" y="683">4.9 TB</text>
+<text class="cat" x="156" y="727" text-anchor="end">Kimi-K3</text>
+<rect class="w" x="168.0" y="704" width="675.9" height="34" rx="4"><title>Kimi-K3: weights 5.6 TB in bf16</title></rect>
+<rect class="kv" x="845.9" y="704" width="2.0" height="34" rx="4"><title>Kimi-K3: KV cache 86 GB at 8,192 context, batch 32</title></rect>
+<text class="val" x="853.6" y="727">5.7 TB</text>
 </svg>
   <figcaption>Log scale. Dashed lines are the total HBM of 4, 16, 32 and 64 v6e chips at 32 GB
   each. A bar ending left of a line fits in that many chips, before the 10% reserved for compile
@@ -147,27 +248,60 @@
  overtakes the weights for every model here.</p>
 
  <h2>Would a token pay for itself?</h2>
- <figure><svg viewBox="0 0 900 312" width="100%" role="img" aria-label="Throughput per chip required to match market price, per model">
-<rect class="band" x="300.7" y="34" width="145.4" height="232"/>
+ <figure><svg viewBox="0 0 900 796" width="100%" role="img" aria-label="Throughput per chip required to match market price, per model">
+<rect class="band" x="300.7" y="34" width="145.4" height="716"/>
 <text class="band-l" x="373.4" y="26" text-anchor="middle">published v6e range</text>
-<text class="thresh-v" x="168.0" y="282" text-anchor="middle">100</text>
-<text class="thresh-v" x="446.1" y="282" text-anchor="middle">1,000</text>
-<text class="thresh-v" x="724.3" y="282" text-anchor="middle">10,000</text>
+<text class="thresh-v" x="168.0" y="766" text-anchor="middle">100</text>
+<text class="thresh-v" x="446.1" y="766" text-anchor="middle">1,000</text>
+<text class="thresh-v" x="724.3" y="766" text-anchor="middle">10,000</text>
 <text class="cat" x="156" y="67" text-anchor="end">gpt-oss-20b</text>
 <rect class="kv" x="168.0" y="44" width="410.8" height="34" rx="4"><title>gpt-oss-20b: needs 2,999 tok/s/chip to match $0.130 per million output tokens</title></rect>
 <text class="val" x="586.8" y="67">2,999 tok/s/chip</text>
-<text class="cat" x="156" y="111" text-anchor="end">Llama-4-Scout</text>
-<rect class="kv" x="168.0" y="88" width="309.8" height="34" rx="4"><title>Llama-4-Scout: needs 1,299 tok/s/chip to match $0.300 per million output tokens</title></rect>
-<text class="val" x="485.8" y="111">1,299 tok/s/chip</text>
-<text class="cat" x="156" y="155" text-anchor="end">gpt-oss-120b</text>
-<rect class="kv" x="168.0" y="132" width="378.4" height="34" rx="4"><title>gpt-oss-120b: needs 2,293 tok/s/chip to match $0.170 per million output tokens</title></rect>
-<text class="val" x="554.4" y="155">2,293 tok/s/chip</text>
-<text class="cat" x="156" y="199" text-anchor="end">Llama-4-Maverick</text>
-<rect class="w" x="168.0" y="176" width="191.3" height="34" rx="4"><title>Llama-4-Maverick: needs 487 tok/s/chip to match $0.800 per million output tokens</title></rect>
-<text class="val" x="367.3" y="199">487 tok/s/chip</text>
-<text class="cat" x="156" y="243" text-anchor="end">DeepSeek-V3.2</text>
-<rect class="w" x="168.0" y="220" width="275.0" height="34" rx="4"><title>DeepSeek-V3.2: needs 975 tok/s/chip to match $0.400 per million output tokens</title></rect>
-<text class="val" x="451.0" y="243">975 tok/s/chip</text>
+<text class="cat" x="156" y="111" text-anchor="end">Nemotron-3-Nano-30B</text>
+<rect class="kv" x="168.0" y="88" width="358.7" height="34" rx="4"><title>Nemotron-3-Nano-30B: needs 1,949 tok/s/chip to match $0.200 per million output tokens</title></rect>
+<text class="val" x="534.7" y="111">1,949 tok/s/chip</text>
+<text class="cat" x="156" y="155" text-anchor="end">Nemotron-3.5-Light-30B</text>
+<rect class="kv" x="168.0" y="132" width="331.8" height="34" rx="4"><title>Nemotron-3.5-Light-30B: needs 1,559 tok/s/chip to match $0.250 per million output tokens</title></rect>
+<text class="val" x="507.8" y="155">1,559 tok/s/chip</text>
+<text class="cat" x="156" y="199" text-anchor="end">Qwen3-30B-A3B</text>
+<rect class="w" x="168.0" y="176" width="243.3" height="34" rx="4"><title>Qwen3-30B-A3B: needs 750 tok/s/chip to match $0.520 per million output tokens</title></rect>
+<text class="val" x="419.3" y="199">750 tok/s/chip</text>
+<text class="cat" x="156" y="243" text-anchor="end">Qwen3-32B</text>
+<rect class="kv" x="168.0" y="220" width="318.1" height="34" rx="4"><title>Qwen3-32B: needs 1,392 tok/s/chip to match $0.280 per million output tokens</title></rect>
+<text class="val" x="494.1" y="243">1,392 tok/s/chip</text>
+<text class="cat" x="156" y="287" text-anchor="end">Llama-3.3-70B</text>
+<rect class="kv" x="168.0" y="264" width="302.0" height="34" rx="4"><title>Llama-3.3-70B: needs 1,218 tok/s/chip to match $0.320 per million output tokens</title></rect>
+<text class="val" x="478.0" y="287">1,218 tok/s/chip</text>
+<text class="cat" x="156" y="331" text-anchor="end">Llama-4-Scout</text>
+<rect class="kv" x="168.0" y="308" width="309.8" height="34" rx="4"><title>Llama-4-Scout: needs 1,299 tok/s/chip to match $0.300 per million output tokens</title></rect>
+<text class="val" x="485.8" y="331">1,299 tok/s/chip</text>
+<text class="cat" x="156" y="375" text-anchor="end">gpt-oss-120b</text>
+<rect class="kv" x="168.0" y="352" width="378.4" height="34" rx="4"><title>gpt-oss-120b: needs 2,293 tok/s/chip to match $0.170 per million output tokens</title></rect>
+<text class="val" x="554.4" y="375">2,293 tok/s/chip</text>
+<text class="cat" x="156" y="419" text-anchor="end">Nemotron-3-Super-120B</text>
+<rect class="w" x="168.0" y="396" width="275.0" height="34" rx="4"><title>Nemotron-3-Super-120B: needs 975 tok/s/chip to match $0.400 per million output tokens</title></rect>
+<text class="val" x="451.0" y="419">975 tok/s/chip</text>
+<text class="cat" x="156" y="463" text-anchor="end">Qwen3-235B-A22B</text>
+<rect class="w" x="168.0" y="440" width="236.6" height="34" rx="4"><title>Qwen3-235B-A22B: needs 709 tok/s/chip to match $0.550 per million output tokens</title></rect>
+<text class="val" x="412.6" y="463">709 tok/s/chip</text>
+<text class="cat" x="156" y="507" text-anchor="end">Llama-4-Maverick</text>
+<rect class="w" x="168.0" y="484" width="191.3" height="34" rx="4"><title>Llama-4-Maverick: needs 487 tok/s/chip to match $0.800 per million output tokens</title></rect>
+<text class="val" x="367.3" y="507">487 tok/s/chip</text>
+<text class="cat" x="156" y="551" text-anchor="end">Nemotron-3-Ultra-550B</text>
+<rect class="w" x="168.0" y="528" width="9.6" height="34" rx="4"><title>Nemotron-3-Ultra-550B: needs 108 tok/s/chip to match $3.600 per million output tokens</title></rect>
+<text class="val" x="185.6" y="551">108 tok/s/chip</text>
+<text class="cat" x="156" y="595" text-anchor="end">DeepSeek-V3.2</text>
+<rect class="w" x="168.0" y="572" width="275.0" height="34" rx="4"><title>DeepSeek-V3.2: needs 975 tok/s/chip to match $0.400 per million output tokens</title></rect>
+<text class="val" x="451.0" y="595">975 tok/s/chip</text>
+<text class="cat" x="156" y="639" text-anchor="end">Kimi-K2.6</text>
+<rect class="w" x="168.0" y="616" width="64.8" height="34" rx="4"><title>Kimi-K2.6: needs 171 tok/s/chip to match $2.280 per million output tokens</title></rect>
+<text class="val" x="240.8" y="639">171 tok/s/chip</text>
+<text class="cat" x="156" y="683" text-anchor="end">Qwen3.8-2.4T-A95B</text>
+<rect class="w" x="168.0" y="660" width="2.0" height="34" rx="4"><title>Qwen3.8-2.4T-A95B: needs 65 tok/s/chip to match $6.000 per million output tokens</title></rect>
+<text class="val" x="176.0" y="683">65 tok/s/chip</text>
+<text class="cat" x="156" y="727" text-anchor="end">Kimi-K3</text>
+<rect class="w" x="168.0" y="704" width="2.0" height="34" rx="4"><title>Kimi-K3: needs 26 tok/s/chip to match $15.000 per million output tokens</title></rect>
+<text class="val" x="176.0" y="727">26 tok/s/chip</text>
 </svg>
   <figcaption>Throughput per chip we would need to match each model's market price for output
   tokens, at our measured spot rate. The shaded band is published v6e throughput for models of this
@@ -191,7 +325,7 @@
 <thead><tr><th>model</th><th class="n">params</th><th class="n">active</th><th class="n">context</th>
 <th class="n">in $/M</th><th class="n">out $/M</th><th class="n">weights</th><th class="n">KV</th>
 <th class="n">min chips</th><th class="n">break-even tok/s/chip</th></tr></thead>
-<tbody><tr><td>gpt-oss-20b</td><td class='n'>21B</td><td class='n'>4B</td><td class='n'>131,072</td><td class='n'>$0.030</td><td class='n'>$0.130</td><td class='n'>42 GB</td><td class='n'>13 GB</td><td class='n'>4</td><td class='n'>2,999</td></tr><tr><td>Llama-4-Scout</td><td class='n'>109B</td><td class='n'>17B</td><td class='n'>1,310,720</td><td class='n'>$0.100</td><td class='n'>$0.300</td><td class='n'>218 GB</td><td class='n'>52 GB</td><td class='n'>16</td><td class='n'>1,299</td></tr><tr><td>gpt-oss-120b</td><td class='n'>117B</td><td class='n'>5B</td><td class='n'>131,072</td><td class='n'>$0.030</td><td class='n'>$0.170</td><td class='n'>234 GB</td><td class='n'>19 GB</td><td class='n'>16</td><td class='n'>2,293</td></tr><tr><td>Llama-4-Maverick</td><td class='n'>400B</td><td class='n'>17B</td><td class='n'>1,048,576</td><td class='n'>$0.200</td><td class='n'>$0.800</td><td class='n'>800 GB</td><td class='n'>52 GB</td><td class='n'>32</td><td class='n'>487</td></tr><tr><td>DeepSeek-V3.2</td><td class='n'>671B</td><td class='n'>37B</td><td class='n'>163,840</td><td class='n'>$0.269</td><td class='n'>$0.400</td><td class='n'>1.3 TB</td><td class='n'>65 GB</td><td class='n'>64</td><td class='n'>975</td></tr></tbody></table></div></details>
+<tbody><tr><td>gpt-oss-20b</td><td class='n'>21B</td><td class='n'>4B</td><td class='n'>131,072</td><td class='n'>$0.030</td><td class='n'>$0.130</td><td class='n'>42 GB</td><td class='n'>13 GB</td><td class='n'>4</td><td class='n'>2,999</td></tr><tr><td>Nemotron-3-Nano-30B</td><td class='n'>30B</td><td class='n'>3B</td><td class='n'>262,144</td><td class='n'>$0.050</td><td class='n'>$0.200</td><td class='n'>60 GB</td><td class='n'>52 GB</td><td class='n'>4</td><td class='n'>1,949</td></tr><tr><td>Nemotron-3.5-Light-30B</td><td class='n'>30B</td><td class='n'>3B</td><td class='n'>1,000,000</td><td class='n'>$0.100</td><td class='n'>$0.250</td><td class='n'>60 GB</td><td class='n'>52 GB</td><td class='n'>4</td><td class='n'>1,559</td></tr><tr><td>Qwen3-30B-A3B</td><td class='n'>30B</td><td class='n'>3B</td><td class='n'>131,072</td><td class='n'>$0.130</td><td class='n'>$0.520</td><td class='n'>61 GB</td><td class='n'>26 GB</td><td class='n'>4</td><td class='n'>750</td></tr><tr><td>Qwen3-32B</td><td class='n'>32B</td><td class='n'>32B</td><td class='n'>131,072</td><td class='n'>$0.080</td><td class='n'>$0.280</td><td class='n'>64 GB</td><td class='n'>69 GB</td><td class='n'>16</td><td class='n'>1,392</td></tr><tr><td>Llama-3.3-70B</td><td class='n'>70B</td><td class='n'>70B</td><td class='n'>131,072</td><td class='n'>$0.100</td><td class='n'>$0.320</td><td class='n'>140 GB</td><td class='n'>86 GB</td><td class='n'>16</td><td class='n'>1,218</td></tr><tr><td>Llama-4-Scout</td><td class='n'>109B</td><td class='n'>17B</td><td class='n'>1,310,720</td><td class='n'>$0.100</td><td class='n'>$0.300</td><td class='n'>218 GB</td><td class='n'>52 GB</td><td class='n'>16</td><td class='n'>1,299</td></tr><tr><td>gpt-oss-120b</td><td class='n'>117B</td><td class='n'>5B</td><td class='n'>131,072</td><td class='n'>$0.030</td><td class='n'>$0.170</td><td class='n'>234 GB</td><td class='n'>19 GB</td><td class='n'>16</td><td class='n'>2,293</td></tr><tr><td>Nemotron-3-Super-120B</td><td class='n'>120B</td><td class='n'>12B</td><td class='n'>1,000,000</td><td class='n'>$0.085</td><td class='n'>$0.400</td><td class='n'>240 GB</td><td class='n'>52 GB</td><td class='n'>16</td><td class='n'>975</td></tr><tr><td>Qwen3-235B-A22B</td><td class='n'>235B</td><td class='n'>22B</td><td class='n'>262,144</td><td class='n'>$0.090</td><td class='n'>$0.550</td><td class='n'>470 GB</td><td class='n'>50 GB</td><td class='n'>32</td><td class='n'>709</td></tr><tr><td>Llama-4-Maverick</td><td class='n'>400B</td><td class='n'>17B</td><td class='n'>1,048,576</td><td class='n'>$0.200</td><td class='n'>$0.800</td><td class='n'>800 GB</td><td class='n'>52 GB</td><td class='n'>32</td><td class='n'>487</td></tr><tr><td>Nemotron-3-Ultra-550B</td><td class='n'>550B</td><td class='n'>55B</td><td class='n'>512,288</td><td class='n'>$0.600</td><td class='n'>$3.600</td><td class='n'>1.1 TB</td><td class='n'>86 GB</td><td class='n'>64</td><td class='n'>108</td></tr><tr><td>DeepSeek-V3.2</td><td class='n'>671B</td><td class='n'>37B</td><td class='n'>163,840</td><td class='n'>$0.269</td><td class='n'>$0.400</td><td class='n'>1.3 TB</td><td class='n'>65 GB</td><td class='n'>64</td><td class='n'>975</td></tr><tr><td>Kimi-K2.6</td><td class='n'>1000B</td><td class='n'>32B</td><td class='n'>262,144</td><td class='n'>$0.541</td><td class='n'>$2.280</td><td class='n'>2.0 TB</td><td class='n'>65 GB</td><td class='n'>&mdash;</td><td class='n'>171</td></tr><tr><td>Qwen3.8-2.4T-A95B</td><td class='n'>2400B</td><td class='n'>95B</td><td class='n'>1,048,576</td><td class='n'>$2.000</td><td class='n'>$6.000</td><td class='n'>4.8 TB</td><td class='n'>86 GB</td><td class='n'>&mdash;</td><td class='n'>65</td></tr><tr><td>Kimi-K3</td><td class='n'>2800B</td><td class='n'>32B</td><td class='n'>1,048,576</td><td class='n'>$3.000</td><td class='n'>$15.000</td><td class='n'>5.6 TB</td><td class='n'>86 GB</td><td class='n'>&mdash;</td><td class='n'>26</td></tr></tbody></table></div></details>
 
  <h2>What we chose, and why</h2>
  <p><strong>gpt-oss-20b.</strong> On OpenRouter with a published price, a mixture of experts at 21B

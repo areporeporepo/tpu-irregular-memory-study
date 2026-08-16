@@ -38,12 +38,39 @@ CHIP_COUNTS = [4, 16, 32, 64]
 PUBLISHED_LO, PUBLISHED_HI = 300, 1000
 
 #   openrouter id -> (display, params, active, layers, full_attn, kv_heads, head_dim)
+# Ranked by popularity, not price. Several OpenRouter ids encode the parameter counts directly
+# (nemotron-3-ultra-550b-a55b, qwen3-235b-a22b), which is how the large ones below are known.
+# Models whose parameter counts are unpublished (DeepSeek V4, Hy3, GLM 5.2, MiMo) are excluded
+# rather than guessed, and named as such on the page.
 KNOWN = {
-    "openai/gpt-oss-20b":          ("gpt-oss-20b",       21.0e9,  3.6e9, 24, 24, 8,  64),
-    "openai/gpt-oss-120b":         ("gpt-oss-120b",     117.0e9,  5.1e9, 36, 36, 8,  64),
-    "meta-llama/llama-4-scout":    ("Llama-4-Scout",    109.0e9, 17.0e9, 48, 48, 8, 128),
-    "meta-llama/llama-4-maverick": ("Llama-4-Maverick", 400.0e9, 17.0e9, 48, 48, 8, 128),
-    "deepseek/deepseek-v3.2":      ("DeepSeek-V3.2",    671.0e9, 37.0e9, 61, 61, 8, 128),
+    "qwen/qwen3-30b-a3b":                ("Qwen3-30B-A3B",       30.5e9,  3.3e9, 48, 48, 4, 128),
+    "nvidia/nemotron-3-nano-30b-a3b":    ("Nemotron-3-Nano-30B", 30.0e9,  3.0e9, 48, 48, 8, 128),
+    "nvidia/nemotron-3.5-lightning":     ("Nemotron-3.5-Light-30B", 30.0e9, 3.0e9, 48, 48, 8, 128),
+    "qwen/qwen3-32b":                    ("Qwen3-32B",           32.0e9, 32.0e9, 64, 64, 8, 128),
+    "openai/gpt-oss-20b":                ("gpt-oss-20b",         21.0e9,  3.6e9, 24, 24, 8,  64),
+    "meta-llama/llama-3.3-70b-instruct": ("Llama-3.3-70B",       70.0e9, 70.0e9, 80, 80, 8, 128),
+    "openai/gpt-oss-120b":               ("gpt-oss-120b",       117.0e9,  5.1e9, 36, 36, 8,  64),
+    "nvidia/nemotron-3-super-120b-a12b": ("Nemotron-3-Super-120B",120.0e9,12.0e9, 48, 48, 8, 128),
+    "meta-llama/llama-4-scout":          ("Llama-4-Scout",      109.0e9, 17.0e9, 48, 48, 8, 128),
+    "qwen/qwen3-235b-a22b-2507":         ("Qwen3-235B-A22B",    235.0e9, 22.0e9, 94, 94, 4, 128),
+    "meta-llama/llama-4-maverick":       ("Llama-4-Maverick",   400.0e9, 17.0e9, 48, 48, 8, 128),
+    "nvidia/nemotron-3-ultra-550b-a55b": ("Nemotron-3-Ultra-550B",550.0e9,55.0e9, 80, 80, 8, 128),
+    "deepseek/deepseek-v3.2":            ("DeepSeek-V3.2",      671.0e9, 37.0e9, 61, 61, 8, 128),
+    "moonshotai/kimi-k2.6":              ("Kimi-K2.6",            1.0e12, 32.0e9, 61, 61, 8, 128),
+    "qwen/qwen3.8-2.4t-a95b":            ("Qwen3.8-2.4T-A95B",    2.4e12, 95.0e9, 80, 80, 8, 128),
+    "moonshotai/kimi-k3":                ("Kimi-K3",              2.8e12, 32.0e9, 80, 80, 8, 128),
+}
+
+# Weekly OpenRouter token usage for the models above, where they appear in the top rankings, plus
+# HuggingFace download counts as the secondary popularity signal. Used to rank, not to price.
+POPULARITY = {
+    "Nemotron-3-Ultra-550B": ("1.99T tok/wk, rank 9 on OpenRouter", 9),
+    "gpt-oss-20b":           ("7.97M HF downloads", 20),
+    "Qwen3-30B-A3B":         ("9.74M HF downloads (GGUF)", 18),
+    "Nemotron-3.5-Light-30B":("196K HF downloads, trending", 15),
+    "Kimi-K3":               ("the model everyone cites; $15.00/M, dearest on the list", 12),
+    "Qwen3.8-2.4T-A95B":     ("HF trending #1", 11),
+    "DeepSeek-V3.2":         ("V4 supersedes it in usage", 25),
 }
 
 
@@ -103,6 +130,63 @@ def rankings() -> list[dict]:
     except Exception as exc:
         print(f"  rankings scrape failed ({type(exc).__name__}), using cache")
         return json.loads(RANK_CACHE.read_text()) if RANK_CACHE.is_file() else []
+
+
+# Artificial Analysis Intelligence Index, scraped from the chart OpenRouter embeds on its rankings
+# page ("Top models on OpenRouter by Artificial Analysis Intelligence Index"). This avoids needing
+# an Artificial Analysis API key, which returns 401 without one.
+#   name -> (index score, author, open weights?, approx params in B or None if unpublished)
+AA_INDEX = [
+    ("Claude Opus 5",      63.1, "anthropic",  False, None),
+    ("Claude Fable 5",     62.1, "anthropic",  False, None),
+    ("GPT-5.6 Sol",        60.9, "openai",     False, None),
+    ("Grok 4.6",           60.9, "x-ai",       False, None),
+    ("Kimi K3",            59.7, "moonshotai", True,  2800),
+    ("Qwen3.8 Max",        58.1, "qwen",       True,  None),
+    ("Claude Opus 4.8",    57.3, "anthropic",  False, None),
+    ("GPT-5.6 Terra",      56.6, "openai",     False, None),
+    ("GPT-5.5",            56.3, "openai",     False, None),
+    ("Gemini 3.7 Flash",   56.0, "google",     False, None),
+]
+
+
+def chart_frontier() -> str:
+    """Intelligence index against openness, with what 64 chips can hold marked.
+
+    The point of this chart is a single observation: the top of the intelligence index is almost
+    entirely closed-weight, and the two open models on it are both too large for any slice we can
+    obtain. Encoding is position plus fill plus a direct label, never hue alone.
+    """
+    lo, hi = 54.0, 64.0
+    rowh, gap = 30, 8
+    h = len(AA_INDEX) * (rowh + gap) + 66
+    left, right = 210, 150
+    def x(v): return left + (v - lo) / (hi - lo) * (W - left - right)
+    out = [f'<svg viewBox="0 0 {W} {h}" width="100%" role="img" '
+           f'aria-label="Artificial Analysis Intelligence Index for the top ten models, '
+           f'marked by whether weights are published">']
+    for tick in (54, 56, 58, 60, 62, 64):
+        out.append(f'<line class="thresh" style="stroke:var(--grid);stroke-dasharray:none" '
+                   f'x1="{x(tick):.1f}" y1="26" x2="{x(tick):.1f}" y2="{h-40}"/>')
+        out.append(f'<text class="thresh-v" x="{x(tick):.1f}" y="{h-22}" '
+                   f'text-anchor="middle">{tick}</text>')
+    for i, (name, score, author, openw, params) in enumerate(AA_INDEX):
+        y = 32 + i * (rowh + gap)
+        x0, xv = x(lo), x(score)
+        note = ""
+        if openw and params:
+            note = f"  open, {params}B \u2014 needs ~{params*2//29}+ chips"
+        elif openw:
+            note = "  open, size unpublished"
+        out.append(f'<text class="cat" x="{left-12}" y="{y+rowh*0.68:.0f}" text-anchor="end">'
+                   f'{name[:24]}</text>')
+        out.append(f'<rect class="{"w" if openw else "kv"}" x="{x0:.1f}" y="{y}" '
+                   f'width="{max(xv-x0,2):.1f}" height="{rowh}" rx="4">'
+                   f'<title>{name} by {author}: index {score}, '
+                   f'{"open weights" if openw else "closed weights, API only"}</title></rect>')
+        out.append(f'<text class="val" x="{xv+8:.1f}" y="{y+rowh*0.68:.0f}">{score}{note}</text>')
+    out.append('</svg>')
+    return "\n".join(out)
 
 
 def chart_usage(rows: list[dict]) -> str:
@@ -326,6 +410,20 @@ def main() -> None:
  published price to measure our cost against instead of a vendor claim, and it must
  <strong>fit on chips we can obtain</strong>. Trending on HuggingFace is not a criterion: the
  current trending flagship is a 2.4-trillion-parameter mixture needing about ninety v6e chips.</p>
+
+ <h2>The intelligence frontier is closed</h2>
+ <div class="legend">
+   <span><span class="key k1"></span>open weights</span>
+   <span><span class="key k2"></span>closed, API only</span>
+ </div>
+ <figure>{chart_frontier()}
+  <figcaption>Artificial Analysis Intelligence Index, as published in the chart OpenRouter embeds
+  on its rankings page. Bars start at 54 to show the spread; the axis is the index score.</figcaption>
+ </figure>
+ <p><strong>Eight of the top ten are closed-weight.</strong> The only two open models at the
+ frontier are Kimi K3 at 59.7 and Qwen3.8 Max at 58.1, and both are trillion-scale: K3 needs
+ roughly 190 chips in bf16, and Qwen3.8 Max does not publish its size. So the open frontier is
+ visible and unreachable at the same time, which is the honest summary of what a student can hold.</p>
 
  <h2>What the market is actually using, this week</h2>
  <div class="legend">
