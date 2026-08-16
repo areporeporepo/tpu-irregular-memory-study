@@ -1,0 +1,40 @@
+data/geometry_results_32chip_final.json
+  s_67b1e088a6a194::t_67f821adf8b1cd 1-321
+supervisor.sh
+  s_67b1e088a6a194::t_e0fc5883b2f3dc 18,23,91,172-177
+  s_67b1e088a6a194::t_bb61e8f890414b 178
+data/availability.jsonl
+  s_67b1e088a6a194::t_e0fc5883b2f3dc 1-6
+probe_availability.sh
+  s_67b1e088a6a194::t_7a8811e0fdcaf2 1-55
+budget_ledger.json
+  s_67b1e088a6a194::t_67f821adf8b1cd 4-13
+data/fabric_results_32chip_final.json
+  s_67b1e088a6a194::t_67f821adf8b1cd 1-265
+campaign.log
+  s_67b1e088a6a194::t_8288e19324c6aa 24
+  s_67b1e088a6a194::t_67f821adf8b1cd 26
+  s_67b1e088a6a194::t_e0fc5883b2f3dc 27-31
+  s_67b1e088a6a194::t_dff9e0842ca073 22-23
+  s_67b1e088a6a194::t_9d2357e393d2c4 21,25
+data/geometry_results_64chip_20260816T113730Z.json
+  s_67b1e088a6a194::t_e0fc5883b2f3dc 1-311
+logbook.jsonl
+  s_67b1e088a6a194::t_c55d7540f592b9 34-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "20d26d70722a145bdbc8e76022f0a11d0f6a197c",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
