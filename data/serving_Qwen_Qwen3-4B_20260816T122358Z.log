@@ -1,0 +1,8 @@
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...
+INFO 08-16 12:24:19 [__init__.py:76] TPU info: node_name=anh-steady-16 | tpu_type=v6e-16 | worker_id=0 | num_chips=4 | num_cores_per_chip=1
+WARNING 08-16 12:24:19 [tpu_platform.py:408] Pin memory is not supported on TPU.
+INFO 08-16 12:24:21 [tpu_platform.py:177] Automatically using fp8_e5m2 for FP8 KV cache on TPU v6e.
+INFO 08-16 12:24:23 [importing.py:53] Triton is installed but 0 active driver(s) found (expected 1). Disabling Triton to prevent runtime errors.
+INFO 08-16 12:24:23 [importing.py:88] Triton not installed or not compatible; certain GPU-related functions will not be available.
+{"model": "Qwen/Qwen3-4B", "stage": "import", "error": "Could not load this library: /home/an/.local/lib/python3.11/site-packages/torchcodec/libtorchcodec_image.so"}

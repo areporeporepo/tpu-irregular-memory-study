@@ -1,0 +1,8 @@
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...
+ERROR: Cannot install tpu-inference==0.25.0 and vllm==0.25.0 because these package versions have conflicting dependencies.
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/topics/dependency-resolution/#dealing-with-dependency-conflicts
+INFO 08-16 12:24:05 [__init__.py:76] TPU info: node_name=anh-steady-16 | tpu_type=v6e-16 | worker_id=0 | num_chips=4 | num_cores_per_chip=1
+WARNING 08-16 12:24:05 [tpu_platform.py:408] Pin memory is not supported on TPU.
+vllm 0.25.0
+OSError: Could not load this library: /home/an/.local/lib/python3.11/site-packages/torchcodec/libtorchcodec_image.so

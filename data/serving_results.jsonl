@@ -1,2 +1,4 @@
 {"model": "Qwen/Qwen3-4B", "stage": "import", "error": "No module named 'vllm'"}
 {"model": "Qwen/Qwen3.8-27B", "stage": "import", "error": "No module named 'vllm'"}
+{"model": "Qwen/Qwen3-4B", "stage": "import", "error": "Could not load this library: /home/an/.local/lib/python3.11/site-packages/torchcodec/libtorchcodec_image.so"}
+{"model": "Qwen/Qwen3.8-27B", "stage": "import", "error": "Could not load this library: /home/an/.local/lib/python3.11/site-packages/torchcodec/libtorchcodec_image.so"}
