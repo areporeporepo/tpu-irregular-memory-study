@@ -1,0 +1,43 @@
+WHAT_GETS_CROWDED.md
+  s_67b1e088a6a194::t_9fc8c2d1852f72 1-80
+observe_contention.py
+  s_67b1e088a6a194::t_02baaf96b0f1f2 1-106
+experiment6_capture_artifacts.py
+  s_67b1e088a6a194::t_c9f164544f234b 1-108
+supervisor.sh
+  s_67b1e088a6a194::t_42e010d5f32a92 166-185
+verify.py
+  s_67b1e088a6a194::t_b279ee44ca38e0 39-49
+  s_67b1e088a6a194::t_0a241d2b9cc558 67,79,106,118
+campaign.log
+  s_67b1e088a6a194::t_0417acc81aafc9 14-15
+  s_67b1e088a6a194::t_91558baccc5d4b 16-17
+data/verify_20260816T1200Z.json
+  s_67b1e088a6a194::t_61d48a643f805c 1-469
+OUTREACH.md
+  s_67b1e088a6a194::t_ddcbc45d4ebbfe 1-86
+data/contention.jsonl
+  s_67b1e088a6a194::t_4a18921e64ef17 1
+logbook.jsonl
+  s_67b1e088a6a194::t_a19a337d4fd871 27-30
+data/fabric_20260816T112105Z.json
+  s_67b1e088a6a194::t_8306d2113c0042 1-265
+data/gather_20260816T112105Z.json
+  s_67b1e088a6a194::t_2278488549e42e 1-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b9903b3d6e906621518f2750cad7d67e4af2423c",
+  "prompts": {},
+  "sessions": {
+    "s_67b1e088a6a194": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "026934f6-3d04-4cf1-bc38-449856ba3d26",
+        "model": "claude-opus-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
