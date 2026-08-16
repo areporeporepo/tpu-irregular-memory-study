@@ -1,0 +1,255 @@
+<!doctype html><meta charset="utf-8">
+<title>The chips we can get, and the chips that are coming</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+ :root{--bg:#fcfcfb;--surface:#fff;--ink:#1c1c20;--ink-2:#42424a;--ink-3:#75757f;--line:#dcd9d4;
+   --band:#efece6;--g:#1c1c20;--n:#8a8a92;
+   --mono:ui-monospace,"SF Mono",Menlo,monospace;
+   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+ @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111113;--surface:#191919;
+   --ink:#f1f0ed;--ink-2:#b8b7b2;--ink-3:#86858d;--line:#2f2f34;--band:#212127;--g:#f1f0ed;
+   --n:#8a8992}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--sans)}
+ .wrap{max-width:940px;margin:0 auto;padding:0 22px}
+ header{padding:54px 0 26px;border-bottom:1px solid var(--line)}
+ h1{font-size:clamp(27px,4.4vw,40px);letter-spacing:-.03em;margin:0 0 12px;font-weight:680;
+   line-height:1.13}
+ h2{font-size:15px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+   margin:46px 0 12px;font-weight:620}
+ h3{font-size:17px;margin:28px 0 8px;font-weight:640}
+ .sub{color:var(--ink-3);font:500 12.5px var(--mono)}
+ p{margin:0 0 14px;max-width:74ch;color:var(--ink-2)}
+ .lede{font-size:18px;color:var(--ink)}
+ figure{margin:22px 0 8px;background:var(--surface);border:1px solid var(--line);
+   border-radius:14px;padding:18px 16px 6px}
+ figcaption{font:13px/1.55 var(--sans);color:var(--ink-3);padding:4px 6px 10px;max-width:80ch}
+ .cat{font:12px var(--mono);fill:var(--ink-2)}
+ .val{font:600 11.5px var(--mono);fill:var(--ink)}
+ .ax-t{font:600 10px var(--mono);fill:var(--ink-3);letter-spacing:.05em}
+ .bar-g{fill:var(--g)} .bar-n{fill:var(--n)}
+ .hatch{fill:url(#hatch)}
+ table{width:100%;border-collapse:collapse;font:12.5px var(--mono);background:var(--surface);
+   border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
+ th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+ th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+ td.n{text-align:right}
+ .scroll{overflow-x:auto}
+ ul{max-width:74ch;color:var(--ink-2)} li{margin-bottom:8px}
+ .keys{display:flex;gap:18px;list-style:none;padding:0 6px;margin:2px 0 0}
+ .keys li{font:12px var(--mono);color:var(--ink-2);display:flex;align-items:center;gap:7px}
+ .keys b{width:16px;height:11px;border-radius:2px;display:inline-block}
+ footer{margin-top:52px;padding:26px 0 64px;border-top:1px solid var(--line);color:var(--ink-3);
+   font-size:13.5px}
+ a{color:var(--ink)}
+</style>
+<svg width="0" height="0" style="position:absolute"><defs>
+ <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)"
+   patternUnits="userSpaceOnUse">
+  <line x1="0" y1="0" x2="0" y2="7" stroke="var(--bg)" stroke-width="2.4" opacity=".55"/>
+ </pattern>
+</defs></svg>
+<header><div class="wrap">
+ <h1>The chips we can get, and the chips everyone is actually buying</h1>
+ <p class="sub">2026-08-16 16:51 UTC &middot; v5e, v5p, v6e measured here &middot; v7, 8t, 8i, A100 and Rubin
+ from published figures</p>
+ <p class="lede" style="margin-top:18px">This study runs on the accelerators a student can get hold
+ of, which are two and three generations behind what is being installed and four behind what is
+ being taped out. That is fine, and it is the reason to be careful: the value of measuring an old
+ chip properly is being able to read a new chip's spec sheet and know which line matters. This page
+ puts our measurements on the same axes as the roadmap.</p>
+</div></header>
+<div class="wrap">
+
+<h2>1. The two lines everyone quotes</h2>
+<figure><svg viewBox="0 0 900 356" width="100%" role="img" aria-label="HBM capacity per chip or package">
+<text class="cat" x="156" y="31" text-anchor="end">TPU v5e</text>
+<rect class="bar-g" x="168" y="14" width="82.4" height="24" rx="4"><title>TPU v5e: 16 GB</title></rect>
+<text class="val" x="259.4" y="31">16 GB</text>
+<text class="cat" x="156" y="62" text-anchor="end">TPU v5p</text>
+<rect class="bar-g" x="168" y="45" width="394.9" height="24" rx="4"><title>TPU v5p: 95 GB</title></rect>
+<text class="val" x="571.9" y="62">95 GB</text>
+<text class="cat" x="156" y="93" text-anchor="end">TPU v6e</text>
+<rect class="bar-g" x="168" y="76" width="204.0" height="24" rx="4"><title>TPU v6e: 32 GB</title></rect>
+<text class="val" x="381.0" y="93">32 GB</text>
+<text class="cat" x="156" y="124" text-anchor="end">TPU v7 Ironwood</text>
+<rect class="bar-g" x="168" y="107" width="518.4" height="24" rx="4"><title>TPU v7 Ironwood: 192 GB</title></rect>
+<text class="val" x="695.4" y="124">192 GB</text>
+<text class="cat" x="156" y="155" text-anchor="end">TPU 8t Sunfish</text>
+<rect class="bar-g" x="168" y="138" width="589.5" height="24" rx="4"><title>TPU 8t Sunfish: 288 GB (estimated)</title></rect>
+<rect class="hatch" x="168" y="138" width="589.5" height="24" rx="4"/>
+<text class="val" x="766.5" y="155">288 GB est</text>
+<text class="cat" x="156" y="186" text-anchor="end">TPU 8i Zebrafish</text>
+<rect class="bar-g" x="168" y="169" width="589.5" height="24" rx="4"><title>TPU 8i Zebrafish: 288 GB (estimated)</title></rect>
+<rect class="hatch" x="168" y="169" width="589.5" height="24" rx="4"/>
+<text class="val" x="766.5" y="186">288 GB est</text>
+<text class="cat" x="156" y="217" text-anchor="end">A100 80GB</text>
+<rect class="bar-n" x="168" y="200" width="364.8" height="24" rx="4"><title>A100 80GB: 80 GB</title></rect>
+<text class="val" x="541.8" y="217">80 GB</text>
+<text class="cat" x="156" y="248" text-anchor="end">H100 SXM</text>
+<rect class="bar-n" x="168" y="231" width="364.8" height="24" rx="4"><title>H100 SXM: 80 GB</title></rect>
+<text class="val" x="541.8" y="248">80 GB</text>
+<text class="cat" x="156" y="279" text-anchor="end">B200</text>
+<rect class="bar-n" x="168" y="262" width="518.4" height="24" rx="4"><title>B200: 192 GB</title></rect>
+<text class="val" x="695.4" y="279">192 GB</text>
+<text class="cat" x="156" y="310" text-anchor="end">R200 Rubin</text>
+<rect class="bar-n" x="168" y="293" width="589.5" height="24" rx="4"><title>R200 Rubin: 288 GB</title></rect>
+<text class="val" x="766.5" y="310">288 GB</text>
+<text class="ax-t" x="168" y="348">log scale. 8t and 8i are per-package figures from reported stack counts.</text>
+</svg>
+ <ul class="keys"><li><b style="background:var(--g)"></b>Google</li>
+  <li><b style="background:var(--n)"></b>NVIDIA</li>
+  <li><b style="background:var(--n);opacity:.55"></b>hatched: reported, not a datasheet</li></ul>
+ <figcaption>Memory per chip, or per package where the vendor sells packages. This is the number
+ that decides whether a model fits at all, and it is the reason a 95 GB v5p is a better fine-tuning
+ chip than a 32 GB v6e despite v6e having twice the arithmetic.</figcaption>
+</figure>
+<figure><svg viewBox="0 0 900 356" width="100%" role="img" aria-label="HBM bandwidth per chip or package">
+<text class="cat" x="156" y="31" text-anchor="end">TPU v5e</text>
+<rect class="bar-g" x="168" y="14" width="74.0" height="24" rx="4"><title>TPU v5e: 819 GB/s</title></rect>
+<text class="val" x="251.0" y="31">819 GB/s</text>
+<text class="cat" x="156" y="62" text-anchor="end">TPU v5p</text>
+<rect class="bar-g" x="168" y="45" width="265.5" height="24" rx="4"><title>TPU v5p: 2.77 TB/s</title></rect>
+<text class="val" x="442.5" y="62">2.77 TB/s</text>
+<text class="cat" x="156" y="93" text-anchor="end">TPU v6e</text>
+<rect class="bar-g" x="168" y="76" width="183.1" height="24" rx="4"><title>TPU v6e: 1.64 TB/s</title></rect>
+<text class="val" x="360.1" y="93">1.64 TB/s</text>
+<text class="cat" x="156" y="124" text-anchor="end">TPU v7 Ironwood</text>
+<rect class="bar-g" x="168" y="107" width="419.8" height="24" rx="4"><title>TPU v7 Ironwood: 7.37 TB/s</title></rect>
+<text class="val" x="596.8" y="124">7.37 TB/s</text>
+<text class="cat" x="156" y="155" text-anchor="end">TPU 8t Sunfish</text>
+<rect class="bar-g" x="168" y="138" width="461.5" height="24" rx="4"><title>TPU 8t Sunfish: 9.60 TB/s (estimated)</title></rect>
+<rect class="hatch" x="168" y="138" width="461.5" height="24" rx="4"/>
+<text class="val" x="638.5" y="155">9.60 TB/s est</text>
+<text class="cat" x="156" y="186" text-anchor="end">TPU 8i Zebrafish</text>
+<rect class="bar-g" x="168" y="169" width="420.5" height="24" rx="4"><title>TPU 8i Zebrafish: 7.40 TB/s (estimated)</title></rect>
+<rect class="hatch" x="168" y="169" width="420.5" height="24" rx="4"/>
+<text class="val" x="597.5" y="186">7.40 TB/s est</text>
+<text class="cat" x="156" y="217" text-anchor="end">A100 80GB</text>
+<rect class="bar-n" x="168" y="200" width="217.6" height="24" rx="4"><title>A100 80GB: 2.04 TB/s</title></rect>
+<text class="val" x="394.6" y="217">2.04 TB/s</text>
+<text class="cat" x="156" y="248" text-anchor="end">H100 SXM</text>
+<rect class="bar-n" x="168" y="231" width="295.7" height="24" rx="4"><title>H100 SXM: 3.35 TB/s</title></rect>
+<text class="val" x="472.7" y="248">3.35 TB/s</text>
+<text class="cat" x="156" y="279" text-anchor="end">B200</text>
+<rect class="bar-n" x="168" y="262" width="432.8" height="24" rx="4"><title>B200: 8.00 TB/s</title></rect>
+<text class="val" x="609.8" y="279">8.00 TB/s</text>
+<text class="cat" x="156" y="310" text-anchor="end">R200 Rubin</text>
+<rect class="bar-n" x="168" y="293" width="592.0" height="24" rx="4"><title>R200 Rubin: 22.00 TB/s</title></rect>
+<text class="val" x="769.0" y="310">22.00 TB/s</text>
+<text class="ax-t" x="168" y="348">log scale. R200 is the 22 TB/s per-package figure; some sources say 13.</text>
+</svg>
+ <figcaption>Bandwidth per chip or package. Rubin's figure is the one to be careful with: 22 TB/s
+ per package is what the collated NVIDIA material says, while some coverage carries 13 TB/s. Both
+ numbers are in circulation and we have not seen the datasheet.</figcaption>
+</figure>
+
+<h2>2. The line nobody quotes, which is the one that bites</h2>
+<figure><svg viewBox="0 0 900 294" width="100%" role="img" aria-label="Arithmetic intensity needed to saturate the chip">
+<text class="cat" x="156" y="31" text-anchor="end">TPU v5e</text>
+<rect class="bar-g" x="168" y="14" width="171.2" height="24" rx="4"><title>TPU v5e: 241 FLOPs/byte</title></rect>
+<text class="val" x="348.2" y="31">241 FLOPs/byte</text>
+<text class="cat" x="156" y="62" text-anchor="end">TPU v5p</text>
+<rect class="bar-g" x="168" y="45" width="102.4" height="24" rx="4"><title>TPU v5p: 166 FLOPs/byte</title></rect>
+<text class="val" x="279.4" y="62">166 FLOPs/byte</text>
+<text class="cat" x="156" y="93" text-anchor="end">TPU v6e</text>
+<rect class="bar-g" x="168" y="76" width="328.2" height="24" rx="4"><title>TPU v6e: 560 FLOPs/byte</title></rect>
+<text class="val" x="505.2" y="93">560 FLOPs/byte</text>
+<text class="cat" x="156" y="124" text-anchor="end">TPU v7 Ironwood</text>
+<rect class="bar-g" x="168" y="107" width="348.7" height="24" rx="4"><title>TPU v7 Ironwood: 626 FLOPs/byte</title></rect>
+<text class="val" x="525.7" y="124">626 FLOPs/byte</text>
+<text class="cat" x="156" y="155" text-anchor="end">A100 80GB</text>
+<rect class="bar-n" x="168" y="138" width="87.2" height="24" rx="4"><title>A100 80GB: 153 FLOPs/byte</title></rect>
+<text class="val" x="264.2" y="155">153 FLOPs/byte</text>
+<text class="cat" x="156" y="186" text-anchor="end">H100 SXM</text>
+<rect class="bar-n" x="168" y="169" width="209.2" height="24" rx="4"><title>H100 SXM: 295 FLOPs/byte</title></rect>
+<text class="val" x="386.2" y="186">295 FLOPs/byte</text>
+<text class="cat" x="156" y="217" text-anchor="end">B200</text>
+<rect class="bar-n" x="168" y="200" width="200.2" height="24" rx="4"><title>B200: 281 FLOPs/byte</title></rect>
+<text class="val" x="377.2" y="217">281 FLOPs/byte</text>
+<text class="cat" x="156" y="248" text-anchor="end">R200 Rubin</text>
+<rect class="bar-n" x="168" y="231" width="588.1" height="24" rx="4"><title>R200 Rubin: 2,273 FLOPs/byte</title></rect>
+<text class="val" x="765.1" y="248">2,273 FLOPs/byte</text>
+<text class="ax-t" x="168" y="286">peak FLOPs divided by peak bandwidth, the roofline corner. mixed precisions down the list, so read the trend. higher means a kernel must find more arithmetic per byte it moves before the compute units can be kept busy.</text>
+</svg>
+ <figcaption>Peak compute divided by peak bandwidth: the roofline corner, in FLOPs per byte. A
+ kernel below its chip's number is bandwidth-bound no matter how well written it is. Precisions
+ differ down the list so this is a trend rather than a like-for-like ratio, and the trend is the
+ point: the bar for v6e lands on 560 FLOPs/byte, which is the corner this study measured
+ independently, and Rubin's is four times higher again.</figcaption>
+</figure>
+<p>An irregular gather is the worst case for this trend, because it has no reuse to give. A random
+row read is one row's worth of arithmetic per row's worth of traffic, forever. Which is why where
+the gather runs, and out of which memory, is a question that gets more expensive with every
+generation rather than less.</p>
+
+<h2>3. Where our own measurement lands on the roadmap</h2>
+<p>The study found that XLA promotes a gather's source table into on-chip memory when it fits inside
+a fixed budget, and leaves it in HBM when it does not, with about a 3.3&times; difference in
+delivered bandwidth. We measured that budget at 47.94 MiB on v5p and 95.94 MiB on v6e. It is a
+fixed number of mebibytes. HBM per chip is not fixed; it is going up by roughly an order of
+magnitude across the generations on this page.</p>
+<figure><svg viewBox="0 0 900 220" width="100%" role="img" aria-label="Share of chip memory eligible for on-chip promotion, by generation">
+<text class="cat" x="156" y="35" text-anchor="end">TPU v5p</text>
+<rect class="bar-g" x="168" y="14" width="82.7" height="30" rx="4"><title>TPU v5p: 48 MiB promotable out of 95 GB HBM, 0.049%</title></rect>
+<text class="val" x="259.7" y="35">0.049% of HBM</text>
+<text class="cat" x="156" y="77" text-anchor="end">TPU v6e</text>
+<rect class="bar-g" x="168" y="56" width="491.2" height="30" rx="4"><title>TPU v6e: 96 MiB promotable out of 32 GB HBM, 0.293%</title></rect>
+<text class="val" x="668.2" y="77">0.293% of HBM</text>
+<text class="cat" x="156" y="119" text-anchor="end">TPU v7 Ironwood</text>
+<rect class="bar-n" x="168" y="98" width="81.9" height="30" rx="4"><title>TPU v7 Ironwood: 96 MiB promotable out of 192 GB HBM, 0.049%</title></rect>
+<rect class="hatch" x="168" y="98" width="81.9" height="30" rx="4"/>
+<text class="val" x="258.9" y="119">0.049% of HBM, if the budget does not move</text>
+<text class="cat" x="156" y="161" text-anchor="end">TPU 8i Zebrafish</text>
+<rect class="bar-n" x="168" y="140" width="54.6" height="30" rx="4"><title>TPU 8i Zebrafish: 96 MiB promotable out of 288 GB HBM, 0.033%</title></rect>
+<rect class="hatch" x="168" y="140" width="54.6" height="30" rx="4"/>
+<text class="val" x="231.6" y="161">0.033% of HBM, if the budget does not move</text>
+<text class="ax-t" x="168" y="210">solid: budget measured on that chip. hatched: the same budget assumed forward.</text>
+</svg>
+ <figcaption>The share of a chip's memory that is eligible for the fast path, if the budget stays
+ where we measured it. The first two bars are measured. The last two assume the budget does not
+ move, which is exactly the assumption worth checking on an Ironwood the moment anyone can get
+ one.</figcaption>
+</figure>
+<p>We cannot test v7, 8t or 8i, so those two bars are an extrapolation and are drawn as one. But the
+extrapolation is falsifiable in a single afternoon by anyone with Ironwood access and the bisection
+script in this repository, which needs no benchmark and no allocation, only a compile.</p>
+
+<h2>4. What each design is betting on for irregular work</h2>
+<p>Read down the SparseCore column of the table below and the disagreement is visible. Google put
+four gather engines on v5p, two on v6e, and by the reporting on the eighth generation the training
+chip keeps them while the inference chip spends that area on collectives instead. NVIDIA has never
+shipped a gather engine at all, and does not need one: an A100 held 222&ndash;236 GB/s on the same
+gather across a 24&times; range of table size, flat, because thousands of resident threads hide the
+latency that a TPU has to schedule around.</p>
+<p>So the two architectures fail at irregular access for different reasons, and only one of those
+reasons is fixable in a compiler. That is the sharpest thing this study has to say, and it is only
+sayable because the same script ran on both.</p>
+
+<div class="scroll"><table>
+ <thead><tr><th>chip</th><th>vendor</th><th class="n">year</th><th class="n">HBM GB</th>
+  <th class="n">TB/s</th><th class="n">dense peak</th><th class="n">SparseCores</th>
+  <th>fabric</th><th>figures</th></tr></thead>
+ <tbody><tr><td>TPU v5e</td><td>Google</td><td class='n'>2023</td><td class='n'>16</td><td class='n'>0.82</td><td class='n'>197 bf16</td><td class='n'>&mdash;</td><td>2D torus</td><td>datasheet</td></tr><tr><td>TPU v5p</td><td>Google</td><td class='n'>2023</td><td class='n'>95</td><td class='n'>2.77</td><td class='n'>459 bf16</td><td class='n'>4</td><td>3D torus</td><td>datasheet</td></tr><tr><td>TPU v6e</td><td>Google</td><td class='n'>2024</td><td class='n'>32</td><td class='n'>1.64</td><td class='n'>918 bf16</td><td class='n'>2</td><td>2D torus</td><td>datasheet</td></tr><tr><td>TPU v7 Ironwood</td><td>Google</td><td class='n'>2026</td><td class='n'>192</td><td class='n'>7.37</td><td class='n'>4,614 fp8</td><td class='n'>4</td><td>3D torus</td><td>datasheet</td></tr><tr><td>TPU 8t Sunfish</td><td>Google</td><td class='n'>2027</td><td class='n'>288</td><td class='n'>9.60</td><td class='n'>0 fp8</td><td class='n'>4</td><td>3D torus</td><td>reported</td></tr><tr><td>TPU 8i Zebrafish</td><td>Google</td><td class='n'>2027</td><td class='n'>288</td><td class='n'>7.40</td><td class='n'>0 fp8</td><td class='n'>&mdash;</td><td>Boardfly</td><td>reported</td></tr><tr><td>A100 80GB</td><td>NVIDIA</td><td class='n'>2020</td><td class='n'>80</td><td class='n'>2.04</td><td class='n'>312 bf16</td><td class='n'>&mdash;</td><td>NVLink 3</td><td>datasheet</td></tr><tr><td>H100 SXM</td><td>NVIDIA</td><td class='n'>2022</td><td class='n'>80</td><td class='n'>3.35</td><td class='n'>989 bf16</td><td class='n'>&mdash;</td><td>NVLink 4</td><td>datasheet</td></tr><tr><td>B200</td><td>NVIDIA</td><td class='n'>2024</td><td class='n'>192</td><td class='n'>8.00</td><td class='n'>2,250 fp8</td><td class='n'>&mdash;</td><td>NVLink 5</td><td>datasheet</td></tr><tr><td>R200 Rubin</td><td>NVIDIA</td><td class='n'>2026</td><td class='n'>288</td><td class='n'>22.00</td><td class='n'>50,000 fp4</td><td class='n'>&mdash;</td><td>NVLink 6</td><td>datasheet</td></tr></tbody></table></div>
+
+<h2>5. What in here we are not sure about</h2>
+<ul><li>That TPU 8i removes the SparseCores in favour of a collectives acceleration engine. This was in earlier reporting we read but we could not re-confirm it from a vendor source today, so the SparseCore count for 8i in the table below is our reading of that reporting, not a fact.</li><li>TPU 8t and 8i bandwidth figures. Google published a relative claim, roughly 30% above Ironwood for 8t, and not an absolute number. The absolute figures here are derived from that percentage and should be treated as arithmetic on a rounded claim.</li></ul>
+<p>Both are the kind of claim that is easy to repeat and hard to check, which is why they are
+flagged here rather than buried. The measured numbers in this study do not depend on either.</p>
+
+<h2>6. Sources</h2>
+<div class="scroll"><table>
+ <thead><tr><th>figure</th><th>source</th><th>where</th><th>as of</th><th>kind</th></tr></thead>
+ <tbody><tr><td>TPU v5e / v5p / v6e capacity and bandwidth</td><td>Google Cloud TPU documentation</td><td class='sub'>cloud.google.com/tpu/docs/system-architecture-tpu-vm</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr><tr><td>v6e SparseCore count, 2 cores, 256 KiB VMEM</td><td>measured, plsc.get_sparse_core_info()</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>v5p SparseCore count, 4 cores, 512 KiB VMEM</td><td>measured, plsc.get_sparse_core_info()</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>On-chip promotion budget, 48 MiB v5p and 96 MiB v6e</td><td>measured by HLO bisection</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr><tr><td>TPU v7 Ironwood, 192 GB, 7.37 TB/s, GA at Cloud Next</td><td>Google Cloud / SemiAnalysis TPUv7 analysis</td><td class='sub'>newsletter.semianalysis.com/p/tpuv7-google-takes-a-swing-at-the</td><td class='sub'>April 2026</td><td>vendor + analyst</td></tr><tr><td>TPU 8t Sunfish: Broadcom, 2 compute dies, 8 stacks of 12-high HBM3e, ~30% more bandwidth than Ironwood, 2.7x perf/$ for training, TSMC 2nm, late 2027</td><td>Google Cloud blog and press coverage of Cloud Next 2026</td><td class='sub'>cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive</td><td class='sub'>April 2026</td><td>vendor</td></tr><tr><td>TPU 8i Zebrafish: MediaTek, 1 compute die, 6 stacks HBM3e, 20-30% lower inference cost, 80% better perf/$ at low latency for MoE, 2x perf/W</td><td>same</td><td class='sub'>cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive</td><td class='sub'>April 2026</td><td>vendor</td></tr><tr><td>R200 Rubin: 288 GB HBM4 per package at 22 TB/s, 50 PFLOPS NVFP4 per GPU, 2H2026</td><td>Glenn Lockwood's processor notes, collating NVIDIA GTC material</td><td class='sub'>glennklockwood.com/garden/processors/r200</td><td class='sub'>checked 2026-08-16</td><td>vendor, collated</td></tr><tr><td>VR200 NVL144: 144 R200 GPUs as 72 Vera Rubin superchips, 3.6 EF NVFP4, ~20.7 TB HBM4/rack</td><td>NVIDIA GTC 2026 material as reported</td><td class='sub'>multiple, see above</td><td class='sub'>2026</td><td>vendor</td></tr><tr><td>A100 / H100 / B200 capacity and bandwidth</td><td>NVIDIA datasheets</td><td class='sub'>nvidia.com</td><td class='sub'>checked 2026-08-16</td><td>vendor</td></tr><tr><td>A100 gather bandwidth, 222-236 GB/s flat across a 24x buffer range</td><td>measured on a2-highgpu-1g via GKE Autopilot</td><td class='sub'>this study</td><td class='sub'>2026-08-16</td><td>ours</td></tr></tbody></table></div>
+<p>Analyst material is marked as such. SemiAnalysis in particular is well sourced but a large part
+of any given post is its own modelling, and their eighth-generation numbers should be read as
+informed estimates rather than as specifications. Anything marked <span class="sub">ours</span> was
+measured on hardware this week and can be reproduced from this repository.</p>
+
+<footer><div class="wrap">
+ Generated by <span class="sub">build_roadmap_page.py</span>. Companion pages:
+ <a href="./">the measurement log</a>, <a href="./gather-cliff.html">the gather cliff</a>,
+ <a href="./models.html">what we can run</a>, <a href="./cluster.html">who is using the cluster</a>,
+ <a href="./stacks-and-physics.html">the physics underneath</a>.
+</div></footer>
+</div>

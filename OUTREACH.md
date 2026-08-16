@@ -43,25 +43,39 @@ loses nothing. **If the answer is yes**, the experiment becomes legitimate and i
 
 ---
 
-## 2. Bug report: SparseCore Pallas is unimplemented on v6e while documented as supported
+## 2. Bug report: the SparseCore gather kernel compiles at only some shapes, and the failure says nothing useful
 
 **To:** the JAX repository, `jax-ml/jax`.
 
-The documentation for SparseCore kernel writing lists v4, v5p, v6e and v7x as having SparseCores,
-and uses a 7x system for all examples. On v6e with JAX 0.10.2:
+An earlier draft of this section claimed the kernel was unimplemented on v6e. That was wrong, and
+running the same script on two generations is what showed it: one shape does compile on v6e. The
+real problem is narrower and more actionable.
 
-- `jax.experimental.pallas.tpu_sc` imports cleanly
-- `plsc.get_sparse_core_info()` reports `num_cores=2, num_subcores=16, num_lanes=8,
-  vmem_capacity_bytes=262144, dma_granule_size_bytes=32`
-- the documented gather kernel fails to compile at every shape tried, with one of:
-  `'tpu.enqueue_indirect_dma' op Not implemented`, `'sc_tpu.enqueue_transfer' op Not implemented`,
-  or `'memref.alloca' op E3000: CompileTimeSparseCore...`
+The documented gather kernel, taken from the SparseCore kernel-writing guide and changed only in its
+shapes, was compiled at 16 configurations on each of two chips with JAX 0.10.2:
 
-Seven variants were tried, spanning row widths 8 to 256, index counts 1K to 8K, window sizes 8 to
-1024, and both float32 and bfloat16. A minimal reproduction is `sc_debug.py` in the repository.
+| chip | SparseCore configuration reported | compiled |
+|---|---|---|
+| v5p | `num_cores=4, num_subcores=16, num_lanes=8, vmem_capacity_bytes=524288` | 9 of 16 |
+| v6e | `num_cores=2, num_subcores=16, num_lanes=8, vmem_capacity_bytes=262144` | 1 of 16 |
 
-The useful outcome is a documentation change if v6e is genuinely unsupported, since the hardware
-reporting its SparseCore configuration strongly implies otherwise.
+Every shape that compiled was bit-exact against `jnp.take`, so the kernel itself is right. The
+failures all report `INTERNAL: Failed to run MLO pass pipeline` at one of three source locations,
+with no indication of which constraint was violated.
+
+The envelope has no documented rule that we could find. On v5p, row widths of 128 and 256 compile
+and 8, 32 and 512 do not; windows of 128 and 256 compile and 64 and 512 do not; and a bfloat16
+configuration fails at a shape whose float32 twin succeeds. Reproduction is
+`experiment9_sparsecore_v5p.py` in the repository, which prints the whole grid.
+
+Either of two outcomes is useful: a documented constraint on shapes, or a compile error that names
+the constraint instead of reporting an internal pass failure. The second matters more, because a
+user meeting this today cannot tell an unsupported shape from a bug.
+
+**Why it is worth Google's attention beyond tidiness.** On the shapes that do compile, the
+SparseCore is 2.3x faster than the TensorCore for gathers out of tables larger than the compiler's
+on-chip promotion budget, which is every embedding table and KV cache of a real size. The narrow
+envelope is standing between users and that speedup.
 
 ---
 

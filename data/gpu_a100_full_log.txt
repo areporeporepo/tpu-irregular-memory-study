@@ -1,0 +1,326 @@
+{
+  "torch": "2.4.1+cu121",
+  "cuda": "12.1",
+  "device": "NVIDIA A100-SXM4-40GB",
+  "sm": "8.0",
+  "hbm_gib": 39.5,
+  "l2_mib": 0.0,
+  "sms": 108,
+  "host": "gather-a100c-q5qxp",
+  "inner": 32,
+  "repeats": 12,
+  "dim": 128,
+  "indices": 16384,
+  "hbm_gbs_assumed": 1555.0,
+  "delivered_mib": 8.0
+}
+
+contiguous reference: 0.0101 ms/op    828.87 GB/s  53.30% of HBM  (same accumulator as every gather below)
+
+alloc     8.0 MiB  span     8.0 MiB  random     gather   222.21 GB/s  ( 26.8% of contiguous, 14.29% of HBM)
+alloc    16.0 MiB  span    16.0 MiB  random     gather   221.38 GB/s  ( 26.7% of contiguous, 14.24% of HBM)
+alloc    24.0 MiB  span    24.0 MiB  random     gather   216.74 GB/s  ( 26.1% of contiguous, 13.94% of HBM)
+alloc    32.0 MiB  span    32.0 MiB  random     gather   215.67 GB/s  ( 26.0% of contiguous, 13.87% of HBM)
+alloc    40.0 MiB  span    40.0 MiB  random     gather   215.08 GB/s  ( 25.9% of contiguous, 13.83% of HBM)
+alloc    48.0 MiB  span    48.0 MiB  random     gather   218.02 GB/s  ( 26.3% of contiguous, 14.02% of HBM)
+alloc    64.0 MiB  span    64.0 MiB  random     gather   213.61 GB/s  ( 25.8% of contiguous, 13.74% of HBM)
+alloc    80.0 MiB  span    80.0 MiB  random     gather   214.64 GB/s  ( 25.9% of contiguous, 13.80% of HBM)
+alloc    96.0 MiB  span    96.0 MiB  random     gather   215.74 GB/s  ( 26.0% of contiguous, 13.87% of HBM)
+alloc   128.0 MiB  span   128.0 MiB  random     gather   215.07 GB/s  ( 25.9% of contiguous, 13.83% of HBM)
+alloc   192.0 MiB  span   192.0 MiB  random     gather   214.87 GB/s  ( 25.9% of contiguous, 13.82% of HBM)
+
+allocation ladder: 213.6 to 222.2 GB/s, a 1.04x spread across a 24x range of buffer size.
+  A flat line here means the GPU makes no compile-time decision on buffer size,
+  which is the TPU behaviour experiment10 found. A step means it does.
+{
+  "torch": "2.4.1+cu121",
+  "cuda": "12.1",
+  "device": "NVIDIA A100-SXM4-40GB",
+  "sm": "8.0",
+  "hbm_gib": 39.5,
+  "l2_mib": 0.0,
+  "sms": 108,
+  "host": "gather-a100c-q5qxp",
+  "inner": 32,
+  "repeats": 12,
+  "dim": 128,
+  "indices": 16384,
+  "hbm_gbs_assumed": 1555.0,
+  "delivered_mib": 8.0
+}
+
+contiguous reference: 0.0100 ms/op    840.29 GB/s  54.04% of HBM  (same accumulator as every gather below)
+
+alloc   128.0 MiB  span     2.0 MiB  random     gather   245.47 GB/s  ( 29.2% of contiguous, 15.79% of HBM)
+alloc   128.0 MiB  span     8.0 MiB  random     gather   223.82 GB/s  ( 26.6% of contiguous, 14.39% of HBM)
+alloc   128.0 MiB  span    32.0 MiB  random     gather   215.03 GB/s  ( 25.6% of contiguous, 13.83% of HBM)
+alloc   128.0 MiB  span   128.0 MiB  random     gather   214.76 GB/s  ( 25.6% of contiguous, 13.81% of HBM)
+alloc   128.0 MiB  span   128.0 MiB  sorted     gather   216.77 GB/s  ( 25.8% of contiguous, 13.94% of HBM)
+alloc   128.0 MiB  span   128.0 MiB  blocked    gather   219.70 GB/s  ( 26.1% of contiguous, 14.13% of HBM)
+alloc    32.0 MiB  span    32.0 MiB  random     gather   221.17 GB/s  ( 26.3% of contiguous, 14.22% of HBM)
+alloc     2.0 MiB  span     2.0 MiB  random     gather   252.95 GB/s  ( 30.1% of contiguous, 16.27% of HBM)
+
+span 2 MiB -> 128 MiB at fixed allocation: 245.5 -> 214.8 GB/s (1.14x). On TPU this was flat; a fall here means the GPU is footprint-limited, i.e. its L2 is doing the work.
+  allocation control at span 128 MiB: 214.8 GB/s in a 128 MiB buffer vs 214.8 GB/s in a 128 MiB buffer
+  allocation control at span 128 MiB: 214.8 GB/s in a 128 MiB buffer vs 216.8 GB/s in a 128 MiB buffer
+  allocation control at span 128 MiB: 214.8 GB/s in a 128 MiB buffer vs 219.7 GB/s in a 128 MiB buffer
+  allocation control at span 32 MiB: 215.0 GB/s in a 128 MiB buffer vs 221.2 GB/s in a 32 MiB buffer
+  allocation control at span 2 MiB: 245.5 GB/s in a 128 MiB buffer vs 252.9 GB/s in a 2 MiB buffer
+---SWEEPJSON---
+{
+  "meta": {
+    "torch": "2.4.1+cu121",
+    "cuda": "12.1",
+    "device": "NVIDIA A100-SXM4-40GB",
+    "sm": "8.0",
+    "hbm_gib": 39.5,
+    "l2_mib": 0.0,
+    "sms": 108,
+    "host": "gather-a100c-q5qxp",
+    "inner": 32,
+    "repeats": 12,
+    "dim": 128,
+    "indices": 16384,
+    "hbm_gbs_assumed": 1555.0,
+    "delivered_mib": 8.0
+  },
+  "contiguous": {
+    "ms": 0.0101,
+    "gbs": 828.87
+  },
+  "records": [
+    {
+      "alloc_rows": 16384,
+      "span_rows": 16384,
+      "order": "random",
+      "alloc_mib": 8.0,
+      "span_mib": 8.0,
+      "gather_gbs": 222.21,
+      "pct_hbm": 14.29,
+      "pct_contiguous": 26.81,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 32768,
+      "span_rows": 32768,
+      "order": "random",
+      "alloc_mib": 16.0,
+      "span_mib": 16.0,
+      "gather_gbs": 221.38,
+      "pct_hbm": 14.237,
+      "pct_contiguous": 26.71,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 49152,
+      "span_rows": 49152,
+      "order": "random",
+      "alloc_mib": 24.0,
+      "span_mib": 24.0,
+      "gather_gbs": 216.74,
+      "pct_hbm": 13.938,
+      "pct_contiguous": 26.15,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 65536,
+      "span_rows": 65536,
+      "order": "random",
+      "alloc_mib": 32.0,
+      "span_mib": 32.0,
+      "gather_gbs": 215.67,
+      "pct_hbm": 13.869,
+      "pct_contiguous": 26.02,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 81920,
+      "span_rows": 81920,
+      "order": "random",
+      "alloc_mib": 40.0,
+      "span_mib": 40.0,
+      "gather_gbs": 215.08,
+      "pct_hbm": 13.831,
+      "pct_contiguous": 25.95,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 98304,
+      "span_rows": 98304,
+      "order": "random",
+      "alloc_mib": 48.0,
+      "span_mib": 48.0,
+      "gather_gbs": 218.02,
+      "pct_hbm": 14.021,
+      "pct_contiguous": 26.3,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 131072,
+      "span_rows": 131072,
+      "order": "random",
+      "alloc_mib": 64.0,
+      "span_mib": 64.0,
+      "gather_gbs": 213.61,
+      "pct_hbm": 13.737,
+      "pct_contiguous": 25.77,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 163840,
+      "span_rows": 163840,
+      "order": "random",
+      "alloc_mib": 80.0,
+      "span_mib": 80.0,
+      "gather_gbs": 214.64,
+      "pct_hbm": 13.803,
+      "pct_contiguous": 25.9,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 196608,
+      "span_rows": 196608,
+      "order": "random",
+      "alloc_mib": 96.0,
+      "span_mib": 96.0,
+      "gather_gbs": 215.74,
+      "pct_hbm": 13.874,
+      "pct_contiguous": 26.03,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 262144,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 128.0,
+      "gather_gbs": 215.07,
+      "pct_hbm": 13.831,
+      "pct_contiguous": 25.95,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 393216,
+      "span_rows": 393216,
+      "order": "random",
+      "alloc_mib": 192.0,
+      "span_mib": 192.0,
+      "gather_gbs": 214.87,
+      "pct_hbm": 13.818,
+      "pct_contiguous": 25.92,
+      "max_abs_err": 0.0
+    }
+  ]
+}---GRIDJSON---
+{
+  "meta": {
+    "torch": "2.4.1+cu121",
+    "cuda": "12.1",
+    "device": "NVIDIA A100-SXM4-40GB",
+    "sm": "8.0",
+    "hbm_gib": 39.5,
+    "l2_mib": 0.0,
+    "sms": 108,
+    "host": "gather-a100c-q5qxp",
+    "inner": 32,
+    "repeats": 12,
+    "dim": 128,
+    "indices": 16384,
+    "hbm_gbs_assumed": 1555.0,
+    "delivered_mib": 8.0
+  },
+  "contiguous": {
+    "ms": 0.01,
+    "gbs": 840.29
+  },
+  "records": [
+    {
+      "alloc_rows": 262144,
+      "span_rows": 4096,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 2.0,
+      "gather_gbs": 245.47,
+      "pct_hbm": 15.786,
+      "pct_contiguous": 29.21,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 16384,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 8.0,
+      "gather_gbs": 223.82,
+      "pct_hbm": 14.393,
+      "pct_contiguous": 26.64,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 65536,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 32.0,
+      "gather_gbs": 215.03,
+      "pct_hbm": 13.829,
+      "pct_contiguous": 25.59,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 262144,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 128.0,
+      "gather_gbs": 214.76,
+      "pct_hbm": 13.811,
+      "pct_contiguous": 25.56,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 262144,
+      "order": "sorted",
+      "alloc_mib": 128.0,
+      "span_mib": 128.0,
+      "gather_gbs": 216.77,
+      "pct_hbm": 13.94,
+      "pct_contiguous": 25.8,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 262144,
+      "order": "blocked",
+      "alloc_mib": 128.0,
+      "span_mib": 128.0,
+      "gather_gbs": 219.7,
+      "pct_hbm": 14.129,
+      "pct_contiguous": 26.15,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 65536,
+      "span_rows": 65536,
+      "order": "random",
+      "alloc_mib": 32.0,
+      "span_mib": 32.0,
+      "gather_gbs": 221.17,
+      "pct_hbm": 14.223,
+      "pct_contiguous": 26.32,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 4096,
+      "span_rows": 4096,
+      "order": "random",
+      "alloc_mib": 2.0,
+      "span_mib": 2.0,
+      "gather_gbs": 252.95,
+      "pct_hbm": 16.267,
+      "pct_contiguous": 30.1,
+      "max_abs_err": 0.0
+    }
+  ]
+}

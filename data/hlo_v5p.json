@@ -1,0 +1,159 @@
+{
+  "device_kind": "TPU v5",
+  "jax": "0.10.2",
+  "below_rows": 81920,
+  "above_rows": 98304,
+  "below": {
+    "total_ops": 50,
+    "lines": 93,
+    "ops": {
+      "broadcast": 9,
+      "compare": 4,
+      "fusion": 4,
+      "select": 3,
+      "reshape": 2,
+      "transpose": 2,
+      "custom-call": 1,
+      "gather": 1
+    },
+    "has_while_loop": false,
+    "windowed": false,
+    "bytes_in_text": 10637
+  },
+  "above": {
+    "total_ops": 48,
+    "lines": 89,
+    "ops": {
+      "broadcast": 9,
+      "compare": 4,
+      "fusion": 4,
+      "select": 3,
+      "reshape": 2,
+      "transpose": 2,
+      "custom-call": 1,
+      "gather": 1
+    },
+    "has_while_loop": false,
+    "windowed": false,
+    "bytes_in_text": 10217
+  },
+  "identical_op_mix": false,
+  "dim_probes": [
+    {
+      "dim": 128,
+      "rows": 81920,
+      "mib": 40.0,
+      "total_ops": 50,
+      "ops": {
+        "broadcast": 9,
+        "compare": 4,
+        "fusion": 4,
+        "select": 3,
+        "reshape": 2,
+        "transpose": 2,
+        "custom-call": 1,
+        "gather": 1
+      }
+    },
+    {
+      "dim": 128,
+      "rows": 98304,
+      "mib": 48.0,
+      "total_ops": 48,
+      "ops": {
+        "broadcast": 9,
+        "compare": 4,
+        "fusion": 4,
+        "select": 3,
+        "reshape": 2,
+        "transpose": 2,
+        "custom-call": 1,
+        "gather": 1
+      }
+    },
+    {
+      "dim": 256,
+      "rows": 81920,
+      "mib": 80.0,
+      "total_ops": 48,
+      "ops": {
+        "broadcast": 9,
+        "compare": 4,
+        "fusion": 4,
+        "select": 3,
+        "reshape": 2,
+        "transpose": 2,
+        "custom-call": 1,
+        "gather": 1
+      }
+    },
+    {
+      "dim": 256,
+      "rows": 98304,
+      "mib": 96.0,
+      "total_ops": 48,
+      "ops": {
+        "broadcast": 9,
+        "compare": 4,
+        "fusion": 4,
+        "select": 3,
+        "reshape": 2,
+        "transpose": 2,
+        "custom-call": 1,
+        "gather": 1
+      }
+    }
+  ],
+  "diff_sample": [
+    "-HloModule jit__lambda, is_scheduled=true, entry_computation_layout={(f32[81920,128]{1,0:T(8,128)}, s32[16384]{0:T(1024)})->f32[16384,128]{1,0:T(8,128)}}, allow_spmd_sharding_propagation_to_parameters={true,true}, allow_spmd_sharding_propagation_to_output={true}, frontend_attributes={arg_layout_modes=\"default;default\",arg_memory_spaces=\"0;0\",out_layout_modes=\"default\",out_memory_spaces=\"0\"}",
+    "+HloModule jit__lambda, is_scheduled=true, entry_computation_layout={(f32[98304,128]{1,0:T(8,128)}, s32[16384]{0:T(1024)})->f32[16384,128]{1,0:T(8,128)}}, allow_spmd_sharding_propagation_to_parameters={true,true}, allow_spmd_sharding_propagation_to_output={true}, frontend_attributes={arg_layout_modes=\"default;default\",arg_memory_spaces=\"0;0\",out_layout_modes=\"default\",out_memory_spaces=\"0\"}",
+    " ",
+    " 1 {file_name_id=1 function_name_id=1 line=116 end_line=116 column=4 end_column=10}",
+    "-2 {file_name_id=1 function_name_id=2 line=72 end_line=72 column=13 end_column=38}",
+    "+2 {file_name_id=1 function_name_id=2 line=72 end_line=72 column=40 end_column=65}",
+    " 3 {file_name_id=1 function_name_id=3 line=39 end_line=39 column=11 end_column=31}",
+    "   %lt.8 = pred[16384]{0:T(1024)(128)(4,1)} compare(%param_0.14, %lt.10), direction=LT, metadata={op_name=\"jit(<lambda>)/jit(_take)/lt\" stack_frame_id=4}",
+    "-  %constant.22 = s32[]{:T(128)} constant(81920), metadata={op_name=\"jit(<lambda>)/jit(_take)\" stack_frame_id=4}",
+    "+  %constant.22 = s32[]{:T(128)} constant(98304), metadata={op_name=\"jit(<lambda>)/jit(_take)\" stack_frame_id=4}",
+    "   %add.10 = s32[16384]{0:T(1024)} broadcast(%constant.22), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/add\" stack_frame_id=4}",
+    "   %select_n.10 = s32[16384]{0:T(1024)} select(%lt.8, %add.8, %param_0.14), metadata={op_name=\"jit(<lambda>)/jit(_take)/jit(_where)/select_n\" stack_frame_id=4}",
+    "-  %constant.17 = s32[] constant(81919), metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=4}",
+    "+  %constant.17 = s32[] constant(98303), metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=4}",
+    "   %broadcast.4 = s32[16384]{0:T(1024)} broadcast(%constant.17), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=4}",
+    " ",
+    "-%fused_computation (param_0.2: f32[81920,128], param_1.4: s32[16384]) -> f32[16384,128] {",
+    "-  %param_0.2 = f32[81920,128]{1,0:T(8,128)S(1)} parameter(0)",
+    "+%fused_computation (param_0.2: f32[98304,128], param_1.4: s32[16384]) -> f32[16384,128] {",
+    "+  %param_0.2 = f32[98304,128]{1,0:T(8,128)} parameter(0)",
+    "   %param_1.4 = s32[16384]{0:T(1024)S(1)} parameter(1)",
+    "   %lt.6 = pred[16384]{0:T(1024)(128)(4,1)} compare(%param_0.16, %lt.9), direction=LT, metadata={op_name=\"jit(<lambda>)/jit(_take)/lt\" stack_frame_id=4}",
+    "-  %constant.21 = s32[]{:T(128)} constant(81920), metadata={op_name=\"jit(<lambda>)/jit(_take)\" stack_frame_id=4}",
+    "+  %constant.21 = s32[]{:T(128)} constant(98304), metadata={op_name=\"jit(<lambda>)/jit(_take)\" stack_frame_id=4}",
+    "   %add.9 = s32[16384]{0:T(1024)} broadcast(%constant.21), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/add\" stack_frame_id=4}",
+    "   %ge.5 = pred[16384]{0:T(1024)(128)(4,1)} compare(%select_n.8, %lt.9), direction=GE, metadata={op_name=\"jit(<lambda>)/jit(_take)/ge\" stack_frame_id=4}",
+    "-  %constant.20 = s32[]{:T(128)} constant(81919), metadata={op_name=\"jit(<lambda>)/jit(_take)\" stack_frame_id=4}",
+    "+  %constant.20 = s32[]{:T(128)} constant(98303), metadata={op_name=\"jit(<lambda>)/jit(_take)\" stack_frame_id=4}",
+    "   %broadcast.6 = s32[16384]{0:T(1024)} broadcast(%constant.20), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/le\" stack_frame_id=4}",
+    " ",
+    "-ENTRY %main.4 (t.1: f32[81920,128], i.1: s32[16384]) -> f32[16384,128] {",
+    "-  %t.1 = f32[81920,128]{1,0:T(8,128)} parameter(0), metadata={op_name=\"t\"}",
+    "-  %copy-start = (f32[81920,128]{1,0:T(8,128)S(1)}, f32[81920,128]{1,0:T(8,128)}, u32[]{:S(2)}) copy-start(%t.1), cross_program_prefetch_index=0",
+    "+ENTRY %main.4 (t.1: f32[98304,128], i.1: s32[16384]) -> f32[16384,128] {",
+    "   %i.1 = s32[16384]{0:T(1024)} parameter(1), metadata={op_name=\"i\"}",
+    "+  %t.1 = f32[98304,128]{1,0:T(8,128)} parameter(0), metadata={op_name=\"t\"}",
+    "   %fusion = s32[16384]{0:T(1024)S(1)} fusion(%i.1), kind=kLoop, calls=%fused_computation.4, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=4}, backend_config={\"aliasing_operands\":{\"lists\":[]},\"flag_configs\":[],\"megacore_config\":{\"megacore_split_dim\":\"0\"},\"retry_config\":{\"retry_count\":\"0\"},\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[{\"memory_space\":\"1\",\"offset\":\"0\",\"size\":\"32768\"}],\"window_config\":{\"cost_model_type\":\"COST_MODEL_TYPE_INVALID\",\"estimated_bundle_count\":\"0\",\"estimated_cycles\":\"2180\",\"estimated_scoped_vmem_bytes\":\"0\",\"estimated_vmem_bytes\":\"0\",\"input_window_bounds\":[],\"is_mask\":false,\"iteration_bounds\":[\"2\"],\"kernel_window_bounds\":[],\"ml_estimated_microseconds\":0,\"output_window_bounds\":[\"8\"],\"pad_input_on_minor_dim\":\"0\",\"pad_output_on_minor_dim\":\"0\"}}",
+    "-  %copy-done = f32[81920,128]{1,0:T(8,128)S(1)} copy-done(%copy-start)",
+    "-  %copy-start.2 = (s32[16384]{0:T(1024)S(1)SC(0:8192)}, s32[16384]{0:T(1024)}, u32[]{:S(2)}) copy-start(%i.1)",
+    "-  %gather_fusion = f32[16384,128]{1,0:T(8,128)} fusion(%copy-done, %fusion), kind=kCustom, calls=%fused_computation, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=4}, backend_config={\"aliasing_operands\":{\"lists\":[]},\"flag_configs\":[],\"integer_config\":{\"integer\":\"0\"},\"retry_config\":{\"retry_count\":\"0\"},\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[{\"memory_space\":\"1\",\"offset\":\"0\",\"size\":\"131072\"}]}",
+    "-  %copy-done.2 = s32[16384]{0:T(1024)S(1)SC(0:8192)} copy-done(%copy-start.2)",
+    "-  %copy-start.1 = (f32[81920,128]{1,0:T(8,128)S(1)}, f32[81920,128]{1,0:T(8,128)}, u32[]{:S(2)}) copy-start(%t.1)",
+    "-  %compare_and_fusion = pred[16384]{0:T(1024)(128)(4,1)S(1)} fusion(%copy-done.2), kind=kLoop, calls=%fused_computation.3, metadata={op_name=\"jit(<lambda>)/jit(_take)/and\" stack_frame_id=4}, backend_config={\"aliasing_operands\":{\"lists\":[]},\"flag_configs\":[],\"megacore_config\":{\"megacore_split_dim\":\"0\"},\"retry_config\":{\"retry_count\":\"0\"},\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[{\"memory_space\":\"1\",\"offset\":\"0\",\"size\":\"0\"}],\"window_config\":{\"cost_model_type\":\"COST_MODEL_TYPE_INVALID\",\"estimated_bundle_count\":\"0\",\"estimated_cycles\":\"2239\",\"estimated_scoped_vmem_bytes\":\"0\",\"estimated_vmem_bytes\":\"0\",\"input_window_bounds\":[],\"is_mask\":false,\"iteration_bounds\":[\"2\"],\"kernel_window_bounds\":[],\"ml_estimated_microseconds\":0,\"output_window_bounds\":[\"8\"],\"pad_input_on_minor_dim\":\"0\",\"pad_output_on_minor_dim\":\"0\"}}",
+    "+  %copy-start = (s32[16384]{0:T(1024)S(1)SC(0:8192)}, s32[16384]{0:T(1024)}, u32[]{:S(2)}) copy-start(%i.1)",
+    "+  %gather_fusion = f32[16384,128]{1,0:T(8,128)} fusion(%t.1, %fusion), kind=kCustom, calls=%fused_computation, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=4}, backend_config={\"aliasing_operands\":{\"lists\":[]},\"flag_configs\":[],\"integer_config\":{\"integer\":\"128\"},\"retry_config\":{\"retry_count\":\"0\"},\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[{\"memory_space\":\"1\",\"offset\":\"0\",\"size\":\"196608\"}]}",
+    "+  %copy-done = s32[16384]{0:T(1024)S(1)SC(0:8192)} copy-done(%copy-start)",
+    "+  %compare_and_fusion = pred[16384]{0:T(1024)(128)(4,1)S(1)} fusion(%copy-done), kind=kLoop, calls=%fused_computation.3, metadata={op_name=\"jit(<lambda>)/jit(_take)/and\" stack_frame_id=4}, backend_config={\"aliasing_operands\":{\"lists\":[]},\"flag_configs\":[],\"megacore_config\":{\"megacore_split_dim\":\"0\"},\"retry_config\":{\"retry_count\":\"0\"},\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[{\"memory_space\":\"1\",\"offset\":\"0\",\"size\":\"0\"}],\"window_config\":{\"cost_model_type\":\"COST_MODEL_TYPE_INVALID\",\"estimated_bundle_count\":\"0\",\"estimated_cycles\":\"2239\",\"estimated_scoped_vmem_bytes\":\"0\",\"estimated_vmem_bytes\":\"0\",\"input_window_bounds\":[],\"is_mask\":false,\"iteration_bounds\":[\"2\"],\"kernel_window_bounds\":[],\"ml_estimated_microseconds\":0,\"output_window_bounds\":[\"8\"],\"pad_input_on_minor_dim\":\"0\",\"pad_output_on_minor_dim\":\"0\"}}",
+    "   ROOT %broadcast_select_fusion = f32[16384,128]{1,0:T(8,128)} fusion(%gather_fusion, %compare_and_fusion), kind=kLoop, calls=%fused_computation.1, metadata={op_name=\"jit(<lambda>)/jit(_take)/select_n\" stack_frame_id=4}, backend_config={\"aliasing_operands\":{\"lists\":[{\"indices\":[\"0\",\"2\"]}]},\"flag_configs\":[],\"megacore_config\":{\"megacore_split_dim\":\"0\"},\"retry_config\":{\"retry_count\":\"0\"},\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[{\"memory_space\":\"1\",\"offset\":\"0\",\"size\":\"5603328\"}],\"window_config\":{\"cost_model_type\":\"COST_MODEL_TYPE_INVALID\",\"estimated_bundle_count\":\"0\",\"estimated_cycles\":\"24588\",\"estimated_scoped_vmem_bytes\":\"0\",\"estimated_vmem_bytes\":\"0\",\"input_window_bounds\":[],\"is_mask\":false,\"iteration_bounds\":[\"6\",\"1\"],\"kernel_window_bounds\":[],\"ml_estimated_microseconds\":0,\"output_window_bounds\":[\"342\",\"1\"],\"pad_input_on_minor_dim\":\"0\",\"pad_output_on_minor_dim\":\"0\"}}",
+    "-  %copy-done.1 = f32[81920,128]{1,0:T(8,128)S(1)} copy-done(%copy-start.1)",
+    " }"
+  ]
+}

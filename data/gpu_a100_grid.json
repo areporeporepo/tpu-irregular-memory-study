@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "torch": "2.4.1+cu121",
+    "cuda": "12.1",
+    "device": "NVIDIA A100-SXM4-40GB",
+    "sm": "8.0",
+    "hbm_gib": 39.5,
+    "l2_mib": 0.0,
+    "sms": 108,
+    "host": "gather-a100c-q5qxp",
+    "inner": 32,
+    "repeats": 12,
+    "dim": 128,
+    "indices": 16384,
+    "hbm_gbs_assumed": 1555.0,
+    "delivered_mib": 8.0
+  },
+  "contiguous": {
+    "ms": 0.01,
+    "gbs": 840.29
+  },
+  "records": [
+    {
+      "alloc_rows": 262144,
+      "span_rows": 4096,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 2.0,
+      "gather_gbs": 245.47,
+      "pct_hbm": 15.786,
+      "pct_contiguous": 29.21,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 16384,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 8.0,
+      "gather_gbs": 223.82,
+      "pct_hbm": 14.393,
+      "pct_contiguous": 26.64,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 65536,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 32.0,
+      "gather_gbs": 215.03,
+      "pct_hbm": 13.829,
+      "pct_contiguous": 25.59,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 262144,
+      "order": "random",
+      "alloc_mib": 128.0,
+      "span_mib": 128.0,
+      "gather_gbs": 214.76,
+      "pct_hbm": 13.811,
+      "pct_contiguous": 25.56,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 262144,
+      "order": "sorted",
+      "alloc_mib": 128.0,
+      "span_mib": 128.0,
+      "gather_gbs": 216.77,
+      "pct_hbm": 13.94,
+      "pct_contiguous": 25.8,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 262144,
+      "span_rows": 262144,
+      "order": "blocked",
+      "alloc_mib": 128.0,
+      "span_mib": 128.0,
+      "gather_gbs": 219.7,
+      "pct_hbm": 14.129,
+      "pct_contiguous": 26.15,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 65536,
+      "span_rows": 65536,
+      "order": "random",
+      "alloc_mib": 32.0,
+      "span_mib": 32.0,
+      "gather_gbs": 221.17,
+      "pct_hbm": 14.223,
+      "pct_contiguous": 26.32,
+      "max_abs_err": 0.0
+    },
+    {
+      "alloc_rows": 4096,
+      "span_rows": 4096,
+      "order": "random",
+      "alloc_mib": 2.0,
+      "span_mib": 2.0,
+      "gather_gbs": 252.95,
+      "pct_hbm": 16.267,
+      "pct_contiguous": 30.1,
+      "max_abs_err": 0.0
+    }
+  ]
+}

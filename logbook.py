@@ -201,6 +201,8 @@ def render() -> str:
   .detail{{margin-top:7px;font:13px/1.55 var(--mono);color:var(--ink-2);
            background:var(--surface-2);padding:9px 11px;border-radius:7px;white-space:pre-wrap}}
   footer{{padding:36px 0 60px;color:var(--ink-3);font-size:13px}}
+  .nav{{line-height:2.1;max-width:82ch}}
+  .nav a{{font-weight:620}}
   a{{color:var(--ink)}}
 </style>
 <header><div class="wrap">
@@ -216,6 +218,20 @@ def render() -> str:
   </div>
 </div></header>
 <div class="wrap">
+  <h2>Pages</h2>
+  <p class="nav">
+   <a href="./gather-cliff.html">The gather cliff</a> &middot; the study's main result: a 3x step in
+   gather bandwidth caused by one compile-time placement decision, measured on v5p, v6e and an A100.
+   <br><a href="./roadmap.html">Chips we can get, chips being bought</a> &middot; v5e through Rubin
+   on the same axes, with every figure sourced and the estimates marked.
+   <br><a href="./models.html">What we can actually run</a> &middot; live model catalogue against
+   the capacity we hold.
+   <br><a href="./cluster.html">Who is using the cluster</a> &middot; refreshed every cycle.
+   <br><a href="./stacks-and-physics.html">The physics underneath</a> &middot;
+   <a href="./background-2026-2027.html">where the hardware is going</a> &middot;
+   <a href="./teaching-accelerators.html">where does the data live</a>
+  </p>
+
   <h2>Latest sweep &middot; milliseconds per collective, dispatch amortised</h2>
   <div class="scroll"><table>
     <thead><tr><th>op</th><th>per-chip payload</th>{head}</tr></thead>

@@ -163,6 +163,63 @@ for z in $ZONES; do
   break
 done
 
+# ---------------------------------------------------------------- v5p, the SparseCore chip
+# v5p is the only chip in the fleet where the documented SparseCore gather kernel compiles, so it is
+# the only place the allocation cliff can be measured against a working SparseCore baseline. Two of
+# the three artefacts here cost no kernel time at all: the HLO bisection only compiles. Run every
+# second hour rather than every cycle, so one chip does not eat the cycle.
+V5P="anh-v5p-8"
+V5P_ZONE="us-east5-a"
+if [ "$(( $(date -u +%H) % 2 ))" -eq 0 ] && [ "$(date -u +%M)" -lt 20 ]; then
+  vstate=$(gcloud compute tpus tpu-vm describe "$V5P" --zone="$V5P_ZONE" \
+             --format="value(state)" 2>/dev/null | head -1)
+  if [ "$vstate" = "READY" ]; then
+    say "cycle $STAMP: allocation ladder and HLO bisection on $V5P"
+    for f in experiment10_gather_locality.py hlo_gather_lowering.py; do
+      gcloud compute tpus tpu-vm scp "$STUDY/$f" "$V5P:~/$f" \
+        --zone="$V5P_ZONE" --worker=0 >/dev/null 2>&1
+    done
+    gcloud compute tpus tpu-vm ssh "$V5P" --zone="$V5P_ZONE" --worker=0 \
+      --command="cd ~ && python3.11 experiment10_gather_locality.py --sweep --out alloc_sweep_v5p.json" \
+      > "$DATA/alloc_sweep_${STAMP}.stdout" 2>&1
+    gcloud compute tpus tpu-vm ssh "$V5P" --zone="$V5P_ZONE" --worker=0 \
+      --command="cd ~ && python3.11 hlo_gather_lowering.py --bisect --out hlo_bisect_v5p.json" \
+      > "$DATA/hlo_bisect_${STAMP}.stdout" 2>&1
+    for f in alloc_sweep_v5p.json hlo_bisect_v5p.json; do
+      gcloud compute tpus tpu-vm scp "$V5P:~/$f" "$DATA/$f" \
+        --zone="$V5P_ZONE" --worker=0 >/dev/null 2>&1
+    done
+    say "cycle $STAMP: v5p artefacts refreshed"
+  else
+    say "cycle $STAMP: $V5P is $vstate, skipping the v5p artefacts"
+  fi
+fi
+
+# The v6e single chip carries the cross-generation half of the same measurement. Two chips minimum
+# for every claim: the identical script on a second architecture is what killed the first two
+# explanations we had for the cliff.
+if [ "$(( $(date -u +%H) % 2 ))" -eq 1 ] && [ "$(date -u +%M)" -lt 20 ]; then
+  for z in $ZONES; do
+    dstate=$(gcloud compute tpus tpu-vm describe "$DEV" --zone="$z" \
+               --format="value(state)" 2>/dev/null | head -1)
+    [ "$dstate" = "READY" ] || continue
+    say "cycle $STAMP: allocation ladder on $DEV, the v6e side of the comparison"
+    for f in experiment10_gather_locality.py hlo_gather_lowering.py; do
+      gcloud compute tpus tpu-vm scp "$STUDY/$f" "$DEV:~/$f" --zone="$z" >/dev/null 2>&1
+    done
+    gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
+      --command="cd ~ && python3.11 experiment10_gather_locality.py --sweep --out alloc_sweep_v6e.json" \
+      > "$DATA/alloc_sweep_v6e_${STAMP}.stdout" 2>&1
+    gcloud compute tpus tpu-vm ssh "$DEV" --zone="$z" \
+      --command="cd ~ && python3.11 hlo_gather_lowering.py --bisect --out hlo_bisect_v6e.json" \
+      > "$DATA/hlo_bisect_v6e_${STAMP}.stdout" 2>&1
+    for f in alloc_sweep_v6e.json hlo_bisect_v6e.json; do
+      gcloud compute tpus tpu-vm scp "$DEV:~/$f" "$DATA/$f" --zone="$z" >/dev/null 2>&1
+    done
+    break
+  done
+fi
+
 # ---------------------------------------------------------------- the shared-project view
 # soe-hpccenter is a class project, so every cycle also records what everyone else is holding.
 # That series is what distinguishes "Google has no capacity" from "our classmates have it all",
@@ -181,8 +238,19 @@ fi
 python3 "$STUDY/logbook.py" build >/dev/null 2>&1
 # Who is holding the class hardware, refreshed on the same cycle as the measurements.
 python3 "$STUDY/build_cluster_dashboard.py" >> "$LOG" 2>&1
-if [ -n "$(git -C "$STUDY" status --porcelain data index.html logbook.jsonl budget_ledger.json 2>/dev/null)" ]; then
-  git -C "$STUDY" add data index.html cluster.html logbook.jsonl budget_ledger.json >/dev/null 2>&1
+# The result pages are generated from the JSON in data/, so they cannot drift from the numbers.
+# Cheap and local: no TPU, no network. Failures must not take the cycle down with them.
+python3 "$STUDY/build_gather_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: gather page build failed"
+python3 "$STUDY/build_roadmap_page.py" >> "$LOG" 2>&1 || say "cycle $STAMP: roadmap page build failed"
+# The model page scrapes a live catalogue, so it goes stale fastest and is also the most likely to
+# fail. Hourly, and never fatal.
+if [ "$(date -u +%M)" -lt 20 ]; then
+  python3 "$STUDY/build_model_page.py" >> "$LOG" 2>&1 || \
+    say "cycle $STAMP: model page build failed, keeping the last good copy"
+fi
+if [ -n "$(git -C "$STUDY" status --porcelain data index.html logbook.jsonl budget_ledger.json gather-cliff.html roadmap.html models.html 2>/dev/null)" ]; then
+  git -C "$STUDY" add data index.html cluster.html gather-cliff.html roadmap.html models.html \
+    logbook.jsonl budget_ledger.json >/dev/null 2>&1
   git -C "$STUDY" -c user.name="anh nguyen" -c user.email="qanh@stanford.edu" \
     commit -q -m "campaign cycle $STAMP" >/dev/null 2>&1
   if git -C "$STUDY" push -q origin main >/dev/null 2>&1; then

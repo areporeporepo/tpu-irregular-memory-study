@@ -1,0 +1,344 @@
+<!doctype html><meta charset="utf-8">
+<title>A 3x cliff in TPU gathers</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+ :root{--bg:#fcfcfb;--surface:#fff;--ink:#1c1c20;--ink-2:#42424a;--ink-3:#75757f;--line:#dcd9d4;
+   --band:#efece6;--a:#1c1c20;--b:#b4531f;--c:#8a8a92;--d:#5f6b74;
+   --mono:ui-monospace,"SF Mono",Menlo,monospace;
+   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+ @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111113;--surface:#191919;
+   --ink:#f1f0ed;--ink-2:#b8b7b2;--ink-3:#86858d;--line:#2f2f34;--band:#212127;--a:#f1f0ed;
+   --b:#e08a4c;--c:#8a8992;--d:#9fb0bd}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--sans)}
+ .wrap{max-width:940px;margin:0 auto;padding:0 22px}
+ header{padding:54px 0 26px;border-bottom:1px solid var(--line)}
+ h1{font-size:clamp(28px,4.5vw,42px);letter-spacing:-.03em;margin:0 0 12px;font-weight:680;
+   line-height:1.12}
+ h2{font-size:15px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+   margin:46px 0 12px;font-weight:620}
+ h3{font-size:17px;margin:30px 0 8px;font-weight:640}
+ .sub{color:var(--ink-3);font:500 13px var(--mono)}
+ p{margin:0 0 14px;max-width:74ch;color:var(--ink-2)}
+ .lede{font-size:18px;color:var(--ink)}
+ figure{margin:22px 0 8px;background:var(--surface);border:1px solid var(--line);
+   border-radius:14px;padding:18px 16px 8px}
+ figcaption{font:13px/1.55 var(--sans);color:var(--ink-3);padding:6px 6px 10px;max-width:80ch}
+ .grid{stroke:var(--line);stroke-width:1}
+ .ax{font:11px var(--mono);fill:var(--ink-3)}
+ .ax-t{font:600 10px var(--mono);fill:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+ .thresh{stroke:var(--ink-3);stroke-width:1;stroke-dasharray:3 4;opacity:.75}
+ .thresh-l{font:600 10px var(--mono);fill:var(--ink-3);letter-spacing:.04em}
+ polyline.ln{fill:none;stroke-width:2;stroke-linejoin:round}
+ .mk{stroke:var(--surface);stroke-width:2}
+ .lbl{font:600 11px var(--mono)}
+ .grp{font:600 11px var(--mono);fill:var(--ink-3);letter-spacing:.05em;text-transform:uppercase}
+ .cat{font:12px var(--mono);fill:var(--ink-2)}
+ .val{font:600 12px var(--mono);fill:var(--ink)}
+ .bar{fill:var(--c)} .bar-hi{fill:var(--a)} .band{fill:var(--band)}
+ .s-a{stroke:var(--a);fill:var(--a)} .s-b{stroke:var(--b);fill:var(--b)}
+ .s-c{stroke:var(--c);fill:var(--c)} .s-d{stroke:var(--d);fill:var(--d)}
+ text.s-a{stroke:none} text.s-b{stroke:none} text.s-c{stroke:none} text.s-d{stroke:none}
+ pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+   overflow-x:auto;font:12.5px/1.55 var(--mono);color:var(--ink-2)}
+ pre b{color:var(--ink);background:var(--band);padding:1px 3px;border-radius:3px}
+ table{width:100%;border-collapse:collapse;font:13px var(--mono);background:var(--surface);
+   border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
+ th,td{padding:8px 11px;border-bottom:1px solid var(--line);text-align:left}
+ th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+ td.n{text-align:right}
+ details{margin:14px 0} summary{cursor:pointer;color:var(--ink-3);font:13px var(--mono)}
+ .keys{display:flex;flex-wrap:wrap;gap:16px;margin:6px 0 0;padding:0 6px;list-style:none}
+ .keys li{font:12px var(--mono);color:var(--ink-2);display:flex;align-items:center;gap:7px}
+ .keys i{width:22px;height:0;border-top-width:2px;display:inline-block}
+ .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;
+   margin:24px 0 6px}
+ .tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+ .tile .v{font:660 25px/1.1 var(--mono);letter-spacing:-.02em;display:block}
+ .tile .k{font:600 10px var(--mono);letter-spacing:.07em;text-transform:uppercase;
+   color:var(--ink-3);margin-top:6px;display:block}
+ footer{margin-top:52px;padding:26px 0 64px;border-top:1px solid var(--line);color:var(--ink-3);
+   font-size:13.5px}
+ a{color:var(--ink)}
+</style>
+<header><div class="wrap">
+ <h1>A gather on a TPU is fast or slow depending on a number you never wrote down</h1>
+ <p class="sub">2026-08-16 16:52 UTC &middot; measured on v5p, v6e and an A100 &middot;
+ part of the TPU irregular-access study</p>
+ <p class="lede" style="margin-top:18px">Reading scattered rows out of a table is what an embedding
+ lookup, an MoE router and a paged KV cache all reduce to. On a TPU that operation runs at one of
+ two speeds, about 3&times; apart, and which one you get is decided by the compiler before your
+ program sees a single index. This page is the measurement, the mechanism, and how to check it
+ yourself.</p>
+ <div class="tiles">
+  <div class="tile"><span class="v">3.3&ndash;3.6&times;</span><span class="k">the step, v5p and v6e</span></div>
+  <div class="tile"><span class="v">1.06&times;</span><span class="k">same test, A100</span></div>
+  <div class="tile"><span class="v">48 / 96</span><span class="k">MiB budget, v5p / v6e</span></div>
+  <div class="tile"><span class="v">S(1)</span><span class="k">the annotation that does it</span></div>
+ </div>
+</div></header>
+<div class="wrap">
+
+<h2>1. What we set out to measure</h2>
+<p>The study's question was where irregular access belongs: on the TensorCore, which is built for
+dense arithmetic, or on the SparseCore sitting beside it, which exists to chase pointers. So we
+timed the same gather both ways on the same chip. 16384 rows of 128 float32 pulled out of a table,
+8 MiB delivered per gather, 32 gathers chained inside one compiled function so that host dispatch
+is amortised rather than measured.</p>
+<p>The first answer looked boring. A random gather runs at a few percent of what the same chip
+manages on a contiguous read, which everyone already knows. The interesting part was what happened
+when we tried to find out <em>why</em>.</p>
+
+<h2>2. Six things that change nothing, two that change everything</h2>
+<figure>
+<svg viewBox="0 0 900 516" width="100%" role="img" aria-label="What changes the gather rate and what does not">
+<text class="grp" x="152" y="24">index span, buffer fixed at 128 MiB</text>
+<text class="cat" x="140" y="52" text-anchor="end">span 2 MiB</text>
+<rect class="bar" x="152" y="34" width="146.8" height="26" rx="4"><title>span 2 MiB: 76.7 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="307.8" y="52">77 GB/s</text>
+<text class="cat" x="140" y="84" text-anchor="end">span 8 MiB</text>
+<rect class="bar" x="152" y="66" width="146.4" height="26" rx="4"><title>span 8 MiB: 76.5 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="307.4" y="84">76 GB/s</text>
+<text class="cat" x="140" y="116" text-anchor="end">span 32 MiB</text>
+<rect class="bar" x="152" y="98" width="146.9" height="26" rx="4"><title>span 32 MiB: 76.7 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="307.9" y="116">77 GB/s</text>
+<text class="cat" x="140" y="148" text-anchor="end">span 128 MiB</text>
+<rect class="bar" x="152" y="130" width="147.0" height="26" rx="4"><title>span 128 MiB: 76.8 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="308.0" y="148">77 GB/s</text>
+<text class="grp" x="152" y="192">index order, span fixed at 128 MiB</text>
+<text class="cat" x="140" y="220" text-anchor="end">random</text>
+<rect class="bar" x="152" y="202" width="147.0" height="26" rx="4"><title>random: 76.8 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="308.0" y="220">77 GB/s</text>
+<text class="cat" x="140" y="252" text-anchor="end">sorted</text>
+<rect class="bar" x="152" y="234" width="146.9" height="26" rx="4"><title>sorted: 76.7 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="307.9" y="252">77 GB/s</text>
+<text class="cat" x="140" y="284" text-anchor="end">blocked</text>
+<rect class="bar" x="152" y="266" width="146.9" height="26" rx="4"><title>blocked: 76.7 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="307.9" y="284">77 GB/s</text>
+<text class="grp" x="152" y="328">buffer shrunk to equal the span</text>
+<text class="cat" x="140" y="356" text-anchor="end">buffer 128 MiB</text>
+<rect class="bar" x="152" y="338" width="147.0" height="26" rx="4"><title>buffer 128 MiB: 76.8 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="308.0" y="356">77 GB/s</text>
+<text class="cat" x="140" y="388" text-anchor="end">buffer 128 MiB</text>
+<rect class="bar" x="152" y="370" width="146.9" height="26" rx="4"><title>buffer 128 MiB: 76.7 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="307.9" y="388">77 GB/s</text>
+<text class="cat" x="140" y="420" text-anchor="end">buffer 128 MiB</text>
+<rect class="bar" x="152" y="402" width="146.9" height="26" rx="4"><title>buffer 128 MiB: 76.7 GB/s, 6.8% of a contiguous read</title></rect>
+<text class="val" x="307.9" y="420">77 GB/s</text>
+<text class="cat" x="140" y="452" text-anchor="end">buffer 32 MiB</text>
+<rect class="bar-hi" x="152" y="434" width="488.8" height="26" rx="4"><title>buffer 32 MiB: 255.3 GB/s, 22.7% of a contiguous read</title></rect>
+<text class="val" x="649.8" y="452">255 GB/s</text>
+<text class="cat" x="140" y="484" text-anchor="end">buffer 2 MiB</text>
+<rect class="bar-hi" x="152" y="466" width="495.1" height="26" rx="4"><title>buffer 2 MiB: 258.6 GB/s, 23.0% of a contiguous read</title></rect>
+<text class="val" x="656.1" y="484">259 GB/s</text>
+</svg>
+<figcaption>One chip, one gather, eight configurations. Widening the range of addresses the indices
+touch from 2 MiB to 128 MiB does nothing. Sorting the indices does nothing, and neither does
+grouping them into consecutive blocks, which is what a batch sorted by expert looks like. Shrinking
+the <em>buffer</em> to match the span, without changing a single index, more than triples the
+rate.</figcaption>
+</figure>
+<p>That is a strange result, because every intuition about why gathers are slow is about the access
+pattern. If the cost were wide memory transactions being mostly discarded, sorting would help. If it
+were cache misses, a 2 MiB working set inside a 128 MiB buffer would be fast. Neither is true here.
+The only thing that matters is how large the buffer was <em>declared</em> to be, which is a property
+of the program text, not of the run.</p>
+
+<h2>3. The ladder, on four accelerators</h2>
+<figure>
+<svg viewBox="0 0 900 376" width="100%" role="img" aria-label="Gather bandwidth against declared buffer size, on four accelerators">
+<line class="grid" x1="66" y1="330.0" x2="768" y2="330.0"/>
+<text class="ax" x="56" y="334.0" text-anchor="end">0</text>
+<line class="grid" x1="66" y1="280.0" x2="768" y2="280.0"/>
+<text class="ax" x="56" y="284.0" text-anchor="end">50</text>
+<line class="grid" x1="66" y1="230.1" x2="768" y2="230.1"/>
+<text class="ax" x="56" y="234.1" text-anchor="end">100</text>
+<line class="grid" x1="66" y1="180.1" x2="768" y2="180.1"/>
+<text class="ax" x="56" y="184.1" text-anchor="end">150</text>
+<line class="grid" x1="66" y1="130.2" x2="768" y2="130.2"/>
+<text class="ax" x="56" y="134.2" text-anchor="end">200</text>
+<line class="grid" x1="66" y1="80.2" x2="768" y2="80.2"/>
+<text class="ax" x="56" y="84.2" text-anchor="end">250</text>
+<line class="grid" x1="66" y1="30.3" x2="768" y2="30.3"/>
+<text class="ax" x="56" y="34.3" text-anchor="end">300</text>
+<text class="ax-t" x="56" y="18" text-anchor="end">GB/s</text>
+<text class="ax" x="66.0" y="352" text-anchor="middle">8</text>
+<text class="ax" x="219.1" y="352" text-anchor="middle">16</text>
+<text class="ax" x="372.2" y="352" text-anchor="middle">32</text>
+<text class="ax" x="461.8" y="352" text-anchor="middle">48</text>
+<text class="ax" x="614.9" y="352" text-anchor="middle">96</text>
+<text class="ax" x="768.0" y="352" text-anchor="middle">192</text>
+<text class="ax-t" x="417" y="370" text-anchor="middle">declared buffer size, MiB (log scale)</text>
+<polyline class="ln s-a" points="66.0,74.7 219.1,74.7 219.1,74.1 308.7,74.1 308.7,71.4 372.2,71.4 372.2,75.3 421.5,75.3 421.5,77.8 441.6,77.8 441.6,253.4 461.8,253.4 525.3,253.4 525.3,253.4 574.6,253.4 574.6,253.4 614.9,253.4 614.9,253.3 678.4,253.3 678.4,253.3 768.0,253.3 768.0,253.4"/>
+<circle class="s-a mk" cx="66.0" cy="74.7" r="4.5"><title>v5p TensorCore: 255.6 GB/s at a 8 MiB buffer</title></circle>
+<circle class="s-a mk" cx="219.1" cy="74.1" r="4.5"><title>v5p TensorCore: 256.1 GB/s at a 16 MiB buffer</title></circle>
+<circle class="s-a mk" cx="308.7" cy="71.4" r="4.5"><title>v5p TensorCore: 258.8 GB/s at a 24 MiB buffer</title></circle>
+<circle class="s-a mk" cx="372.2" cy="75.3" r="4.5"><title>v5p TensorCore: 254.9 GB/s at a 32 MiB buffer</title></circle>
+<circle class="s-a mk" cx="421.5" cy="77.8" r="4.5"><title>v5p TensorCore: 252.4 GB/s at a 40 MiB buffer</title></circle>
+<circle class="s-a mk" cx="461.8" cy="253.4" r="4.5"><title>v5p TensorCore: 76.7 GB/s at a 48 MiB buffer</title></circle>
+<circle class="s-a mk" cx="525.3" cy="253.4" r="4.5"><title>v5p TensorCore: 76.7 GB/s at a 64 MiB buffer</title></circle>
+<circle class="s-a mk" cx="574.6" cy="253.4" r="4.5"><title>v5p TensorCore: 76.7 GB/s at a 80 MiB buffer</title></circle>
+<circle class="s-a mk" cx="614.9" cy="253.3" r="4.5"><title>v5p TensorCore: 76.8 GB/s at a 96 MiB buffer</title></circle>
+<circle class="s-a mk" cx="678.4" cy="253.3" r="4.5"><title>v5p TensorCore: 76.7 GB/s at a 128 MiB buffer</title></circle>
+<circle class="s-a mk" cx="768.0" cy="253.4" r="4.5"><title>v5p TensorCore: 76.7 GB/s at a 192 MiB buffer</title></circle>
+<text class="lbl s-a" x="779.0" y="257.4">v5p TensorCore</text>
+<polyline class="ln s-b" points="66.0,174.4 219.1,174.4 219.1,174.5 308.7,174.5 308.7,175.4 372.2,175.4 372.2,175.5 421.5,175.5 421.5,176.9 461.8,176.9 461.8,176.6 525.3,176.6 525.3,176.9 574.6,176.9 574.6,178.1 594.8,178.1 594.8,287.7 614.9,287.7 678.4,287.7 678.4,287.8 768.0,287.8 768.0,287.7" stroke-dasharray="7 4"/>
+<rect class="s-b mk" x="62.0" y="170.4" width="8" height="8" rx="1.5"><title>v6e TensorCore: 155.8 GB/s at a 8 MiB buffer</title></rect>
+<rect class="s-b mk" x="215.1" y="170.5" width="8" height="8" rx="1.5"><title>v6e TensorCore: 155.6 GB/s at a 16 MiB buffer</title></rect>
+<rect class="s-b mk" x="304.7" y="171.4" width="8" height="8" rx="1.5"><title>v6e TensorCore: 154.7 GB/s at a 24 MiB buffer</title></rect>
+<rect class="s-b mk" x="368.2" y="171.5" width="8" height="8" rx="1.5"><title>v6e TensorCore: 154.6 GB/s at a 32 MiB buffer</title></rect>
+<rect class="s-b mk" x="417.5" y="172.9" width="8" height="8" rx="1.5"><title>v6e TensorCore: 153.3 GB/s at a 40 MiB buffer</title></rect>
+<rect class="s-b mk" x="457.8" y="172.6" width="8" height="8" rx="1.5"><title>v6e TensorCore: 153.5 GB/s at a 48 MiB buffer</title></rect>
+<rect class="s-b mk" x="521.3" y="172.9" width="8" height="8" rx="1.5"><title>v6e TensorCore: 153.2 GB/s at a 64 MiB buffer</title></rect>
+<rect class="s-b mk" x="570.6" y="174.1" width="8" height="8" rx="1.5"><title>v6e TensorCore: 152.1 GB/s at a 80 MiB buffer</title></rect>
+<rect class="s-b mk" x="610.9" y="283.7" width="8" height="8" rx="1.5"><title>v6e TensorCore: 42.3 GB/s at a 96 MiB buffer</title></rect>
+<rect class="s-b mk" x="674.4" y="283.8" width="8" height="8" rx="1.5"><title>v6e TensorCore: 42.3 GB/s at a 128 MiB buffer</title></rect>
+<rect class="s-b mk" x="764.0" y="283.7" width="8" height="8" rx="1.5"><title>v6e TensorCore: 42.3 GB/s at a 192 MiB buffer</title></rect>
+<text class="lbl s-b" x="779.0" y="291.7">v6e TensorCore</text>
+<polyline class="ln s-c" points="66.0,151.9 219.1,151.9 219.1,152.8 308.7,152.8 308.7,152.5 372.2,152.5 372.2,153.9 421.5,153.9 421.5,153.5 461.8,153.5 461.8,152.6 525.3,152.6 525.3,152.7 574.6,152.7 574.6,153.6 614.9,153.6 614.9,152.9 678.4,152.9 678.4,152.7 768.0,152.7 768.0,153.6" stroke-dasharray="2 3"/>
+<polygon class="s-c mk" points="66.0,146.9 70.6,155.4 61.4,155.4"><title>v5p SparseCore: 178.3 GB/s at a 8 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="219.1,147.8 223.7,156.3 214.5,156.3"><title>v5p SparseCore: 177.4 GB/s at a 16 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="308.7,147.5 313.3,156.0 304.1,156.0"><title>v5p SparseCore: 177.6 GB/s at a 24 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="372.2,148.9 376.8,157.4 367.6,157.4"><title>v5p SparseCore: 176.3 GB/s at a 32 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="421.5,148.5 426.1,157.0 416.9,157.0"><title>v5p SparseCore: 176.7 GB/s at a 40 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="461.8,147.6 466.4,156.1 457.2,156.1"><title>v5p SparseCore: 177.6 GB/s at a 48 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="525.3,147.7 529.9,156.2 520.7,156.2"><title>v5p SparseCore: 177.4 GB/s at a 64 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="574.6,148.6 579.2,157.1 570.0,157.1"><title>v5p SparseCore: 176.5 GB/s at a 80 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="614.9,147.9 619.5,156.4 610.3,156.4"><title>v5p SparseCore: 177.3 GB/s at a 96 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="678.4,147.7 683.0,156.2 673.8,156.2"><title>v5p SparseCore: 177.4 GB/s at a 128 MiB buffer</title></polygon>
+<polygon class="s-c mk" points="768.0,148.6 772.6,157.1 763.4,157.1"><title>v5p SparseCore: 176.6 GB/s at a 192 MiB buffer</title></polygon>
+<text class="lbl s-c" x="779.0" y="157.6">v5p SparseCore</text>
+<polyline class="ln s-d" points="66.0,108.0 219.1,108.0 219.1,108.8 308.7,108.8 308.7,113.4 372.2,113.4 372.2,114.5 421.5,114.5 421.5,115.1 461.8,115.1 461.8,112.2 525.3,112.2 525.3,116.6 574.6,116.6 574.6,115.5 614.9,115.5 614.9,114.4 678.4,114.4 678.4,115.1 768.0,115.1 768.0,115.3" stroke-dasharray="1 5"/>
+<polygon class="s-d mk" points="66.0,102.5 71.0,108.0 66.0,113.5 61.0,108.0"><title>A100 TensorCore: 222.2 GB/s at a 8 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="219.1,103.3 224.1,108.8 219.1,114.3 214.1,108.8"><title>A100 TensorCore: 221.4 GB/s at a 16 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="308.7,107.9 313.7,113.4 308.7,118.9 303.7,113.4"><title>A100 TensorCore: 216.7 GB/s at a 24 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="372.2,109.0 377.2,114.5 372.2,120.0 367.2,114.5"><title>A100 TensorCore: 215.7 GB/s at a 32 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="421.5,109.6 426.5,115.1 421.5,120.6 416.5,115.1"><title>A100 TensorCore: 215.1 GB/s at a 40 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="461.8,106.7 466.8,112.2 461.8,117.7 456.8,112.2"><title>A100 TensorCore: 218.0 GB/s at a 48 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="525.3,111.1 530.3,116.6 525.3,122.1 520.3,116.6"><title>A100 TensorCore: 213.6 GB/s at a 64 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="574.6,110.0 579.6,115.5 574.6,121.0 569.6,115.5"><title>A100 TensorCore: 214.6 GB/s at a 80 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="614.9,108.9 619.9,114.4 614.9,119.9 609.9,114.4"><title>A100 TensorCore: 215.7 GB/s at a 96 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="678.4,109.6 683.4,115.1 678.4,120.6 673.4,115.1"><title>A100 TensorCore: 215.1 GB/s at a 128 MiB buffer</title></polygon>
+<polygon class="s-d mk" points="768.0,109.8 773.0,115.3 768.0,120.8 763.0,115.3"><title>A100 TensorCore: 214.9 GB/s at a 192 MiB buffer</title></polygon>
+<text class="lbl s-d" x="779.0" y="119.3">A100 TensorCore</text>
+</svg>
+<ul class="keys">
+ <li><i style="border-top-style:solid;border-color:var(--a)"></i>v5p TensorCore</li>
+ <li><i style="border-top-style:dashed;border-color:var(--b)"></i>v6e TensorCore</li>
+ <li><i style="border-top-style:dotted;border-color:var(--c)"></i>v5p SparseCore</li>
+ <li><i style="border-top-style:dotted;border-color:var(--d)"></i>A100</li>
+</ul>
+<figcaption>Buffer size on a log scale, gather bandwidth on the vertical. The two TensorCore lines
+are step functions with the step in different places. The SparseCore line and the A100 line are
+flat. v5p steps 259&thinsp;&rarr;&thinsp;77 GB/s (3.38&times;) &middot; v6e steps 156&thinsp;&rarr;&thinsp;42 GB/s (3.68&times;). The A100 holds 214&ndash;222 GB/s across the same 24&times; range of buffer size, a spread of 1.04&times;.</figcaption>
+</figure>
+<p>Two flat lines and two steps is the whole finding in one frame. The SparseCore is flat because
+its indirect DMA reads HBM whatever the table's size: 176.3&ndash;178.3 GB/s, a 1.1% spread across a 24&times; range. The
+A100 is flat for a different reason, that nothing about a CUDA gather is decided at compile time.
+Only the TPU TensorCore has a cliff, and each generation puts it somewhere else.</p>
+
+<h2>4. The mechanism, in one line of HLO</h2>
+<p>XLA hands over the compiled program, so this does not have to stay a correlation. Compiling the
+identical gather at a buffer just below and just above the cliff, and diffing the optimised HLO,
+gives a two-character answer.</p>
+<pre>%param_0.2 = f32[81920,128]{1,0:T(8,128)<b>S(1)</b>} parameter(0)   40 MiB &rarr; 256 GB/s
+%param_0.2 = f32[98304,128]{1,0:T(8,128)}     parameter(0)   48 MiB &rarr;  77 GB/s</pre>
+<p><span class="sub">S(1)</span> is XLA's memory-space annotation. Below the threshold the
+compiler promotes the gather's source table into on-chip memory; above it, the table stays in HBM
+and every gathered row is a separate trip off-chip. The decision is made at compile time from the
+declared shape, which is exactly why the span and the order of the indices cannot matter: neither
+is known yet.</p>
+
+<h3>Finding the threshold for free</h3>
+<p>Because the mechanism is visible in the compiled module, the exact cutoff can be bisected without
+running a single kernel: compile, look for <span class="sub">S(1)</span>, halve the interval.</p>
+<table>
+ <thead><tr><th>chip</th><th>TensorCores per chip</th><th class="n">last promoted</th>
+  <th>reads as</th></tr></thead>
+ <tbody>
+  <tr><td>v5p</td><td class="n">2 (Megacore)</td><td class="n">50,266,112 B</td>
+   <td>48 MiB &minus; 64 KiB</td></tr>
+  <tr><td>v6e</td><td class="n">1</td><td class="n">100,597,760 B</td>
+   <td>96 MiB &minus; 64 KiB</td></tr>
+ </tbody>
+</table>
+<p>The threshold is identical for 128-, 256- and 512-wide rows, so it is a byte budget rather than a
+row count. At 64-wide rows it halves, because a float32 array is laid out in
+<span class="sub">T(8,128)</span> tiles and a 64-wide row wastes half of every tile: the budget is
+counted in allocated bytes, padding included.</p>
+
+<h3>One guess tested and dropped</h3>
+<p>64 KiB below a round number is suspicious, and at our shape the index vector was exactly 64 KiB,
+which suggested the budget covered the table and the indices together. It does not.
+</p>
+
+<h2>5. Why it might be 48 on one chip and 96 on the other</h2>
+<p>A v5p chip has two TensorCores that Megacore drives as one; a v6e chip has a single core. If the
+budget is a per-chip allowance divided among the cores, then 96 MiB per chip becomes 48 MiB per core
+on v5p and stays 96 MiB on v6e, which is what we see. That is a hypothesis with a sharp consequence:
+any single-core chip should show 96 MiB, and v5e is a single-core chip we had not touched. The test
+costs one spot instance and no benchmark, only a compile.</p>
+
+<h2>6. What it means if you are the one shipping the model</h2>
+<figure>
+<svg viewBox="0 0 900 243" width="100%" role="img" aria-label="Sizes of real model tables against the on-chip promotion budget">
+<rect class="band" x="268" y="22" width="216.4" height="185"/>
+<text class="thresh-l" x="490.4" y="18">96 MiB budget &rarr; everything right of here stays in HBM</text>
+<line class="thresh" x1="484.4" y1="22" x2="484.4" y2="207"/>
+<text class="cat" x="256" y="46" text-anchor="end">Qwen3 embedding, 151k x 2560</text>
+<rect class="bar" x="268" y="26" width="313.4" height="28" rx="4"><title>Qwen3 embedding, 151k x 2560: 742 MiB, left in HBM</title></rect>
+<text class="val" x="590.4" y="46">742 MiB</text>
+<text class="cat" x="256" y="83" text-anchor="end">Llama-3 embedding, 128k x 4096</text>
+<rect class="bar" x="268" y="63" width="327.6" height="28" rx="4"><title>Llama-3 embedding, 128k x 4096: 1,002 MiB, left in HBM</title></rect>
+<text class="val" x="604.6" y="83">1,002 MiB</text>
+<text class="cat" x="256" y="120" text-anchor="end">MoE experts, 8 x 4096 x 14336</text>
+<rect class="bar" x="268" y="100" width="322.3" height="28" rx="4"><title>MoE experts, 8 x 4096 x 14336: 896 MiB, left in HBM</title></rect>
+<text class="val" x="599.3" y="120">896 MiB</text>
+<text class="cat" x="256" y="157" text-anchor="end">KV cache, 8k ctx, batch 32</text>
+<rect class="bar" x="268" y="137" width="493.0" height="28" rx="4"><title>KV cache, 8k ctx, batch 32: 32,768 MiB, left in HBM</title></rect>
+<text class="val" x="770.0" y="157">32,768 MiB</text>
+<text class="cat" x="256" y="194" text-anchor="end">a table that fits the budget</text>
+<rect class="bar-hi" x="268" y="174" width="211.4" height="28" rx="4"><title>a table that fits the budget: 86 MiB, promoted on chip</title></rect>
+<text class="val" x="488.4" y="194">86 MiB</text>
+</svg>
+<figcaption>Table sizes from real models against the v6e budget. The bar for a table that fits is
+there to show what fitting looks like; nothing anyone actually serves is anywhere near it.</figcaption>
+</figure>
+<p>Every embedding table and every KV cache worth the name is far above the budget, so in practice
+the slow path is the only path, and no amount of sorting indices or improving locality moves it.
+What does move it is putting the gather on the SparseCore, which was 2.3&times; faster than the
+TensorCore in exactly the regime that matters, and slower in the regime nobody is in. The crossover
+between the two engines is not a hardware property at all. It is a compiler threshold.</p>
+
+<h2>7. What we still do not know</h2>
+<p>Three open items, each with the experiment that would settle it. Where the 64 KiB reservation
+comes from, which the JAX or XLA source would answer directly. Whether the budget is configurable,
+since <span class="sub">xla_tpu_scoped_vmem_limit_kib</span> and its neighbours exist and would be
+the obvious lever, in which case the cliff can be moved on purpose. And whether the promoted path
+is genuinely a full copy into on-chip memory or a prefetch hint, which the memory-space assignment
+pass would show.</p>
+<p>The SparseCore half also comes with a caveat worth stating plainly: the documented kernel
+compiles at 9 of 16 shapes we tried on v5p and 1 of 16 on v6e, with an opaque
+<span class="sub">Failed to run MLO pass pipeline</span> for the rest. Every shape that compiled was
+bit-exact against <span class="sub">jnp.take</span>. The envelope is real but narrow, and it is not
+documented anywhere we could find.</p>
+
+<details>
+ <summary>the numbers behind every chart</summary>
+ <table>
+  <thead><tr><th>chip</th><th class="n">buffer MiB</th><th class="n">TensorCore GB/s</th>
+   <th class="n">SparseCore GB/s</th></tr></thead>
+  <tbody><tr><td>v5p</td><td class='n'>8</td><td class='n'>255.6</td><td class='n'>178.3</td></tr><tr><td>v5p</td><td class='n'>16</td><td class='n'>256.1</td><td class='n'>177.4</td></tr><tr><td>v5p</td><td class='n'>24</td><td class='n'>258.8</td><td class='n'>177.6</td></tr><tr><td>v5p</td><td class='n'>32</td><td class='n'>254.9</td><td class='n'>176.3</td></tr><tr><td>v5p</td><td class='n'>40</td><td class='n'>252.4</td><td class='n'>176.7</td></tr><tr><td>v5p</td><td class='n'>48</td><td class='n'>76.7</td><td class='n'>177.6</td></tr><tr><td>v5p</td><td class='n'>64</td><td class='n'>76.7</td><td class='n'>177.4</td></tr><tr><td>v5p</td><td class='n'>80</td><td class='n'>76.7</td><td class='n'>176.5</td></tr><tr><td>v5p</td><td class='n'>96</td><td class='n'>76.8</td><td class='n'>177.3</td></tr><tr><td>v5p</td><td class='n'>128</td><td class='n'>76.7</td><td class='n'>177.4</td></tr><tr><td>v5p</td><td class='n'>192</td><td class='n'>76.7</td><td class='n'>176.6</td></tr><tr><td>v6e</td><td class='n'>8</td><td class='n'>155.8</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>16</td><td class='n'>155.6</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>24</td><td class='n'>154.7</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>32</td><td class='n'>154.6</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>40</td><td class='n'>153.3</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>48</td><td class='n'>153.5</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>64</td><td class='n'>153.2</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>80</td><td class='n'>152.1</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>96</td><td class='n'>42.3</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>128</td><td class='n'>42.3</td><td class='n'>&mdash;</td></tr><tr><td>v6e</td><td class='n'>192</td><td class='n'>42.3</td><td class='n'>&mdash;</td></tr></tbody>
+ </table>
+</details>
+
+<footer><div class="wrap">
+ Generated by <span class="sub">build_gather_page.py</span> from the JSON in
+ <span class="sub">data/</span>, so the prose and the charts cannot disagree with the measurements.
+ Reproduce with <span class="sub">experiment10_gather_locality.py --sweep</span> and
+ <span class="sub">hlo_gather_lowering.py --bisect</span>.
+ Companion pages: <a href="./">the measurement log</a>,
+ <a href="./models.html">what we can run</a>, <a href="./cluster.html">who is using the cluster</a>,
+ <a href="./stacks-and-physics.html">the physics underneath</a>.
+</div></footer>
+</div>
