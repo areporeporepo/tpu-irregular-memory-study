@@ -14,18 +14,18 @@ Vendor peak figures. A kernel whose arithmetic intensity sits below the ridge po
 
 ## Results
 
-**1. All-to-all bandwidth stays flat with scale; all-reduce does not.** 16 MiB per chip, 918 TFLOPS chips, 64 host processes ([`data/fabric256_20260816T110009Z.json`](data/fabric256_20260816T110009Z.json)):
+**1. All-to-all cost on whole slices fits "mesh below the full pod, torus at the full pod".** All-to-all is the collective that routes tokens to experts in a mixture-of-experts layer. 16 MiB per chip, 918 TFLOPS chips on a 2D-torus interconnect, each row a complete slice (not a subset carved out of a larger one):
 
-| Chips | all-to-all | all-reduce | all-to-all ÷ all-reduce time |
-|---:|---:|---:|---:|
-| 32 | 0.424 ms, 38.3 GB/s bus | 0.243 ms, 133.7 GB/s bus | 1.74× |
-| 64 | 0.431 ms, 38.3 GB/s bus | 0.246 ms, 134.5 GB/s bus | 1.75× |
-| 128 | 0.438 ms, 38.0 GB/s bus | 0.295 ms, 112.9 GB/s bus | 1.49× |
-| 256 | 0.438 ms, 38.2 GB/s bus | 0.212 ms, 158.0 GB/s bus | 2.07× |
+| Slice | Chips | all-to-all | ÷ 16-chip time | Model: torus everywhere | Model: mesh below 256, torus at 256 | Source |
+|---|---:|---:|---:|---:|---:|---|
+| 4×4 | 16 | 0.237 ms | 1.00 | 1 | 1 | [`fabric_20260816T120856Z`](data/fabric_20260816T120856Z.json) |
+| 4×8 | 32 | 0.423 ms | 1.78 | 2 | 2 | [`fabric_20260816T1055Z`](data/fabric_20260816T1055Z.json) |
+| 8×8 | 64 | 0.466 ms | 1.96 | 2 | 2 | [`fabric_results_64chip_20260816T113730Z`](data/fabric_results_64chip_20260816T113730Z.json) |
+| 16×16 | 256 | 0.438 ms | 1.84 | **4** | **2** | [`fabric256_20260816T110009Z`](data/fabric256_20260816T110009Z.json) |
 
-All-to-all is the collective that routes tokens to experts in a mixture-of-experts layer, so this is the routing cost a model pays that dense data parallelism (all-reduce) does not.
+Model: uniform all-to-all moves N·M/4 bytes across the bisection, so T ≥ (N/4)·M / (W·b), with W the links crossing the cut: W = min(X,Y) for a mesh, 2·min(X,Y) for a torus with wraparound. If every slice were a torus, the 256-chip pod should cost 4× the 16-chip slice; it costs 1.84×. The data fits only if sub-pod slices are meshes without wraparound and the full 16×16 pod is a torus. Google's v6e documentation does not state this; its v4 documentation states the analogous rule (sub-cube slices are meshes). **Falsifiable prediction:** a whole 8×16 slice (128 chips) should take ~0.95 ms if it is a mesh, ~0.44 ms if it is a torus. Not yet measured.
 
-In the 256-chip run, all-reduce hit an XLA internal error (`RET_CHECK`) at 8 and 16 chips; 8- and 16-chip all-reduce comes from separate runs on the same chip type (e.g. [`data/fabric_20260816T1055Z.json`](data/fabric_20260816T1055Z.json): 0.223 ms at 8 chips and 0.240 ms at 16 chips, 16 MiB).
+Related: carving a subset out of a larger slice is penalised. The same 16 chips took 0.239 ms as part of a 32-chip slice and 0.421 ms as part of the 256-chip slice; small all-reduce on 128 of 256 chips cost 3.7× the full slice. All-reduce also hit an XLA internal error (`RET_CHECK`) on 8- and 16-chip subsets of the 256-chip slice, while all-to-all ran on the same subsets.
 
 **2. At these message sizes, per-op dispatch dominates.** The script times dispatch overhead separately: 0.51 to 1.28 ms per op, larger than the collective itself in all 40 measured rows (0.25 to 16 MiB). Batching small collectives matters more than the fabric at this size.
 
