@@ -1,0 +1,23 @@
+.gitignore
+  s_0bedbde73d667b::t_e11863ca730ab2 9-11
+index.html
+  s_0bedbde73d667b::t_e11863ca730ab2 107
+logbook.jsonl
+  s_0bedbde73d667b::t_e11863ca730ab2 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a669582fca72868c2a6521537d75d6f42941413e",
+  "prompts": {},
+  "sessions": {
+    "s_0bedbde73d667b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dbfd8fe4-b3f8-4264-9755-6388477500a6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>"
+    }
+  }
+}
