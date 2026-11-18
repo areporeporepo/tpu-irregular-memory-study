@@ -6,3 +6,6 @@ launchd.err.log
 
 # Banked HLO and profiler archives: hundreds of MiB, kept locally as the durable record
 artifacts/
+
+# private correspondence drafts, kept local
+OUTREACH.md
